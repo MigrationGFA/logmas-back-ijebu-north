@@ -48,6 +48,7 @@ enum ApplicationStatus {
   cancelled
   payment_pending
   awaiting_form
+  awaiting_payment_confirmation
 }
 
 enum InvoiceStatus {
@@ -233,20 +234,21 @@ model User {
   ward   Ward?   @relation("UserWard", fields: [wardId], references: [id])
 
   // Relational Collections
-  applications         Application[]      @relation("ApplicantApplications")
-  reviewedApplications Application[]      @relation("AdminReviews")
-  createdApplications  Application[]      @relation("ApplicationCreatedBy")
-  feeUpdatesMade       ServiceFeeConfig[] @relation("TreasuryFeeUpdates")
-  invoicesCreated      Invoice[]          @relation("InvoiceCreatedBy")
-  invoicesAssignedTo   Invoice[]          @relation("InvoiceAssignedOfficer")
-  invoicesAssigned     Invoice[]
-  payments             Payment[]
-  certificatesIssued   Certificate[]      @relation("CertificateIssuedBy")
-  receiptsIssued       Receipt[]          @relation("ReceiptIssuedBy")
-  notifications        Notification[]
-  complaintsRaised     Complaint[]        @relation("ComplaintRaisedBy")
-  complaintsAssigned   Complaint[]        @relation("ComplaintAssignedTo")
-  violationsLogged     Violation[]        @relation("ViolationLoggedBy")
+  applications          Application[]      @relation("ApplicantApplications")
+  reviewedApplications  Application[]      @relation("AdminReviews")
+  createdApplications   Application[]      @relation("ApplicationCreatedBy")
+  feeUpdatesMade        ServiceFeeConfig[] @relation("TreasuryFeeUpdates")
+  invoicesCreated       Invoice[]          @relation("InvoiceCreatedBy")
+  invoicesAssignedTo    Invoice[]          @relation("InvoiceAssignedOfficer")
+  invoicesAssigned      Invoice[]
+  payments              Payment[]
+  paymentProofsUploaded Payment[]          @relation("PaymentProofUploadedBy")
+  certificatesIssued    Certificate[]      @relation("CertificateIssuedBy")
+  receiptsIssued        Receipt[]          @relation("ReceiptIssuedBy")
+  notifications         Notification[]
+  complaintsRaised      Complaint[]        @relation("ComplaintRaisedBy")
+  complaintsAssigned    Complaint[]        @relation("ComplaintAssignedTo")
+  violationsLogged      Violation[]        @relation("ViolationLoggedBy")
 
   auditLogs AuditLog[]
   // invoices  Invoice[]  @relation("InvoiceCreatedBy")
@@ -455,14 +457,24 @@ model Payment {
   // matched to a pending Payment by service + amount + creation time.
   // These columns hold the evidence and the match outcome. NOTHING here ever
   // confirms a payment — confirmation stays on the treasurer path.
-  rawPayload  Json?
-  serviceCode String?
+  rawPayload   Json?
+  serviceCode  String?
   payerName    String?
   payerAccount String?
   payerBank    String?
   settledAt    DateTime?
   // unmatched | candidate | matched | ambiguous
-  matchStatus String?
+  matchStatus  String?
+
+  // ── Field-officer-assisted static/reserved account flow ────────────────
+  // A citizen handed a reserved account by a field officer transfers out of
+  // band; the FO (or the citizen) uploads evidence here, and a treasurer
+  // reviews it before the application can proceed past
+  // `awaiting_payment_confirmation`.
+  proofUrl          String?
+  proofUploadedById String?
+  proofUploadedBy   User?     @relation("PaymentProofUploadedBy", fields: [proofUploadedById], references: [id])
+  proofUploadedAt   DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -489,11 +501,11 @@ model PaymentIntent {
   // Our own unique reference — the gateway's `merchant_transaction_ref`
   reference String @unique
 
-  provider PaymentProvider  @default(gpay)
+  provider PaymentProvider   @default(gpay)
   flow     PaymentIntentFlow
-  amount   Decimal          @db.Decimal(12, 2)
-  currency String           @default("NGN")
-  status   PaymentStatus    @default(pending)
+  amount   Decimal           @db.Decimal(12, 2)
+  currency String            @default("NGN")
+  status   PaymentStatus     @default(pending)
 
   // Set for the invoice_online flow only (null for new_application)
   invoiceId String?

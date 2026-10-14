@@ -7,11 +7,14 @@ import { z } from "zod";
 import { requireAuth } from "../../middleware/auth.middleware";
 import { validateBody, validateQuery } from "../../middleware/validate.middleware";
 import {
+  createDynamicAccountForInvoice,
+  createDynamicAccountPublicPayment,
   getInvoiceVirtualAccount,
   getVirtualAccountForService,
   gpayWebhook,
   initializeGpayInvoicePayment,
   initializeGpayPublicPayment,
+  verifyDynamicAccountPayment,
   verifyGpayPayment,
 } from "./gpay.controller";
 
@@ -70,6 +73,29 @@ router.get(
   "/invoices/:invoiceNumber/virtual-account",
   requireAuth,
   getInvoiceVirtualAccount,
+);
+
+// GET /api/v1/payments/gpay/dynamic-account/verify/:reference
+// Public poll for a minted transfer account — the frontend hits this while
+// the expiry countdown runs (webhook is the primary settlement signal).
+router.get("/dynamic-account/verify/:reference", verifyDynamicAccountPayment);
+
+// POST /api/v1/payments/gpay/dynamic-account/invoices/:invoiceNumber
+// Authenticated invoice payment by one-shot transfer account (15-min expiry).
+router.post(
+  "/dynamic-account/invoices/:invoiceNumber",
+  jsonBody,
+  requireAuth,
+  createDynamicAccountForInvoice,
+);
+
+// POST /api/v1/payments/gpay/dynamic-account/public
+// Public "apply + pay first" flow via one-shot transfer account.
+router.post(
+  "/dynamic-account/public",
+  jsonBody,
+  validateBody(gpayPublicInitializeSchema),
+  createDynamicAccountPublicPayment,
 );
 
 // POST /api/v1/payments/gpay/webhook — GPay calls this. Signature verification

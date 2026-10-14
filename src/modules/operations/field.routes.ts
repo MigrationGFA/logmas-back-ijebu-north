@@ -1,8 +1,12 @@
 // src/modules/fieldOfficer/fieldOfficer.routes.ts
 import { Router } from 'express';
+import multer from 'multer';
+import path from 'path';
+import crypto from 'crypto';
 import { requireAuth } from '../../middleware/auth.middleware';
 import { requireRole } from '../../middleware/authorize.middleware';
 import { validateBody, validateQuery } from '../../middleware/validate.middleware';
+import { UPLOAD_FOLDER_MAP, ensureDirectoryExists } from '../../utils/fileStorage';
 import {
   // registerBusiness,
   // generateInvoice,
@@ -15,6 +19,8 @@ import {
   // getWardPermits,
   // issueDemandNotice,
   logViolation,
+  createStaticAccountApplication,
+  uploadPaymentProof,
 } from './field.controller';
 import {
   registerBusinessSchema,
@@ -22,12 +28,27 @@ import {
   recordPaymentSchema,
   issuePermitSchema,
   collectionsQuerySchema,
+  createStaticAccountApplicationSchema,
 } from './field.validation';
 
 const router = Router();
 
 // All field officer routes require auth + role guard
 const guard = [requireAuth, requireRole('field_officer')];
+
+const proofStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const targetFolder = UPLOAD_FOLDER_MAP.paymentProofs;
+    ensureDirectoryExists(targetFolder);
+    cb(null, targetFolder);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+    const ext = path.extname(file.originalname);
+    cb(null, `proof-${uniqueSuffix}${ext}`);
+  },
+});
+const proofUpload = multer({ storage: proofStorage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 // ── BUSINESS ──────────────────────────────────────────────────
 
@@ -167,5 +188,39 @@ router.get('/collections/summary', ...guard, getCollectionSummary);
  *           type: string
  */
 router.get('/collections', ...guard, validateQuery(collectionsQuerySchema), getMyCollections);
+
+// ── STATIC-ACCOUNT APPLICATIONS ───────────────────────────────
+
+/**
+ * @openapi
+ * /field-officer/applications:
+ *   post:
+ *     tags: [Field Officer]
+ *     summary: Register/reuse a citizen and submit an application paid via the FO-only static account
+ *     security:
+ *       - BearerAuth: []
+ */
+router.post(
+  '/applications',
+  ...guard,
+  validateBody(createStaticAccountApplicationSchema),
+  createStaticAccountApplication,
+);
+
+/**
+ * @openapi
+ * /field-officer/payments/{paymentId}/proof:
+ *   post:
+ *     tags: [Field Officer]
+ *     summary: Upload proof of a static-account transfer (does not confirm payment)
+ *     security:
+ *       - BearerAuth: []
+ */
+router.post(
+  '/payments/:paymentId/proof',
+  ...guard,
+  proofUpload.single('proof'),
+  uploadPaymentProof,
+);
 
 export default router;

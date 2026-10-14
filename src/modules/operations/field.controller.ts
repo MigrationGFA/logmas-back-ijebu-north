@@ -2,6 +2,8 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../../utils/prisma";
 import { sendSuccess, sendError } from "../../utils/response";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import {
   generateReceiptNumber,
   generateVerificationCode,
@@ -11,6 +13,8 @@ import {
 import {  PaymentMethod, Role } from "@prisma/client";
 import * as ApplicationService from "../application/application.service";
 import { getIp, queryString } from "../complaints/complaints.controller";
+import { findReservedAccount, SERVICE_CODE_BY_SERVICE } from "../payment/gpay.service";
+import { notify } from "../notification/notification.service";
 
 // ─────────────────────────────────────────────────────────────
 // BUSINESS REGISTRATION
@@ -18,9 +22,306 @@ import { getIp, queryString } from "../complaints/complaints.controller";
 
 
 
+
 // ─────────────────────────────────────────────────────────────
 // INVOICE GENERATION
 // ─────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------
+// STATIC / RESERVED-ACCOUNT APPLICATION (field-officer-assisted)
+// -----------------------------------------------------------------
+
+/**
+ * POST /api/v1/field-officer/applications
+ * Field officer registers (or reuses) a citizen and submits an application on
+ * their behalf, paid via the FO-only static/reserved bank account. The
+ * application is parked at `awaiting_payment_confirmation` until a treasurer
+ * reviews the uploaded proof - it never reaches `submitted` on its own.
+ */
+export const createStaticAccountApplication = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const officerId = req.user!.id;
+
+    const {
+      serviceId,
+      formData,
+      applicantId,
+      firstName,
+      lastName,
+      email,
+      phone,
+    } = req.body;
+
+    if (!serviceId) {
+      return sendError(res, "serviceId is required", "VALIDATION_ERROR", null, 400);
+    }
+
+    const service = await prisma.service.findUnique({
+      where: { id: serviceId },
+      include: { feeConfig: true },
+    });
+
+    if (!service) {
+      return sendError(res, "Service not found", "NOT_FOUND", null, 404);
+    }
+    if (!service.isActive) {
+      return sendError(res, "Service is not active", "SERVICE_INACTIVE", null, 400);
+    }
+    if (!service.feeConfig || service.feeConfig.status !== "ACTIVE") {
+      return sendError(
+        res,
+        "Service fee is not configured",
+        "SERVICE_FEE_NOT_CONFIGURED",
+        null,
+        400,
+      );
+    }
+
+    const gpayServiceCode = SERVICE_CODE_BY_SERVICE[service.code];
+    if (!gpayServiceCode) {
+      return sendError(
+        res,
+        "Bank transfer is not available for this service",
+        "VIRTUAL_ACCOUNT_UNAVAILABLE",
+        null,
+        400,
+      );
+    }
+
+    const account = await findReservedAccount(gpayServiceCode);
+    if (!account) {
+      return sendError(
+        res,
+        "No active transfer account is available for this service",
+        "VIRTUAL_ACCOUNT_UNAVAILABLE",
+        null,
+        404,
+      );
+    }
+
+
+
+    // ------------------------------------------------------------
+    // Resolve the citizen applicant
+    // ------------------------------------------------------------
+    let citizenId = applicantId as string | undefined;
+    let newCitizenCreated = false;
+    let generatedPassword: string | null = null;
+    let citizen: { id: string; email: string; firstName: string; lastName: string; phone: string | null } | null =
+      null;
+
+    if (citizenId) {
+      citizen = await prisma.user.findUnique({
+        where: { id: citizenId },
+        select: { id: true, email: true, firstName: true, lastName: true, phone: true },
+      });
+      if (!citizen) {
+        return sendError(res, "Applicant not found", "NOT_FOUND", null, 404);
+      }
+    } else {
+      if (!firstName || !lastName || !email) {
+        return sendError(
+          res,
+          "firstName, lastName and email are required to register a new citizen",
+          "VALIDATION_ERROR",
+          null,
+          400,
+        );
+      }
+
+      const normalizedEmail = String(email).toLowerCase().trim();
+      const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
+
+      if (existing) {
+        citizen = existing;
+        citizenId = existing.id;
+      } else {
+        generatedPassword = crypto.randomBytes(6).toString("base64url");
+        const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
+        citizen = await prisma.user.create({
+          data: {
+            email: normalizedEmail,
+            phone: phone ? String(phone).trim() : undefined,
+            firstName,
+            lastName,
+            password: hashedPassword,
+            role: "citizen",
+            passwordResetRequired: true,
+            isActive: true,
+            emailVerifiedAt: new Date(),
+          },
+          select: { id: true, email: true, firstName: true, lastName: true, phone: true },
+        });
+        citizenId = citizen.id;
+        newCitizenCreated = true;
+      }
+    }
+
+    // ------------------------------------------------------------
+    // Create the application + invoice (createInvoice defaults true)
+    // ------------------------------------------------------------
+    const { application, invoice } = await ApplicationService.createOrUpdateApplication({
+      mode: "create",
+      applicantId: citizenId,
+      createdById: officerId,
+      serviceId,
+      formData: formData ?? {},
+      files: [],
+      createInvoice: true,
+    });
+
+    // Force the FO-assisted application into the confirmation-gated status —
+    // `createOrUpdateApplication` always writes `submitted`.
+    const gatedApplication = await prisma.application.update({
+      where: { id: application.id },
+      data: { status: "awaiting_payment_confirmation" },
+    });
+
+    // ------------------------------------------------------------
+    // Record the pending static-account payment.
+    // ------------------------------------------------------------
+    const amount = Number(service.feeConfig.amount);
+    const reference = generateReference("STA");
+
+    const payment = await prisma.payment.create({
+      data: {
+        invoiceId: invoice?.id ?? null,
+        amount,
+        method: "bank_transfer" as PaymentMethod,
+        status: "pending",
+        reference,
+        serviceCode: service.code,
+        narration: `Field-officer static account — ${service.name}`,
+      },
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        action: "application_created",
+        entity: "Application",
+        entityId: application.id,
+        userId: officerId,
+        details: {
+          flow: "field_officer_static_account",
+          serviceId,
+          applicantId: citizenId,
+          newCitizenCreated,
+          paymentId: payment.id,
+        },
+        ipAddress: getIp(req),
+      },
+    });
+
+
+    if (newCitizenCreated && citizen) {
+      try {
+        await notify({
+          userId: citizen.id,
+          to: { email: citizen.email, phone: citizen.phone ?? "" },
+          templateKey: "account.publicAccountCreated",
+          vars: {
+            applicant_name: `${citizen.firstName} ${citizen.lastName}`,
+            application_number: gatedApplication.applicationNumber,
+            service_name: service.name,
+            application_id: application.id,
+            fee_amount: amount.toString(),
+            temp_password: generatedPassword,
+          },
+          channels: ["email", "sms"],
+        });
+      } catch (notifyErr) {
+        console.error(
+          "[createStaticAccountApplication] account notification failed, continuing:",
+          notifyErr,
+        );
+      }
+    }
+
+    return sendSuccess(
+      res,
+      {
+        application: gatedApplication,
+        invoice,
+        payment,
+        transferInstructions: {
+          bankName: account.bankName,
+          accountNumber: account.accountNumber,
+          accountName: account.accountName,
+          amount,
+          reference,
+        },
+        newCitizenCreated,
+      },
+      "Application submitted — awaiting payment confirmation",
+      201,
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * POST /api/v1/field-officer/payments/:paymentId/proof
+ * Field officer (or the citizen) uploads evidence of the static-account
+ * transfer. Does NOT confirm the payment — that stays the treasurer's call.
+ */
+export const uploadPaymentProof = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const uploaderId = req.user!.id;
+    let { paymentId } = req.params;
+    if (Array.isArray(paymentId)) paymentId = paymentId[0];
+
+    const file = (req as any).file as Express.Multer.File | undefined;
+    if (!file) {
+      return sendError(res, "A proof file is required", "VALIDATION_ERROR", null, 400);
+    }
+
+    const payment = await prisma.payment.findUnique({ where: { id: String(paymentId) } });
+    if (!payment) {
+      return sendError(res, "Payment not found", "NOT_FOUND", null, 404);
+    }
+    if (payment.status === "confirmed") {
+      return sendError(res, "Payment is already confirmed", "BAD_REQUEST", null, 400);
+    }
+
+    const serverUrl = `${req.protocol}://${req.get("host")}`;
+    const normalizedRelativePath = file.path.replace(/\\/g, "/");
+    const proofUrl = `${serverUrl}/${normalizedRelativePath}`;
+
+    const updated = await prisma.payment.update({
+      where: { id: payment.id },
+      data: {
+        proofUrl,
+        proofUploadedById: uploaderId,
+        proofUploadedAt: new Date(),
+      },
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        action: "payment_confirmed",
+        entity: "Payment",
+        entityId: payment.id,
+        userId: uploaderId,
+        details: { event: "proof_uploaded", proofUrl },
+        ipAddress: getIp(req),
+      },
+    });
+
+    return sendSuccess(res, updated, "Proof of payment uploaded");
+  } catch (err) {
+    next(err);
+  }
+};
+
 
 
 // ─────────────────────────────────────────────────────────────

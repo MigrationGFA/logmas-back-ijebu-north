@@ -554,7 +554,7 @@ export const accountTemplates = {
   },
 
   verifyEmail: {
-    emailSubject: `Verify your LOGMAS account`,
+    emailSubject: `Verify your Odeda LGA Account`,
     emailHtml: `
 <!DOCTYPE html>
 <html>
@@ -562,9 +562,9 @@ export const accountTemplates = {
   <div style="max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden;">
     
     <div style="background: #1a4731; padding: 32px; text-align: center;">
-      <h1 style="color: #fff; margin: 0;">Welcome to ${lgaName} LOGMAS</h1>
+      <h1 style="color: #fff; margin: 0;">Welcome to Odeda</h1>
       <p style="color: #a7f3d0; margin: 4px 0 0;">
-        ${lgaName} Local Government Management System
+        Local Government Management System
       </p>
     </div>
 
@@ -572,7 +572,7 @@ export const accountTemplates = {
       <p>Dear <strong>{{applicant_name}}</strong>,</p>
 
       <p>
-        Thank you for creating your LOGMAS account.
+        Thank you for creating your Odeda LGA account.
         Please verify your email address to complete your registration.
       </p>
 

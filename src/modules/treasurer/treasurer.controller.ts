@@ -5,6 +5,9 @@ import { sendSuccess, sendError } from "../../utils/response";
 import { InvoiceStatus, Prisma } from "@prisma/client";
 import { getIp, queryString } from "../complaints/complaints.controller";
 import { upsertServiceFeeSchema } from "./treasurer.validation";
+import { generateReceiptNumber, generateVerificationCode, generateQrToken } from "../../utils/generators";
+import { notify } from "../notification/notification.service";
+
 
 const buildDateRange = (from?: string, to?: string) => {
   const now = new Date();
@@ -863,5 +866,285 @@ export const getFieldOfficersList = async (req: Request, res: Response) => {
       success: false,
       message: "Internal server error",
     });
+  }
+};
+
+// ============================================================
+// FIELD-OFFICER STATIC-ACCOUNT PAYMENT CONFIRMATION
+// ============================================================
+
+/**
+ * GET /api/v1/treasurer/applications/awaiting-confirmation
+ * Worklist of applications parked at `awaiting_payment_confirmation` —
+ * the sole signal that a field-officer-assisted static-account payment is
+ * waiting on treasurer review.
+ */
+export const listAwaitingConfirmation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 25;
+
+    const where = { status: "awaiting_payment_confirmation" as const };
+
+    const [items, total] = await Promise.all([
+      prisma.application.findMany({
+        where,
+        orderBy: { createdAt: "asc" },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: {
+          service: true,
+          invoice: { include: { payments: { orderBy: { createdAt: "desc" } } } },
+          applicant: {
+            select: { id: true, firstName: true, lastName: true, email: true, phone: true },
+          },
+          createdBy: {
+            select: { id: true, firstName: true, lastName: true, role: true },
+          },
+        },
+      }),
+      prisma.application.count({ where }),
+    ]);
+
+    return sendSuccess(res, {
+      data: items,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+/**
+ * PATCH /api/v1/treasurer/payments/:paymentId/confirm
+ * Treasurer confirms a field-officer static-account payment: marks the
+ * Payment confirmed, settles the invoice, generates a receipt, and releases
+ * the application back to `submitted` so the normal review pipeline picks
+ * it up.
+ */
+export const confirmStaticAccountPayment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const treasurerId = req.user!.id;
+    let { paymentId } = req.params;
+    if (Array.isArray(paymentId)) paymentId = paymentId[0];
+
+    const payment = await prisma.payment.findUnique({
+      where: { id: String(paymentId) },
+      include: {
+        invoice: {
+          include: { application: { include: { applicant: true, service: true } } },
+        },
+      },
+    });
+
+    if (!payment) {
+      return sendError(res, "Payment not found", "NOT_FOUND", null, 404);
+    }
+    if (payment.status === "confirmed") {
+      return sendError(res, "Payment is already confirmed", "BAD_REQUEST", null, 400);
+    }
+
+    const application = payment.invoice?.application;
+    if (!application || application.status !== "awaiting_payment_confirmation") {
+      return sendError(
+        res,
+        "Application is not awaiting payment confirmation",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    const invoiceId = payment.invoiceId!;
+
+    const result = await prisma.$transaction(async (tx) => {
+      const confirmedPayment = await tx.payment.update({
+        where: { id: payment.id },
+        data: {
+          status: "confirmed",
+          confirmedById: treasurerId,
+          confirmedAt: new Date(),
+          matchStatus: "matched",
+        },
+      });
+
+      const updatedInvoice = await tx.invoice.update({
+        where: { id: invoiceId },
+        data: { paymentStatus: "confirmed", paidAt: new Date() },
+      });
+
+      const existingReceipt = await tx.receipt.findUnique({ where: { invoiceId } });
+      const receipt =
+        existingReceipt ??
+        (await tx.receipt.create({
+          data: {
+            receiptNumber: generateReceiptNumber("RCP"),
+            verificationCode: generateVerificationCode(),
+            qrToken: generateQrToken(),
+            amountPaid: confirmedPayment.amount,
+            invoiceId,
+            issuedById: treasurerId,
+          },
+        }));
+
+      const updatedApplication = await tx.application.update({
+        where: { id: application.id },
+        data: { status: "submitted" },
+      });
+
+      return { confirmedPayment, updatedInvoice, receipt, updatedApplication };
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        action: "payment_confirmed",
+        entity: "Payment",
+        entityId: payment.id,
+        userId: treasurerId,
+        details: {
+          flow: "field_officer_static_account",
+          applicationId: application.id,
+          invoiceId,
+        },
+        ipAddress: getIp(req),
+      },
+    });
+
+    try {
+      if (application.applicant) {
+        await notify({
+          userId: application.applicant.id,
+          to: { email: application.applicant.email, phone: application.applicant.phone ?? "" },
+          templateKey: "application.completeApplication",
+          vars: {
+            applicant_name: `${application.applicant.firstName} ${application.applicant.lastName}`,
+            application_number: application.applicationNumber,
+            service_name: application.service.name,
+            application_id: application.id,
+          },
+          channels: ["email", "sms"],
+        });
+      }
+    } catch (notifyErr) {
+      console.error("[confirmStaticAccountPayment] notify() failed, continuing:", notifyErr);
+    }
+
+    return sendSuccess(res, result, "Payment confirmed — application released for review");
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+/**
+ * PATCH /api/v1/treasurer/payments/:paymentId/decline
+ * Treasurer rejects the submitted proof (mismatched/invalid). The payment
+ * stays pending with the proof cleared, and the application is declined with
+ * the reason recorded — the citizen/FO can resubmit a new payment.
+ */
+export const declineStaticAccountPayment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const treasurerId = req.user!.id;
+    let { paymentId } = req.params;
+    if (Array.isArray(paymentId)) paymentId = paymentId[0];
+    const { reason } = req.body;
+
+    if (!reason || !String(reason).trim()) {
+      return sendError(res, "reason is required when declining a payment", "VALIDATION_ERROR", null, 400);
+    }
+
+    const payment = await prisma.payment.findUnique({
+      where: { id: String(paymentId) },
+      include: { invoice: { include: { application: { include: { applicant: true, service: true } } } } },
+    });
+
+    if (!payment) {
+      return sendError(res, "Payment not found", "NOT_FOUND", null, 404);
+    }
+
+    const application = payment.invoice?.application;
+    if (!application || application.status !== "awaiting_payment_confirmation") {
+      return sendError(
+        res,
+        "Application is not awaiting payment confirmation",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+      const updatedPayment = await tx.payment.update({
+        where: { id: payment.id },
+        data: {
+          matchStatus: "unmatched",
+          proofUrl: null,
+          proofUploadedById: null,
+          proofUploadedAt: null,
+        },
+      });
+
+      const updatedApplication = await tx.application.update({
+        where: { id: application.id },
+        data: {
+          status: "declined",
+          reviewedById: treasurerId,
+          reviewedAt: new Date(),
+          declineReason: reason,
+        },
+      });
+
+      return { updatedPayment, updatedApplication };
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        action: "application_rejected",
+        entity: "Payment",
+        entityId: payment.id,
+        userId: treasurerId,
+        details: { flow: "field_officer_static_account", reason, applicationId: application.id },
+        ipAddress: getIp(req),
+      },
+    });
+
+    try {
+      if (application.applicant) {
+        await notify({
+          userId: application.applicant.id,
+          to: { email: application.applicant.email, phone: application.applicant.phone ?? "" },
+          templateKey: "application.applicationDeclined",
+          vars: {
+            applicant_name: `${application.applicant.firstName} ${application.applicant.lastName}`,
+            application_number: application.applicationNumber,
+            service_name: application.service.name,
+            application_id: application.id,
+            decline_reason: reason,
+            reviewed_at: new Date().toISOString(),
+            reviewer_name: "Treasurer",
+          },
+          channels: ["email", "sms"],
+        });
+      }
+    } catch (notifyErr) {
+      console.error("[declineStaticAccountPayment] notify() failed, continuing:", notifyErr);
+    }
+
+    return sendSuccess(res, result, "Payment proof declined — application declined");
+  } catch (err) {
+    next(err);
   }
 };

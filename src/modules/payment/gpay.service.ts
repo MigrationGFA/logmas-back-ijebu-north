@@ -443,12 +443,16 @@ function timingSafeStringEqual(a: string, b: string): boolean {
 
 /**
  * Verify that an inbound webhook really came from GPay.
- * GPay signs the raw request body with the webhook secret (HMAC-SHA256) and
- * sends it as `X-GPay-Signature`.
+ * GPay signs the raw request body with the webhook secret (HMAC) and sends it
+ * as `X-GPay-Signature`.
  *
- * The docs don't state whether the digest is hex or base64, so both are
- * accepted and the comparison is timing-safe. Tighten this to the confirmed
- * encoding once GPay confirms it.
+ * Two digests are accepted because GPay's docs and its live behaviour disagree:
+ * the reserved-VA / checkout integrations were exercised with HMAC-SHA256,
+ * while the dynamic-VA docs specify `hash_hmac('sha512', raw_payload, secret)`.
+ * The four candidate digests have distinct lengths (sha256 hex=64 / base64=44,
+ * sha512 hex=128 / base64=88), so there is never ambiguity between them, and
+ * every comparison below is timing-safe. Tighten to the confirmed encoding
+ * once GPay confirms it.
  *
  * IMPORTANT: this needs the *raw* request body bytes, not parsed JSON — see the
  * express.raw() note in gpay.routes.ts.
@@ -461,22 +465,28 @@ export function verifyWebhookSignature(
   if (!signatureHeader) return false;
   if (!Buffer.isBuffer(rawBody) || rawBody.length === 0) return false;
 
-  const provided = signatureHeader.trim().replace(/^sha256=/i, "");
+  const provided = signatureHeader
+    .trim()
+    .replace(/^(sha256|sha512)=/i, "");
   if (!provided) return false;
 
   // One HMAC instance per digest — digest() can only be called once per instance.
-  const hex = crypto
-    .createHmac("sha256", GPAY_WEBHOOK_SECRET)
-    .update(rawBody)
-    .digest("hex");
-  const base64 = crypto
-    .createHmac("sha256", GPAY_WEBHOOK_SECRET)
-    .update(rawBody)
-    .digest("base64");
+  // Hex digests are compared case-insensitively; base64 is case-sensitive and
+  // must be compared verbatim (lengths differ across algorithms, so a candidate
+  // of the wrong length can never collide).
+  const hexDigests = [
+    crypto.createHmac("sha256", GPAY_WEBHOOK_SECRET).update(rawBody).digest("hex"),
+    crypto.createHmac("sha512", GPAY_WEBHOOK_SECRET).update(rawBody).digest("hex"),
+  ];
+  const base64Digests = [
+    crypto.createHmac("sha256", GPAY_WEBHOOK_SECRET).update(rawBody).digest("base64"),
+    crypto.createHmac("sha512", GPAY_WEBHOOK_SECRET).update(rawBody).digest("base64"),
+  ];
 
+  const lowerProvided = provided.toLowerCase();
   return (
-    timingSafeStringEqual(provided.toLowerCase(), hex) ||
-    timingSafeStringEqual(provided, base64)
+    hexDigests.some((d) => timingSafeStringEqual(lowerProvided, d)) ||
+    base64Digests.some((d) => timingSafeStringEqual(provided, d))
   );
 }
 
@@ -710,6 +720,304 @@ export function isReservedVaWebhook(payload: unknown): boolean {
     String((data as Record<string, unknown>).account_type ?? "").trim() ===
     "Reserved Virtual Account"
   );
+}
+
+export interface GpayDynamicVaWebhookData {
+  /** "Dynamic Virtual Account" when GPay labels it; may be absent. */
+  account_type?: string;
+  /** OUR reference — we send it at creation, so it maps straight to an intent. */
+  merchant_transaction_ref?: string;
+  gpay_reference?: string;
+  status?: string;
+  amount?: string;
+  /** Settled amount on the transfer; preferred over `amount` when present. */
+  amount_settled?: string;
+  currency?: string;
+  account_number?: string;
+  bank_name?: string;
+  paid_at?: string;
+  expires_at?: string;
+  [key: string]: unknown;
+}
+
+/**
+ * True when this payload is the dynamic-VA settlement dialect.
+ *
+ * ORDER MATTERS: the caller runs isReservedVaWebhook first, so by the time we
+ * get here the reserved dialect is already excluded. Two signals:
+ *   1. `account_type` names a dynamic account — definitive.
+ *   2. No `account_type`, but OUR merchant_transaction_ref alongside a settled
+ *      amount and no MPGS `order_details` block (checkout charges carry
+ *      `order_details`; reserved VA was branched off already).
+ *
+ * A false positive costs only a "no PaymentIntent found" log — the lookup is
+ * exact on our own unique reference, so nothing else can be touched.
+ */
+export function isDynamicVaWebhook(payload: unknown): boolean {
+  const data = (payload as { data?: unknown } | null | undefined)?.data;
+  if (!data || typeof data !== "object") return false;
+  const d = data as Record<string, unknown>;
+
+  const accountType = String(d.account_type ?? "").trim().toLowerCase();
+  if (accountType.includes("dynamic")) return true;
+  if (accountType) return false; // some other labelled account type
+
+  return Boolean(String(d.merchant_transaction_ref ?? "").trim()) &&
+    (d.amount_settled !== undefined || d.amount !== undefined) &&
+    d.order_details === undefined;
+}
+
+// ── 6. Dynamic virtual accounts (one-shot, short-lived bank transfer) ──────
+//
+// POST /virtual-accounts/dynamic mints a Providus account for ONE payment:
+// GPay generates the account, the payer transfers the exact amount, and the
+// settlement webhook (or a poll of GET /transactions/verify) closes the loop.
+// Unlike the reserved pool this account EXPIRES (default 15 minutes), which is
+// why PaymentIntent.expiresAt exists.
+
+/** How long a dynamic account lives before GPay retires it. */
+export const DYNAMIC_ACCOUNT_EXPIRY_MINUTES = Number(
+  process.env.GPAY_DYNAMIC_ACCOUNT_EXPIRY_MINUTES ?? 15,
+);
+
+export interface CreateDynamicAccountParams {
+  /** Label GPay shows on the account, e.g. "ODEDA/CENTRAL". */
+  accountName: string;
+  /** NGN, decimal — same convention as initiateCheckout (no *100). */
+  amount: number;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  /** Our own unique reference — sent as `merchant_transaction_ref`. */
+  merchantTransactionRef: string;
+  webhookUrl?: string;
+  /** Defaults to DYNAMIC_ACCOUNT_EXPIRY_MINUTES (15). */
+  expiryMinutes?: number;
+}
+
+export interface DynamicAccountData {
+  accountNumber: string;
+  accountName: string;
+  bankName: string;
+  /** Raw EMVCo NQR string, when GPay returns one. */
+  qrCode: string | null;
+  /** Vector SVG URL for the QR, when GPay returns one. */
+  qrSvgUrl: string | null;
+  /** Per-bank USSD dial strings keyed by bank name. */
+  ussd: Record<string, string> | null;
+  expiresAt: string | null;
+  status: string | null;
+  gpayReference: string | null;
+  merchantTransactionRef: string | null;
+  raw: any;
+}
+
+/** Reads the first present, non-empty field among several accepted spellings. */
+function pickField(source: Record<string, unknown>, ...keys: string[]): any {
+  for (const key of keys) {
+    const value = source?.[key];
+    if (value !== undefined && value !== null && String(value).trim() !== "") {
+      return value;
+    }
+  }
+  return null;
+}
+
+/**
+ * Mint a dynamic virtual account for a single payment.
+ *
+ * Fields are read defensively (snake_case plus a couple of aliases) because
+ * GPay's reserved-account and dynamic-account responses disagree on naming.
+ */
+export async function createDynamicAccount(
+  params: CreateDynamicAccountParams,
+): Promise<GpayResult<DynamicAccountData>> {
+  try {
+    const res = await fetch(`${GPAY_BASE_URL}/virtual-accounts/dynamic`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${GPAY_AUTH_SECRET}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        account_name: params.accountName,
+        amount: params.amount,
+        customer_name: params.customerName,
+        customer_email: params.customerEmail,
+        customer_phone: params.customerPhone,
+        merchant_transaction_ref: params.merchantTransactionRef,
+        webhook_url: params.webhookUrl ?? gpayWebhookUrl,
+        expiry_minutes:
+          params.expiryMinutes ?? DYNAMIC_ACCOUNT_EXPIRY_MINUTES,
+      }),
+      signal: AbortSignal.timeout(GPAY_TIMEOUT_MS),
+    });
+
+    const json = await safeJson(res);
+
+    if (!res.ok || !isEnvelopeSuccess(json)) {
+      return {
+        success: false,
+        error: envelopeError(json, "Failed to create dynamic virtual account"),
+        raw: json,
+      };
+    }
+
+    const d = (json?.data ?? {}) as Record<string, unknown>;
+    const qr = d.qr_code as Record<string, unknown> | string | undefined;
+    const qrCode =
+      typeof qr === "string"
+        ? qr
+        : String(
+            pickField((qr ?? {}) as Record<string, unknown>, "code", "value", "data") ??
+              "",
+          ) || null;
+
+    return {
+      success: true,
+      raw: json,
+      data: {
+        accountNumber: String(
+          pickField(d, "account_number", "accountNumber", "virtual_account_number") ?? "",
+        ).trim(),
+        accountName: String(
+          pickField(d, "account_name", "accountName") ?? params.accountName,
+        ).trim(),
+        bankName: String(
+          pickField(d, "bank_name", "bankName") ?? "Providus Bank",
+        ).trim(),
+        qrCode,
+        qrSvgUrl:
+          typeof qr === "object" && qr !== null
+            ? ((pickField(
+                qr as Record<string, unknown>,
+                "svg_url",
+                "svgUrl",
+                "url",
+              ) as string | null) ?? null)
+            : null,
+        ussd:
+          d.ussd && typeof d.ussd === "object"
+            ? (d.ussd as Record<string, string>)
+            : null,
+        expiresAt:
+          (pickField(d, "expires_at", "expiresAt", "expiry_date") as string | null) ??
+          null,
+        status:
+          ((pickField(d, "status") as string | null) ?? "").trim().toLowerCase() ||
+          null,
+        gpayReference:
+          (pickField(d, "reference", "gpay_reference", "transaction_ref") as string | null) ??
+          null,
+        merchantTransactionRef:
+          (pickField(d, "merchant_transaction_ref") as string | null) ??
+          params.merchantTransactionRef,
+        raw: d,
+      },
+    };
+  } catch (err: any) {
+    console.error(
+      "[gpay.service] createDynamicAccount error:",
+      err?.message ?? err,
+    );
+    return {
+      success: false,
+      error: err?.message ?? "GPay dynamic account request failed",
+    };
+  }
+}
+
+export interface DynamicVerifyData {
+  status: NormalizedStatus;
+  rawStatus: string | null;
+  isPaid: boolean;
+  amount: string | null;
+  currency: string | null;
+  gpayReference: string | null;
+  merchantTransactionRef: string | null;
+  accountNumber: string | null;
+  paidAtRaw: string | null;
+  expiresAtRaw: string | null;
+  raw: any;
+}
+
+/**
+ * GET /transactions/verify?reference= — accepts gpay_reference,
+ * merchant_transaction_ref, or account_number. Polls a dynamic VA payment
+ * while the 15-minute countdown runs; the webhook is the primary signal,
+ * this is the fallback the frontend polls.
+ */
+export async function verifyDynamicAccount(
+  reference: string,
+): Promise<GpayResult<DynamicVerifyData>> {
+  try {
+    const url = `${GPAY_BASE_URL}/transactions/verify?reference=${encodeURIComponent(
+      reference,
+    )}`;
+
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${GPAY_AUTH_SECRET}`,
+        Accept: "application/json",
+      },
+      signal: AbortSignal.timeout(GPAY_TIMEOUT_MS),
+    });
+
+    const json = await safeJson(res);
+
+    if (!res.ok || !isEnvelopeSuccess(json)) {
+      return {
+        success: false,
+        error: envelopeError(json, "Failed to verify GPay transaction"),
+        raw: json,
+      };
+    }
+
+    const d = (json?.data ?? {}) as Record<string, unknown>;
+    const rawStatus = (d.status as string | null) ?? null;
+    const orderDetails = d.order_details as Record<string, unknown> | undefined;
+    const mpgsResult =
+      ((orderDetails?.result as string | undefined) ??
+        (d.result as string | undefined) ??
+        null) as string | null;
+
+    return {
+      success: true,
+      raw: json,
+      data: {
+        status: normalizeGatewayStatus(rawStatus ?? mpgsResult),
+        rawStatus,
+        // Success is per-status ONLY here: unlike checkout, a dynamic VA has no
+        // MPGS order block, so a "SUCCESS" leak from another field must not
+        // promote a pending credit.
+        isPaid: normalizeGatewayStatus(rawStatus) === "successful",
+        amount:
+          (d.amount as string | null) ?? (d.amount_settled as string | null) ?? null,
+        currency: (d.currency as string | null) ?? null,
+        gpayReference:
+          ((d.gpay_reference as string | null) ??
+            (d.reference as string | null) ??
+            null) as string | null,
+        merchantTransactionRef:
+          (d.merchant_transaction_ref as string | null) ?? null,
+        accountNumber: (d.account_number as string | null) ?? null,
+        paidAtRaw: (d.paid_at as string | null) ?? null,
+        expiresAtRaw: (d.expires_at as string | null) ?? null,
+        raw: d,
+      },
+    };
+  } catch (err: any) {
+    console.error(
+      "[gpay.service] verifyDynamicAccount error:",
+      err?.message ?? err,
+    );
+    return {
+      success: false,
+      error: err?.message ?? "GPay verify request failed",
+    };
+  }
 }
 
 

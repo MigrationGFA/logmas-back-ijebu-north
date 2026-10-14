@@ -30,3 +30,19 @@ export const authLimiter = rateLimit({
     },
   },
 });
+
+// Dedicated limiter for resend-verification: 2 requests per hour per IP
+export const resendVerificationLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 2,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    status: "error",
+    error: {
+      code: "TOO_MANY_REQUESTS",
+      message: "You can only request 2 verification emails per hour. Please wait before trying again.",
+      details: null,
+    },
+  },
+});

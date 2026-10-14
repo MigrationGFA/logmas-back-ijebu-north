@@ -7,7 +7,8 @@ export const UPLOAD_FOLDER_MAP: Record<string, string> = {
   complaints: 'public/uploads/complaints',
   permits: 'public/uploads/permits',
   news: 'public/uploads/news',
-  documents: 'public/uploads/documents'
+  documents: 'public/uploads/documents',
+  paymentProofs: 'public/uploads/payment-proofs'
 };
 
 /**

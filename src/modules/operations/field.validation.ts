@@ -92,3 +92,24 @@ export const collectionsQuerySchema = z.object({
     'state_of_origin_fee', 'other',
   ]).optional(),
 });
+
+// ── Static-account applications ───────────────────────────────
+
+export const createStaticAccountApplicationSchema = z
+  .object({
+    serviceId: z.string().min(1, 'serviceId is required'),
+    formData: z.record(z.string(), z.any()).optional(),
+    applicantId: z.string().uuid('Invalid applicant ID').optional(),
+    firstName: z.string().min(2, 'First name is required').optional(),
+    lastName: z.string().min(2, 'Last name is required').optional(),
+    email: z.string().email('Invalid email format').optional(),
+    phone: z.string().min(7, 'Valid phone number is required').optional(),
+  })
+  .refine(
+    (data) => Boolean(data.applicantId) || Boolean(data.firstName && data.lastName && data.email),
+    {
+      message:
+        'Provide either an existing applicantId or firstName/lastName/email to register a new citizen',
+      path: ['applicantId'],
+    },
+  );

@@ -181,3 +181,8 @@ export const upsertServiceFeeSchema = z.object({
   amount: z.number().positive('Amount must be a positive monetary value'),
   status: z.boolean().optional().default(true) // true = ACTIVE, false = INACTIVE
 });
+
+// ── Static-account payment confirmation ───────────────────────
+export const declinePaymentSchema = z.object({
+  reason: z.string().min(3, 'A decline reason is required'),
+});

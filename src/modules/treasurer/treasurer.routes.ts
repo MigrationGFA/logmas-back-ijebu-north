@@ -14,6 +14,9 @@ import {
   getTreasuryOverview,
   getReconciliation,
   getFieldOfficersList,
+  listAwaitingConfirmation,
+  confirmStaticAccountPayment,
+  declineStaticAccountPayment,
 
 } from "./treasurer.controller";
 import {
@@ -24,6 +27,7 @@ import {
   updateLevyConfigSchema,
   updatePermitConfigSchema,
   upsertServiceFeeSchema,
+  declinePaymentSchema,
 } from "./treasurer.validation";
 
 const router = Router();
@@ -236,5 +240,55 @@ router.get("/revenue", getTreasuryOverview);
  */
 router.get("/reconciliation", getReconciliation);
 
+
+// ============================================================
+// FIELD-OFFICER STATIC-ACCOUNT PAYMENT CONFIRMATION
+// ============================================================
+
+/**
+ * @openapi
+ * /treasurer/applications/awaiting-confirmation:
+ *   get:
+ *     tags: [Treasurer Operations]
+ *     summary: Applications parked pending treasurer confirmation of a field-officer static-account payment
+ *     security:
+ *       - BearerAuth: []
+ */
+router.get(
+  "/applications/awaiting-confirmation",
+  requireRole("treasurer", "super_admin"),
+  listAwaitingConfirmation,
+);
+
+/**
+ * @openapi
+ * /treasurer/payments/{paymentId}/confirm:
+ *   patch:
+ *     tags: [Treasurer Operations]
+ *     summary: Confirm a field-officer static-account payment and release the application for review
+ *     security:
+ *       - BearerAuth: []
+ */
+router.patch(
+  "/payments/:paymentId/confirm",
+  requireRole("treasurer", "super_admin"),
+  confirmStaticAccountPayment,
+);
+
+/**
+ * @openapi
+ * /treasurer/payments/{paymentId}/decline:
+ *   patch:
+ *     tags: [Treasurer Operations]
+ *     summary: Decline a field-officer static-account payment's proof and decline the application
+ *     security:
+ *       - BearerAuth: []
+ */
+router.patch(
+  "/payments/:paymentId/decline",
+  requireRole("treasurer", "super_admin"),
+  validateBody(declinePaymentSchema),
+  declineStaticAccountPayment,
+);
 
 export default router;

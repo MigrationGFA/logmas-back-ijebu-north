@@ -17,9 +17,15 @@ import {
   SERVICE_CODE_BY_SERVICE,
   findReservedAccount,
   isReservedVaWebhook,
+  isDynamicVaWebhook,
+  createDynamicAccount,
+  verifyDynamicAccount,
+  DYNAMIC_ACCOUNT_EXPIRY_MINUTES,
+  normalizeGatewayStatus,
   parseLagosDateTime,
   serviceCodeForGpay,
   type GpayReservedVaWebhookData,
+  type GpayDynamicVaWebhookData,
   type ReservedVirtualAccount,
 } from "./gpay.service";
 import { notify } from "../notification/notification.service";
@@ -366,6 +372,353 @@ export const initializeGpayPublicPayment = async (
   }
 };
 
+// ── Dynamic virtual account: POST /dynamic-account/* ──
+//
+// A one-shot Providus account minted for exactly this amount, expiring after
+// DYNAMIC_ACCOUNT_EXPIRY_MINUTES (15). Same PaymentIntent-first discipline as
+// the checkout flows — GPay echoes no metadata, so the intent row is created
+// BEFORE the gateway call and carries everything settlement needs.
+
+/**
+ * GPay expiry timestamps carry no zone ("2026-09-25 15:18:20" = Lagos) unless
+ * the string says otherwise. Parse accordingly; null when unparseable.
+ */
+function parseGatewayExpiry(raw: string | null | undefined): Date | null {
+  if (!raw) return null;
+  const trimmed = raw.trim();
+  if (/[zZ]$|[+-]\d{2}:?\d{2}$/.test(trimmed)) {
+    const d = new Date(trimmed);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+  return parseLagosDateTime(trimmed);
+}
+
+/** Everything the payment page needs to render the transfer card. */
+function dynamicAccountResponse(
+  data: {
+    accountNumber: string;
+    accountName: string;
+    bankName: string;
+    qrCode: string | null;
+    ussd: Record<string, string> | null;
+    expiresAt: string | null;
+  },
+  expiresAt: Date,
+  base: Record<string, unknown>,
+) {
+  return {
+    ...base,
+    gateway: "gpay",
+    channel: "dynamic_va",
+    accountNumber: data.accountNumber,
+    accountName: data.accountName,
+    bankName: data.bankName,
+    qrCode: data.qrCode,
+    ussd: data.ussd,
+    expiresAt: expiresAt.toISOString(),
+    expiresInSeconds: Math.max(
+      0,
+      Math.round((expiresAt.getTime() - Date.now()) / 1000),
+    ),
+  };
+}
+
+// ── Dynamic VA, invoice flow: POST /api/v1/payments/gpay/dynamic-account/invoices/:invoiceNumber ──
+
+export const createDynamicAccountForInvoice = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { invoiceNumber } = req.params;
+    const userId = req.user!.id;
+    const userEmail = req.user!.email;
+
+    const invoice = await prisma.invoice.findUnique({
+      where: { invoiceNumber: String(invoiceNumber) },
+      include: { service: { select: { name: true } } },
+    });
+
+    if (!invoice) {
+      return sendError(res, "Invoice not found", "NOT_FOUND", null, 404);
+    }
+
+    if (invoice.paymentStatus !== "pending") {
+      return sendError(
+        res,
+        `Invoice is already ${invoice.paymentStatus}`,
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true, firstName: true, lastName: true, phone: true },
+    });
+
+    // GPay takes Naira decimals — NOT kobo. No *100 here.
+    const amount = Number(invoice.amount);
+    const reference = generateReference("PAY");
+    const customerName = fullNameOf(user ?? { email: userEmail });
+    const customerPhone = phoneOf(user?.phone, `user ${userId}`);
+
+    const intent = await prisma.paymentIntent.create({
+      data: {
+        reference,
+        provider: "gpay",
+        flow: "invoice_online",
+        amount,
+        currency: "NGN",
+        status: "pending",
+        invoiceId: invoice.id,
+        payload: {
+          flow: "invoice_online",
+          channel: "dynamic_va",
+          invoiceId: invoice.id,
+          invoiceNumber: invoice.invoiceNumber,
+          userId,
+          fullName: customerName,
+          email: userEmail,
+          phone: customerPhone,
+        },
+      },
+    });
+
+    const gatewayResult = await createDynamicAccount({
+      accountName: `ODEDA/${invoice.invoiceNumber}`,
+      amount,
+      customerName,
+      customerEmail: userEmail,
+      customerPhone,
+      merchantTransactionRef: reference,
+    });
+
+    if (!gatewayResult.success || !gatewayResult.data) {
+      await recordLastResponse(intent.id, gatewayResult.raw ?? null, "failed");
+
+      return sendError(
+        res,
+        gatewayResult.error ?? "Failed to create transfer account",
+        "PAYMENT_INITIALIZATION_FAILED",
+        null,
+        400,
+      );
+    }
+
+    const data = gatewayResult.data;
+
+    if (!data.accountNumber) {
+      await recordLastResponse(intent.id, gatewayResult.raw ?? null, "failed");
+      return sendError(
+        res,
+        "GPay did not return an account number",
+        "PAYMENT_INITIALIZATION_FAILED",
+        null,
+        502,
+      );
+    }
+
+    const expiresAt =
+      parseGatewayExpiry(data.expiresAt) ??
+      new Date(Date.now() + DYNAMIC_ACCOUNT_EXPIRY_MINUTES * 60_000);
+
+    await prisma.paymentIntent.update({
+      where: { id: intent.id },
+      data: {
+        gpayReference: data.gpayReference,
+        initiateResponse: gatewayResult.raw ?? undefined,
+        expiresAt,
+      },
+    });
+
+    // Keep the same pending Payment row the checkout flow creates, so
+    // confirmPayment can find this attempt by reference when the webhook/verify
+    // lands.
+    await prisma.payment.create({
+      data: {
+        invoice: { connect: { id: invoice.id } },
+        amount,
+        method: "online_gateway",
+        status: "pending",
+        reference,
+        paidBy: { connect: { id: userId } },
+      },
+    });
+
+    return sendSuccess(
+      res,
+      dynamicAccountResponse(data, expiresAt, {
+        reference,
+        amount,
+        invoiceNumber: invoice.invoiceNumber,
+        message:
+          "Transfer the exact amount to this account before it expires. Payment confirms automatically.",
+      }),
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── Dynamic VA, public flow: POST /api/v1/payments/gpay/dynamic-account/public ──
+
+export const createDynamicAccountPublicPayment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { serviceId, fullName, email, phone } =
+      req.body as GpayPublicPaymentBody;
+
+    if (!serviceId || !fullName || !email || !phone) {
+      return sendError(
+        res,
+        "Service ID, full name, email and phone number are required",
+        "VALIDATION_ERROR",
+        null,
+        400,
+      );
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanName = fullName.trim();
+    const cleanPhone = phone.trim();
+
+    // 1. Service + current fee
+    const service = await prisma.service.findUnique({
+      where: { id: serviceId },
+      include: { feeConfig: true },
+    });
+
+    if (!service) {
+      return sendError(res, "Service not found", "NOT_FOUND", null, 404);
+    }
+
+    if (!service.isActive) {
+      return sendError(
+        res,
+        "Service is not active",
+        "SERVICE_INACTIVE",
+        null,
+        400,
+      );
+    }
+
+    if (!service.feeConfig || service.feeConfig.status !== "ACTIVE") {
+      return sendError(
+        res,
+        "Service fee is not configured",
+        "SERVICE_FEE_NOT_CONFIGURED",
+        null,
+        400,
+      );
+    }
+
+    // GPay takes Naira decimals — NOT kobo.
+    const amount = Number(service.feeConfig.amount);
+    const reference = generateReference("PAY");
+
+    // If this person already has an account we remember it, but nothing is
+    // created here — the user/application/invoice are only created once the
+    // payment is confirmed (same behaviour as the checkout flow).
+    const existingUser = await prisma.user.findUnique({
+      where: { email: cleanEmail },
+      select: { id: true },
+    });
+
+    // Everything needed to finish the application later. GPay echoes no
+    // metadata, so this is the only copy of the context.
+    const payload = {
+      flow: "new_application",
+      channel: "dynamic_va",
+      serviceId: service.id,
+      serviceCode: service.code,
+      serviceName: service.name,
+      fullName: cleanName,
+      email: cleanEmail,
+      phone: cleanPhone,
+      userId: existingUser?.id ?? null,
+    };
+
+    const intent = await prisma.paymentIntent.create({
+      data: {
+        reference,
+        provider: "gpay",
+        flow: "new_application",
+        amount,
+        currency: "NGN",
+        status: "pending",
+        payload,
+      },
+    });
+
+    const gatewayResult = await createDynamicAccount({
+      accountName: `ODEDA/${service.code}`,
+      amount,
+      customerName: cleanName,
+      customerEmail: cleanEmail,
+      customerPhone: cleanPhone,
+      merchantTransactionRef: reference,
+    });
+
+    if (!gatewayResult.success || !gatewayResult.data) {
+      await recordLastResponse(intent.id, gatewayResult.raw ?? null, "failed");
+
+      return sendError(
+        res,
+        gatewayResult.error ?? "Failed to create transfer account",
+        "PAYMENT_INITIALIZATION_FAILED",
+        null,
+        400,
+      );
+    }
+
+    const data = gatewayResult.data;
+
+    if (!data.accountNumber) {
+      await recordLastResponse(intent.id, gatewayResult.raw ?? null, "failed");
+      return sendError(
+        res,
+        "GPay did not return an account number",
+        "PAYMENT_INITIALIZATION_FAILED",
+        null,
+        502,
+      );
+    }
+
+    const expiresAt =
+      parseGatewayExpiry(data.expiresAt) ??
+      new Date(Date.now() + DYNAMIC_ACCOUNT_EXPIRY_MINUTES * 60_000);
+
+    await prisma.paymentIntent.update({
+      where: { id: intent.id },
+      data: {
+        gpayReference: data.gpayReference,
+        initiateResponse: gatewayResult.raw ?? undefined,
+        expiresAt,
+      },
+    });
+
+    return sendSuccess(
+      res,
+      dynamicAccountResponse(data, expiresAt, {
+        reference,
+        amount,
+        serviceId: service.id,
+        flow: "new_application",
+        message:
+          "Transfer the exact amount to this account before it expires. Payment confirms automatically.",
+      }),
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
 // ── Shared: turn a paid gateway response into a confirmed payment ──
 
 interface SettleParams {
@@ -535,6 +888,122 @@ export const verifyGpayPayment = async (
       gpayReference: data.gpayReference,
       gatewayReference: data.gatewayReference,
       mastercardSessionId: data.mastercardSessionId,
+      raw: verifyResult.raw ?? null,
+      source: "verify",
+    });
+
+    if (outcome.status === "amount_mismatch") {
+      return sendError(
+        res,
+        "Paid amount does not match the expected amount",
+        "AMOUNT_MISMATCH",
+        null,
+        409,
+      );
+    }
+
+    if (outcome.status === "error") {
+      return sendError(
+        res,
+        outcome.error,
+        "PAYMENT_CONFIRMATION_FAILED",
+        null,
+        500,
+      );
+    }
+
+    return sendSuccess(res, {
+      status: "confirmed",
+      flow: intent.flow,
+      ...(outcome.status === "confirmed" ? outcome.result : {}),
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── Verify a dynamic VA payment: GET /api/v1/payments/gpay/dynamic-account/verify/:reference ──
+//
+// Frontend polls this while the 15-minute countdown runs. The webhook is the
+// primary settlement signal; this is the fallback for when tunnels/delivery
+// fail. Unlike verifyGpayPayment it must NOT fall back to an MPGS order block —
+// a dynamic VA has none, and a stray "SUCCESS" elsewhere must not promote a
+// pending credit.
+
+export const verifyDynamicAccountPayment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const reference = req.params.reference as string;
+
+    const intent = await prisma.paymentIntent.findUnique({
+      where: { reference },
+    });
+
+    if (!intent) {
+      return sendError(
+        res,
+        "Payment reference not found",
+        "NOT_FOUND",
+        null,
+        404,
+      );
+    }
+
+    if (intent.status === "confirmed") {
+      return sendSuccess(res, {
+        status: "confirmed",
+        flow: intent.flow,
+        reference,
+        alreadyConfirmed: true,
+      });
+    }
+
+    // Past expiry with no settlement? Let the caller show "expired" — but only
+    // the gateway's own verdict can flip the row to failed, never the clock.
+    const expired = intent.expiresAt
+      ? intent.expiresAt.getTime() < Date.now()
+      : false;
+
+    const verifyResult = await verifyDynamicAccount(reference);
+
+    if (!verifyResult.success || !verifyResult.data) {
+      return sendError(
+        res,
+        verifyResult.error ?? "Failed to verify with GPay",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    const data = verifyResult.data;
+    await recordLastResponse(intent.id, verifyResult.raw ?? null);
+
+    if (!data.isPaid) {
+      if (data.status === "failed") {
+        await prisma.paymentIntent.update({
+          where: { id: intent.id },
+          data: { status: "failed" },
+        });
+      }
+
+      return sendSuccess(res, {
+        status: expired ? "expired" : data.status,
+        reference,
+        rawStatus: data.rawStatus,
+        expiresAt: intent.expiresAt?.toISOString() ?? null,
+      });
+    }
+
+    const outcome = await settleIntent(intent, {
+      reference,
+      amount: Number(data.amount),
+      gpayReference: data.gpayReference,
+      gatewayReference: null,
+      mastercardSessionId: null,
       raw: verifyResult.raw ?? null,
       source: "verify",
     });
@@ -812,6 +1281,91 @@ export const getInvoiceVirtualAccount = async (
   }
 };
 
+// ── Dynamic virtual account settlement ─────────────────────────────────────
+//
+// Runs ONLY for the dynamic dialect (isDynamicVaWebhook) and always AFTER the
+// 200-ack. The `merchant_transaction_ref` here is the reference WE minted, so
+// unlike the reserved pool an exact PaymentIntent lookup is safe. Status is
+// checked per-status only — no MPGS order block exists to fall back on.
+
+async function handleDynamicVaSettlement(payload: unknown) {
+  const data = ((payload as { data?: unknown })?.data ??
+    {}) as GpayDynamicVaWebhookData;
+
+  const reference = str(data.merchant_transaction_ref);
+  if (!reference) {
+    console.error(
+      "[gpay.webhook] dynamic VA settlement has no merchant_transaction_ref",
+    );
+    return;
+  }
+
+  const intent = await prisma.paymentIntent.findUnique({
+    where: { reference },
+  });
+
+  if (!intent) {
+    // A late or replayed delivery for an intent we no longer have. Log it —
+    // never route this to the reserved-VA matcher, whose `account_number`
+    // candidates must not pick up a minted-account credit.
+    console.error(
+      `[gpay.webhook] no PaymentIntent found for dynamic VA reference ${reference}`,
+    );
+    return;
+  }
+
+  if (intent.status === "confirmed") {
+    console.log(
+      `[gpay.webhook] ${reference} already confirmed — ignoring duplicate delivery`,
+    );
+    return;
+  }
+
+  const status = normalizeGatewayStatus(data.status);
+
+  if (status === "failed") {
+    await prisma.paymentIntent.update({
+      where: { id: intent.id },
+      data: { status: "failed", lastResponse: payload as any },
+    });
+    console.warn(
+      `[gpay.webhook] dynamic VA ${reference} reported failed — marking intent failed`,
+    );
+    return;
+  }
+
+  if (status !== "successful") {
+    // Pending / unknown — leave it pending; the poll endpoint or a later
+    // delivery promotes it. An unrecognised string is never a paid payment.
+    await recordLastResponse(intent.id, payload);
+    console.warn(
+      `[gpay.webhook] dynamic VA ${reference} reported status "${data.status}" — leaving pending`,
+    );
+    return;
+  }
+
+  const amount = Number(data.amount_settled ?? data.amount);
+  if (!Number.isFinite(amount)) {
+    console.error(
+      `[gpay.webhook] dynamic VA ${reference} settlement has no usable amount`,
+    );
+    await recordLastResponse(intent.id, payload);
+    return;
+  }
+
+  const outcome = await settleIntent(intent, {
+    reference,
+    amount,
+    gpayReference: str(data.gpay_reference) || intent.gpayReference,
+    gatewayReference: null,
+    mastercardSessionId: null,
+    raw: payload,
+    source: "webhook",
+  });
+
+  console.log(`[gpay.webhook] dynamic VA ${reference} → ${outcome.status}`);
+}
+
 // ── Webhook: POST /api/v1/payments/gpay/webhook ──
 
 export const gpayWebhook = async (req: Request, res: Response) => {
@@ -839,6 +1393,15 @@ export const gpayWebhook = async (req: Request, res: Response) => {
     // Providus's settlement id, never ours, and must never touch that table.
     if (isReservedVaWebhook(payload)) {
       await handleReservedVaSettlement(payload);
+      return;
+    }
+
+    // Dynamic VA settlements are a third dialect. Unlike the reserved pool the
+    // `merchant_transaction_ref` IS ours (we minted the account with it), so
+    // this branch may look up a PaymentIntent — but only after the reserved
+    // check above, and only via our own unique reference.
+    if (isDynamicVaWebhook(payload)) {
+      await handleDynamicVaSettlement(payload);
       return;
     }
 

@@ -4,7 +4,7 @@ import { login, register, getMe, googleLogin, refreshToken, updateUserProfile, f
 import { validateBody } from '../../middleware/validate.middleware';
 import { requireAuth } from '../../middleware/auth.middleware';
 import { registerSchema, loginSchema, googleAuthSchema } from './auth.validation';
-import { authLimiter } from '../../middleware/rateLimiters.middleware';
+import { authLimiter, resendVerificationLimiter } from '../../middleware/rateLimiters.middleware';
 
 const router = Router();
 
@@ -412,7 +412,7 @@ router.post('/forgot-password', forgotPassword);
 router.get('/verify-email', verifyEmail);
 router.post(
   "/resend-verification",
-  authLimiter,
+  resendVerificationLimiter,
   resendVerificationEmail,
 );
 router.post('/reset-password', resetPassword);
