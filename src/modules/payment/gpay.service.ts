@@ -865,42 +865,78 @@ export async function createDynamicAccount(
     }
 
     const d = (json?.data ?? {}) as Record<string, unknown>;
-    const qr = d.qr_code as Record<string, unknown> | string | undefined;
+
+    // GPay's dynamic-account response NESTS the payment details under
+    // `payment_channels`, and every channel value is an OBJECT (not a scalar):
+    //   payment_channels.bank_transfer = { bank_name, bank_code, account_number,
+    //                                       account_name, account_type }
+    //   payment_channels.qr_code       = { qr_string, qr_image_url }
+    //   payment_channels.ussd          = { ussd_code, ussd_template, bank_codes }
+    // Read through payment_channels first, then fall back to top-level fields so
+    // a flatter reserved-style payload still parses. `||` (not `??`) so an empty
+    // string from one location falls through to the next.
+    const channels = (d.payment_channels ?? {}) as Record<string, unknown>;
+    const bankTransfer = (channels.bank_transfer ?? {}) as Record<string, unknown>;
+    const qrChannel = (channels.qr_code ?? d.qr_code ?? {}) as Record<string, unknown>;
+    const ussdChannel = (channels.ussd ?? d.ussd ?? {}) as Record<string, unknown>;
+
+    const accountNumber = String(
+      pickField(bankTransfer, "account_number", "accountNumber", "virtual_account_number") ||
+        pickField(d, "account_number", "accountNumber", "virtual_account_number") ||
+        "",
+    ).trim();
+
+    const accountName = String(
+      pickField(bankTransfer, "account_name", "accountName") ||
+        pickField(d, "account_name", "accountName") ||
+        params.accountName ||
+        "",
+    ).trim();
+
+    const bankName = String(
+      pickField(bankTransfer, "bank_name", "bankName") ||
+        pickField(d, "bank_name", "bankName") ||
+        "Providus Bank",
+    ).trim();
+
+    // The payment card renders `qrCode` as an <img src>, so prefer the renderable
+    // image URL, then the raw EMVCo string, then any generic code/url field.
     const qrCode =
-      typeof qr === "string"
-        ? qr
-        : String(
-            pickField((qr ?? {}) as Record<string, unknown>, "code", "value", "data") ??
-              "",
-          ) || null;
+      (pickField(
+        qrChannel,
+        "qr_image_url",
+        "image_url",
+        "imageUrl",
+        "svg_url",
+        "qr_string",
+        "url",
+        "code",
+        "value",
+      ) as string | null) || null;
+
+    // `ussd` is consumed as Record<bankLabel, dialString> by the payment card, so
+    // use the nested `bank_codes` map when present (else the channel object).
+    const ussdRaw = (ussdChannel.bank_codes ?? ussdChannel) as Record<string, unknown>;
+    const ussdEntries = Object.entries(
+      ussdRaw && typeof ussdRaw === "object" ? ussdRaw : {},
+    ).filter(([, v]) => typeof v === "string" && v.trim().length > 0);
+    const ussd: Record<string, string> | null =
+      ussdEntries.length > 0
+        ? Object.fromEntries(ussdEntries.map(([k, v]) => [k, String(v)]))
+        : null;
 
     return {
       success: true,
       raw: json,
       data: {
-        accountNumber: String(
-          pickField(d, "account_number", "accountNumber", "virtual_account_number") ?? "",
-        ).trim(),
-        accountName: String(
-          pickField(d, "account_name", "accountName") ?? params.accountName,
-        ).trim(),
-        bankName: String(
-          pickField(d, "bank_name", "bankName") ?? "Providus Bank",
-        ).trim(),
+        accountNumber,
+        accountName,
+        bankName,
         qrCode,
         qrSvgUrl:
-          typeof qr === "object" && qr !== null
-            ? ((pickField(
-                qr as Record<string, unknown>,
-                "svg_url",
-                "svgUrl",
-                "url",
-              ) as string | null) ?? null)
-            : null,
-        ussd:
-          d.ussd && typeof d.ussd === "object"
-            ? (d.ussd as Record<string, string>)
-            : null,
+          (pickField(qrChannel, "qr_string", "svg_url", "svgUrl") as string | null) ||
+          null,
+        ussd,
         expiresAt:
           (pickField(d, "expires_at", "expiresAt", "expiry_date") as string | null) ??
           null,
