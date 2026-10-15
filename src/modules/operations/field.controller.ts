@@ -4,6 +4,7 @@ import { prisma } from "../../utils/prisma";
 import { sendSuccess, sendError } from "../../utils/response";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import multer from 'multer';
 import {
   generateReceiptNumber,
   generateVerificationCode,
