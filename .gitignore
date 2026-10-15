@@ -6,3 +6,4 @@ node_modules
 /src/modules/uploads/uploads.route copy.ts
 dist
 /public/uploads/*
+tmp

@@ -102,7 +102,7 @@ router.post(
 // happens inside gpayWebhook, so no auth middleware here.
 router.post("/webhook", express.raw({ type: "application/json" }), gpayWebhook);
 
-// GET /api/v1/payments/gpay/verify/:reference
+// GET /api/v1/payments/gpay/verify/:reference✅
 // Public: the frontend calls this on refresh / after the redirect back from the
 // checkout page.
 router.get("/verify/:reference", verifyGpayPayment);
