@@ -1,9 +1,11 @@
 // src/notifications/templates/index.ts
 // ============================================================
 // LOGMAS NOTIFICATION TEMPLATES
-// ${} Local Government
+// <LGA> Local Government
 // ============================================================
 // Usage: interpolate(templates.soo.invoiceGenerated.sms, { applicant_name: "John", ... })
+
+import { LGA_CONFIG } from "./lga.config";
 
 export const interpolate = (
   template: string,
@@ -17,7 +19,7 @@ export const interpolate = (
 
 const BASE_URL = process.env.FRONTEND_URL;
 
-const lgaName = process.env.LGA_NAME ?? "Odeda";
+const lgaName = process.env.LGA_NAME ?? LGA_CONFIG.name;
 
 export const applicationTemplates = {
   // Application Submitted - Initial Confirmation
@@ -554,7 +556,7 @@ export const accountTemplates = {
   },
 
   verifyEmail: {
-    emailSubject: `Verify your Odeda LGA Account`,
+    emailSubject: `Verify your ${lgaName} LGA Account`,
     emailHtml: `
 <!DOCTYPE html>
 <html>
@@ -562,7 +564,7 @@ export const accountTemplates = {
   <div style="max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden;">
     
     <div style="background: #1a4731; padding: 32px; text-align: center;">
-      <h1 style="color: #fff; margin: 0;">Welcome to Odeda</h1>
+      <h1 style="color: #fff; margin: 0;">Welcome to ${lgaName}</h1>
       <p style="color: #a7f3d0; margin: 4px 0 0;">
         Local Government Management System
       </p>
@@ -572,7 +574,7 @@ export const accountTemplates = {
       <p>Dear <strong>{{applicant_name}}</strong>,</p>
 
       <p>
-        Thank you for creating your Odeda LGA account.
+        Thank you for creating your ${lgaName} LGA account.
         Please verify your email address to complete your registration.
       </p>
 
@@ -751,7 +753,7 @@ export const paymentTemplates = {
 <body style="font-family: Arial, sans-serif; color: #1a1a1a; padding: 32px; background: #f5f5f5;">
   <div style="max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 32px; border-top: 4px solid #f59e0b;">
     <h2 style="color: #92400e;">Transfer needs reconciliation</h2>
-    <p>A credit arrived on the Odeda reserved virtual account but could not be matched to a pending payment. <strong>No payment status was changed.</strong></p>
+    <p>A credit arrived on the ${lgaName} reserved virtual account but could not be matched to a pending payment. <strong>No payment status was changed.</strong></p>
     <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 16px; margin: 20px 0; font-size: 14px;">
       <div style="margin-bottom: 6px;"><span style="color:#6b7280;">Amount settled:</span> <strong>{{amount}}</strong></div>
       <div style="margin-bottom: 6px;"><span style="color:#6b7280;">Our reference:</span> {{reference}}</div>

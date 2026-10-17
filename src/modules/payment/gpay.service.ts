@@ -4,7 +4,7 @@
 // GPay's API only. Wiring this to Invoice / Payment / PaymentIntent rows happens
 // in gpay.controller.ts.
 //
-// Merchant: Odeda LGA (merchant id 3 / merchant code "odedalga")
+// Merchant: per-deployment (configured via GPAY_* env vars — see src/config/env usage in gpay.service)
 // Gateway base: https://gpay.gfa-tech.com/api/v1
 //
 // Notable differences from Paystack that this file has to absorb:
@@ -781,7 +781,7 @@ export const DYNAMIC_ACCOUNT_EXPIRY_MINUTES = Number(
 );
 
 export interface CreateDynamicAccountParams {
-  /** Label GPay shows on the account, e.g. "ODEDA/CENTRAL". */
+  /** Label GPay shows on the account, e.g. "LGA-PREFIX/INV-0001". */
   accountName: string;
   /** NGN, decimal — same convention as initiateCheckout (no *100). */
   amount: number;

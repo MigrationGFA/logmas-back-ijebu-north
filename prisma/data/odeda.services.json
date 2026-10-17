@@ -1,0 +1,157 @@
+[
+  {
+    "code": "certificate_of_origin",
+    "certificateType": "CERTIFICATE_OF_ORIGIN",
+    "name": "Certificate of Origin",
+    "description": "Official certificate confirming the origin of goods or products supplied from {lgaName}.",
+    "category": "CERTIFICATE",
+    "revenueHead": "1001 - Statutory Certificate Fees",
+    "requirements": ["passport_photo", "nin_slip", "proof_of_residency"],
+    "estimatedDays": 3,
+    "fee": 10000
+  },
+  {
+    "code": "club_registration",
+    "certificateType": "CLUB_REGISTRATION",
+    "name": "Certificate of Club Registration",
+    "description": "Registration certificate issued to social and professional clubs operating in {lgaName}.",
+    "category": "CERTIFICATE",
+    "revenueHead": "1002 - Social & Club Fees",
+    "requirements": ["club_constitution", "inaugural_minutes", "executives_list_signed", "president_passport", "secretariat_proof"],
+    "estimatedDays": 5,
+    "fee": 15000
+  },
+  {
+    "code": "cda_registration",
+    "certificateType": "CDA_REGISTRATION",
+    "name": "Certificate of CDA Registration",
+    "description": "Certificate acknowledging the registration of a Community Development Association.",
+    "category": "CERTIFICATE",
+    "revenueHead": "1003 - Community Dev. Fees",
+    "requirements": ["cda_constitution", "inaugural_minutes", "boundary_sketch", "chairman_passport", "baale_letter"],
+    "estimatedDays": 5,
+    "fee": 12000
+  },
+  {
+    "code": "farmers_registration",
+    "certificateType": "FARMERS_REGISTRATION",
+    "name": "Certificate of Farmers Registration",
+    "description": "Registration certificate for farmers and agricultural producers within {lgaName}.",
+    "category": "CERTIFICATE",
+    "revenueHead": "1004 - Agricultural & Farmers Fees",
+    "requirements": ["land_tenure_proof", "farmer_photo", "farmer_nin", "farm_sketch_map", "coop_membership_doc"],
+    "estimatedDays": 3,
+    "fee": 5000
+  },
+  {
+    "code": "sanitation_compliance",
+    "certificateType": "ENVIRONMENTAL_SANITATION_COMPLIANCE",
+    "name": "Certificate of Environmental Sanitation",
+    "description": "Certificate confirming environmental sanitation compliance after inspection.",
+    "category": "CERTIFICATE",
+    "revenueHead": "1005 - Environmental Sanitation Fees",
+    "requirements": ["cac_cert", "facility_restroom_photos", "sanitation_layout", "fumigation_cert", "waste_contract_agreement"],
+    "estimatedDays": 7,
+    "fee": 8000
+  },
+  {
+    "code": "tenement_rate",
+    "certificateType": "TENEMENT_RATE_CLEARANCE",
+    "name": "Tenement Rate",
+    "description": "Assessment and levy on property or tenement holdings located in {lgaName}.",
+    "category": "RATES_AND_LEVIES",
+    "revenueHead": "2001 - Tenement & Property Rates",
+    "requirements": ["previous_receipt", "owner_id", "title_document", "building_photos"],
+    "estimatedDays": 14,
+    "fee": 25000
+  },
+  {
+    "code": "haulage_fees",
+    "certificateType": "HAULAGE_PERMIT",
+    "name": "Haulage Fees",
+    "description": "Fees charged for the movement and transit of goods or materials through {lgaName}.",
+    "category": "RATES_AND_LEVIES",
+    "revenueHead": "2002 - Haulage & Transit Levies",
+    "requirements": ["vehicle_reg_papers", "drivers_licences", "roadworthiness_cert", "quarry_loading_pass", "cac_cert"],
+    "estimatedDays": 2,
+    "fee": 7500
+  },
+  {
+    "code": "liquor_licence",
+    "certificateType": "LIQUOR_LICENCE",
+    "name": "Liquor Licence Fees",
+    "description": "Licence fee for retail or commercial sale of liquor and associated outlets.",
+    "category": "LICENCES_AND_PERMITS",
+    "revenueHead": "2003 - Liquor & Liquor Outlets",
+    "requirements": ["premises_plan", "cac_cert", "fire_clearance", "police_clearance", "hygiene_cert"],
+    "estimatedDays": 10,
+    "fee": 30000
+  },
+  {
+    "code": "viewing_centre_licence",
+    "certificateType": "VIEWING_CENTRE_LICENCE",
+    "name": "Viewing Centre Licence Fee",
+    "description": "Licence fee for operating a cinema, viewing centre, or entertainment outlet.",
+    "category": "LICENCES_AND_PERMITS",
+    "revenueHead": "2004 - Entertainment & Viewing Centres",
+    "requirements": ["operator_id", "cac_cert", "hall_layout", "commercial_broadcast_receipt", "fire_safety_cert"],
+    "estimatedDays": 7,
+    "fee": 20000
+  },
+  {
+    "code": "quarry_permit",
+    "certificateType": "QUARRY_PERMIT",
+    "name": "Quarry Fees and Permits",
+    "description": "Permit and operational fee for quarrying, mining, and mineral exploration activities.",
+    "category": "LICENCES_AND_PERMITS",
+    "revenueHead": "2005 - Mining & Mineral Resources",
+    "requirements": ["eia_approval", "police_explosives_permit", "mining_cadastre_lease", "cda_agreement", "coren_mining_cert"],
+    "estimatedDays": 21,
+    "fee": 50000
+  },
+  {
+    "code": "kiosk_licence",
+    "certificateType": "KIOSK_LICENCE",
+    "name": "Kiosk Licence",
+    "description": "Licence for operating a temporary kiosk or small commercial structure.",
+    "category": "LICENCES_AND_PERMITS",
+    "revenueHead": "2007 - Kiosk & Temporary Structures",
+    "requirements": ["kiosk_photo", "landowner_consent", "passport_photo", "operator_id"],
+    "estimatedDays": 3,
+    "fee": 5000
+  },
+  {
+    "code": "street_naming",
+    "certificateType": "STREET_NAMING_CERTIFICATE",
+    "name": "Street Naming and Property Numbering",
+    "description": "Urban development service for assigning official street names and property numbering.",
+    "category": "URBAN_DEVELOPMENT",
+    "revenueHead": "2006 - Urban Dev & Street Naming",
+    "requirements": ["cda_resolution", "survey_layout_plan", "traditional_ruler_letter", "applicant_id"],
+    "estimatedDays": 14,
+    "fee": 35000
+  },
+  {
+    "code": "state_of_origin",
+    "certificateType": "CERTIFICATE_OF_ORIGIN",
+    "name": "State of Origin Certificate",
+    "description": "Certificate of Origin / State of Origin issued by LGA for residents.",
+    "category": "CERTIFICATE",
+    "revenueHead": "1010 - State of Origin Fees",
+    "requirements": ["passport_photo", "nin_slip", "proof_of_residency"],
+    "estimatedDays": 5,
+    "fee": 7500
+  },
+  {
+    "code": "business_registration",
+    "certificateType": "CDA_REGISTRATION",
+    "name": "Business Registration",
+    "description": "Register a new business with the Local Government",
+    "category": "LICENCES_AND_PERMITS",
+    "revenueHead": "3001 - Business Registration",
+    "requirements": ["passport_photo", "nin_slip", "proof_of_residency"],
+    "estimatedDays": 7,
+    "fee": 15000
+  }
+]
+

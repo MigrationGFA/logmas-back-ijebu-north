@@ -29,6 +29,7 @@ import {
   type ReservedVirtualAccount,
 } from "./gpay.service";
 import { notify } from "../notification/notification.service";
+import { LGA_CONFIG } from "../../config/lga.config";
 
 // ─────────────────────────────────────────────────────────────
 // GPay (Mastercard MPGS) controllers
@@ -52,7 +53,7 @@ function fullNameOf(user: {
 }): string {
   const name = `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim();
   if (name) return name;
-  return (user.email ?? "").split("@")[0] || "Odeda LGA Taxpayer";
+  return (user.email ?? "").split("@")[0] || `${LGA_CONFIG.name} LGA Taxpayer`;
 }
 
 function phoneOf(phone: string | null | undefined, context: string): string {
@@ -149,7 +150,7 @@ export const initializeGpayInvoicePayment = async (
       customerName,
       customerEmail: userEmail,
       customerPhone,
-      description: `${invoice.service?.name ?? "Odeda LGA Payment"} — ${invoice.invoiceNumber}`,
+      description: `${invoice.service?.name ?? `${LGA_CONFIG.name} LGA Payment`} — ${invoice.invoiceNumber}`,
     });
 
     if (!gatewayResult.success || !gatewayResult.data) {
@@ -320,7 +321,7 @@ export const initializeGpayPublicPayment = async (
       customerName: cleanName,
       customerEmail: cleanEmail,
       customerPhone: cleanPhone,
-      description: `${service.name} — Odeda LGA`,
+      description: `${service.name} — ${LGA_CONFIG.name} LGA`,
     });
 
     if (!gatewayResult.success || !gatewayResult.data) {
@@ -488,7 +489,7 @@ export const createDynamicAccountForInvoice = async (
     });
 
     const gatewayResult = await createDynamicAccount({
-      accountName: `ODEDA/${invoice.invoiceNumber}`,
+      accountName: `${LGA_CONFIG.accountPrefix}/${invoice.invoiceNumber}`,
       amount,
       customerName,
       customerEmail: userEmail,
@@ -657,7 +658,7 @@ export const createDynamicAccountPublicPayment = async (
     });
 
     const gatewayResult = await createDynamicAccount({
-      accountName: `ODEDA/${service.code}`,
+      accountName: `${LGA_CONFIG.accountPrefix}/${service.code}`,
       amount,
       customerName: cleanName,
       customerEmail: cleanEmail,

@@ -396,7 +396,7 @@ model ApplicationDocument {
 
 model Invoice {
   id            String @id @default(uuid())
-  invoiceNumber String @unique // e.g. "ODE/INV/2026/000101"
+  invoiceNumber String @unique // e.g. "<LGA-PREFIX>-INV-2026-000101" (prefix from LGA config)
 
   applicationId String?      @unique
   application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
@@ -405,7 +405,7 @@ model Invoice {
   paymentStatus PaymentStatus @default(pending)
 
   // Dedicated Virtual Bank Account for direct settlement
-  virtualBankName      String? @default("Zenith Bank / Odeda Treasury")
+  virtualBankName      String? @default("Local Government Treasury")
   virtualAccountNumber String?
   virtualAccountRef    String? @unique
 

@@ -84,7 +84,7 @@ router.get(
 
 
 // ============================================================
-// TREASURER SERVICE FEES (Odeda simplified flow)
+// TREASURER SERVICE FEES (LGA simplified flow)
 // ============================================================
 
 

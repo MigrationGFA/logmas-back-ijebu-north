@@ -11,6 +11,14 @@ const envSchema = z.object({
   JWT_REFRESH_SECRET: z.string(),
   JWT_EXPIRES_IN: z.string().default('1d'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
+
+  // ─── LGA identity (see src/config/lga.config.ts) ──────────────────────────
+  // Optional: defaults to the built-in preset in src/config/lga.config.ts.
+  // Set these when onboarding a new LGA deployment.
+  LGA_ID: z.string().optional(),
+  LGA_NAME: z.string().optional(),
+  LGA_SHORT_CODE: z.string().optional(),
+  LGA_ACCOUNT_PREFIX: z.string().optional(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
