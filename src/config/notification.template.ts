@@ -91,7 +91,7 @@ export const applicationTemplates = {
     </div>
 
     <p>
-      Please log in to your LOGMAS account to complete your application form
+      Please log in to your account to complete your application form
       and upload all required supporting documents.
     </p>
 
@@ -270,7 +270,7 @@ export const applicationTemplates = {
   <div style="max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden;">
     <div style="background: #1a4731; padding: 32px; text-align: center;">
       <h1 style="color: #fff; margin: 0;">Complete Your Application</h1>
-      <p style="color: #a7f3d0; margin: 4px 0 0;">LOGMAS</p>
+      <p style="color: #a7f3d0; margin: 4px 0 0;">${lgaName}</p>
     </div>
 
     <div style="padding: 32px;">
@@ -528,7 +528,7 @@ export const accountTemplates = {
 
   // Welcome — new staff account created
   welcomeStaff: {
-    sms: `Welcome to LOGMAS, {{applicant_name}}. Your account has been created. Temporary password: {{temp_password}}. Login at: ${BASE_URL}/login — Change your password immediately.`,
+    sms: `Welcome to ${lgaName} LGA Portal, {{applicant_name}}. Your account has been created. Temporary password: {{temp_password}}. Login at: ${BASE_URL}/login — Change your password immediately.`,
 
     emailSubject: `Welcome to ${lgaName} LGA Portal — Account Created`,
     emailHtml: `
@@ -537,12 +537,12 @@ export const accountTemplates = {
 <body style="font-family: Arial, sans-serif; color: #1a1a1a; padding: 32px; background: #f5f5f5;">
   <div style="max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden;">
     <div style="background: #1a4731; padding: 32px; text-align: center;">
-      <h1 style="color: #fff; margin: 0;">Welcome to LOGMAS</h1>
-      <p style="color: #a7f3d0; margin: 4px 0 0;">${lgaName} Local Government</p>
+      <h1 style="color: #fff; margin: 0;">Welcome to ${lgaName} LGA Portal</h1>
+      <p style="color: #a7f3d0; margin: 4px 0 0;">${lgaName} Local Government Area</p>
     </div>
     <div style="padding: 32px;">
       <p>Dear <strong>{{applicant_name}}</strong>,</p>
-      <p>Your staff account has been created on the LOGMAS platform. Please use the credentials below to log in and change your password immediately.</p>
+      <p>Your staff account has been created on the ${lgaName} LGA Portal. Please use the credentials below to log in and change your password immediately.</p>
       <div style="background: #f9fafb; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center;">
         <div style="font-size: 12px; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">Temporary Password</div>
         <div style="font-family: monospace; font-size: 24px; font-weight: bold; letter-spacing: 4px; color: #1a4731;">{{temp_password}}</div>
@@ -564,7 +564,7 @@ export const accountTemplates = {
   <div style="max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden;">
     
     <div style="background: #1a4731; padding: 32px; text-align: center;">
-      <h1 style="color: #fff; margin: 0;">Welcome to ${lgaName}</h1>
+      <h1 style="color: #fff; margin: 0;">Welcome to ${lgaName} LGA Portal</h1>
       <p style="color: #a7f3d0; margin: 4px 0 0;">
         Local Government Management System
       </p>
@@ -610,7 +610,7 @@ export const accountTemplates = {
 </html>`,
   },
   resendVerificationEmail: {
-    emailSubject: `New Email Verification Link — LOGMAS`,
+    emailSubject: `New Email Verification Link — ${lgaName} LGA Portal`,
     emailHtml: `
 <!DOCTYPE html>
 <html>
@@ -618,7 +618,7 @@ export const accountTemplates = {
   <div style="max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden;">
 
     <div style="background: #1a4731; padding: 32px; text-align: center;">
-      <h1 style="color: #fff; margin: 0;">${lgaName} LOGMAS</h1>
+      <h1 style="color: #fff; margin: 0;">${lgaName} LGA Portal</h1>
       <p style="color: #a7f3d0; margin: 4px 0 0;">
         ${lgaName} Local Government Management System
       </p>
@@ -628,7 +628,7 @@ export const accountTemplates = {
       <p>Dear <strong>{{applicant_name}}</strong>,</p>
 
       <p>
-        You requested a new email verification link for your LOGMAS account.
+        You requested a new email verification link for your ${lgaName} LGA Portal account.
         Click the button below to verify your email address.
       </p>
 
@@ -673,16 +673,16 @@ export const accountTemplates = {
 
   // Welcome — account created through the public application route
   publicAccountCreated: {
-    sms: `Welcome to LOGMAS, {{applicant_name}}. Your account has been created after your payment for {{service_name}}. Login at: ${BASE_URL}/login to complete your application. Your temporary password is {{temp_password}}. Please change it after logging in.`,
+    sms: `Welcome to ${lgaName} LGA Portal, {{applicant_name}}. Your account has been created after your payment for {{service_name}}. Login at: ${BASE_URL}/login to complete your application. Your temporary password is {{temp_password}}. Please change it after logging in.`,
 
-    emailSubject: `Welcome to LOGMAS — Complete Your {{service_name}} Application`,
+    emailSubject: `Welcome to ${lgaName} LGA Portal — Complete Your {{service_name}} Application`,
     emailHtml: `
 <!DOCTYPE html>
 <html>
 <body style="font-family: Arial, sans-serif; color: #1a1a1a; padding: 32px; background: #f5f5f5;">
   <div style="max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden;">
     <div style="background: #1a4731; padding: 32px; text-align: center;">
-      <h1 style="color: #fff; margin: 0;">Welcome to LOGMAS</h1>
+      <h1 style="color: #fff; margin: 0;">Welcome to ${lgaName} LGA Portal</h1>
       <p style="color: #a7f3d0; margin: 4px 0 0;">Local Government Management & Service Portal</p>
     </div>
 
@@ -691,7 +691,7 @@ export const accountTemplates = {
 
       <p>
         Your payment for <strong>{{service_name}}</strong> has been successfully received,
-        and your LOGMAS account has been created.
+        and your ${lgaName} LGA Portal account has been created.
       </p>
 
       <div style="background: #f9fafb; border-radius: 8px; padding: 20px; margin: 20px 0;">
@@ -745,7 +745,7 @@ export const paymentTemplates = {
   // automatically — a treasurer reconciles it against the bank statement
   // using the reference the citizen was asked to quote.
   unmatchedBankTransfer: {
-    sms: `LOGMAS: unconfirmed transfer of {{amount}} from {{payer_name}} ({{payer_bank}} {{payer_account}}) for {{service_name}}. Our ref {{reference}}. Please reconcile in the treasury dashboard.`,
+    sms: `${lgaName} LGA Portal: unconfirmed transfer of {{amount}} from {{payer_name}} ({{payer_bank}} {{payer_account}}) for {{service_name}}. Our ref {{reference}}. Please reconcile in the treasury dashboard.`,
     emailSubject: `Unconfirmed transfer: {{amount}} — {{service_name}}`,
     emailHtml: `
 <!DOCTYPE html>
