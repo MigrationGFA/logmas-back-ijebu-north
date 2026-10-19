@@ -1,12 +1,12 @@
-@Evans # ODEDA LOCAL GOVERNMENT LOGMAS
+﻿@Evans # IJEBU NORTH EAST LOGMAS
 
 ## Additional Revenue and Certificate Modules
 
 ### Functional Flow and Development Requirements
 
-**Local Government:** Odeda Local Government Area, Ogun State, Nigeria
+**Local Government:** Ijebu North East Local Government Area, Ogun State, Nigeria
 **Platform:** LOGMAS – Local Government Management and Automation System
-**Purpose:** To digitise applications, assessments, invoicing, payments, approvals, certificate issuance, receipt verification and revenue monitoring for Odeda Local Government.
+**Purpose:** To digitise applications, assessments, invoicing, payments, approvals, certificate issuance, receipt verification and revenue monitoring for Ijebu North East Local Government.
 
 ---
 
@@ -32,7 +32,7 @@ The modules should allow:
 
 # 2. Services to Be Added
 
-The following services should be created under the Odeda LGA account:
+The following services should be created under the Ijebu North East LGA account:
 
 ## Certificate Services
 
@@ -167,7 +167,7 @@ The Chairman’s dashboard should provide read-only executive visibility into:
 * Revenue by ward and service.
 * Daily, weekly, monthly and annual performance.
 
-The Chairman’s signature should appear on approved certificates, but the Chairman should not be required to manually approve every application unless Odeda LGA later enables that requirement.
+The Chairman’s signature should appear on approved certificates, but the Chairman should not be required to manually approve every application unless Ijebu North East LGA later enables that requirement.
 
 ## 3.6 Super Administrator
 
@@ -180,7 +180,7 @@ The Super Administrator should be able to:
 * Configure payment integrations.
 * Manage notifications.
 * View system-wide audit logs.
-* Configure Odeda LGA branding.
+* Configure Ijebu North East LGA branding.
 * Manage QR-code verification settings.
 * Manage invoice, receipt and certificate numbering formats.
 
@@ -192,7 +192,7 @@ The same general structure should apply to all services.
 
 ## Step 1: Citizen Registration
 
-The citizen visits the Odeda LOGMAS portal and creates an account using:
+The citizen visits the Ijebu North East LOGMAS portal and creates an account using:
 
 * Full name.
 * Email address.
@@ -243,7 +243,7 @@ For a business or organisation, the profile should contain:
 
 ## Step 3: Select Service
 
-The citizen selects one of the available Odeda LGA services.
+The citizen selects one of the available Ijebu North East LGA services.
 
 The service page should display:
 
@@ -272,11 +272,11 @@ Before submission, the citizen must tick a mandatory declaration checkbox.
 
 Suggested declaration:
 
-“I certify that all information and documents provided in this application are true, complete and correct. I understand that providing false information may lead to rejection, cancellation or revocation of any certificate, licence, permit or approval issued to me. I authorise Odeda Local Government to verify the information provided.”
+“I certify that all information and documents provided in this application are true, complete and correct. I understand that providing false information may lead to rejection, cancellation or revocation of any certificate, licence, permit or approval issued to me. I authorise Ijebu North East Local Government to verify the information provided.”
 
 The citizen must also accept the payment disclaimer:
 
-“I understand that all application, assessment, processing, licence, permit, rate and certificate fees paid through this platform are non-refundable, except where a duplicate payment or confirmed payment error is established by Odeda Local Government.”
+“I understand that all application, assessment, processing, licence, permit, rate and certificate fees paid through this platform are non-refundable, except where a duplicate payment or confirmed payment error is established by Ijebu North East Local Government.”
 
 The system should store:
 
@@ -344,7 +344,7 @@ The Treasury Administrator should manage these rules.
 
 Once the fee has been determined, the system generates an invoice containing:
 
-* Odeda LGA logo.
+* Ijebu North East LGA logo.
 * Citizen or business name.
 * Service name.
 * Application reference.
@@ -1229,7 +1229,7 @@ After successful payment, the citizen should receive:
 
 Example SMS:
 
-“Your payment of ₦[Amount] for [Service] has been received by Odeda Local Government. Receipt No: [Receipt Number]. Log in to your LOGMAS account to download your receipt.”
+“Your payment of ₦[Amount] for [Service] has been received by Ijebu North East Local Government. Receipt No: [Receipt Number]. Log in to your LOGMAS account to download your receipt.”
 
 ---
 
@@ -1252,7 +1252,7 @@ The user should be able to verify using:
 The page should display:
 
 * Valid or invalid status.
-* Odeda Local Government.
+* Ijebu North East Local Government.
 * Receipt number.
 * Service.
 * Payer’s masked name.
@@ -1269,14 +1269,14 @@ Sensitive information should not be displayed publicly.
 
 # 10. Certificate Design Requirements
 
-Every certificate should use an official Odeda LGA template.
+Every certificate should use an official Ijebu North East LGA template.
 
 ## Certificate Header
 
 * Federal Republic of Nigeria.
 * Ogun State.
-* Odeda Local Government.
-* Odeda LGA logo.
+* Ijebu North East Local Government.
+* Ijebu North East LGA logo.
 * Ogun State logo, where authorised.
 * Certificate title.
 
@@ -1339,7 +1339,7 @@ Codes may include:
 
 A public page should be created:
 
-**Verify Odeda LGA Certificate or Licence**
+**Verify Ijebu North East LGA Certificate or Licence**
 
 The public should be able to verify using:
 
@@ -1609,7 +1609,7 @@ Audit logs must not be editable by ordinary administrators.
 8. Every certificate must have a unique number and QR code.
 9. Every payment and certificate must be publicly verifiable.
 10. Citizens must accept the declaration and payment disclaimer before submitting.
-11. Payments are non-refundable except for confirmed duplicate payments or payment errors approved by Odeda LGA.
+11. Payments are non-refundable except for confirmed duplicate payments or payment errors approved by Ijebu North East LGA.
 12. Certificates must remain available in the citizen’s dashboard.
 13. Expired, revoked or replaced certificates must remain in the historical register.
 14. All dashboards must respect role permissions.
@@ -1775,15 +1775,15 @@ Audit logs must not be editable by ordinary administrators.
 
 ## General Application Declaration
 
-“I declare that the information and documents submitted in this application are true, complete and accurate to the best of my knowledge. I understand that Odeda Local Government may verify any information provided. I further understand that false information, forged documents, misrepresentation or non-disclosure may result in the rejection of my application or the suspension, cancellation or revocation of any certificate, licence, permit or approval issued.”
+“I declare that the information and documents submitted in this application are true, complete and accurate to the best of my knowledge. I understand that Ijebu North East Local Government may verify any information provided. I further understand that false information, forged documents, misrepresentation or non-disclosure may result in the rejection of my application or the suspension, cancellation or revocation of any certificate, licence, permit or approval issued.”
 
 ## Payment Disclaimer
 
-“All fees paid through the Odeda Local Government LOGMAS platform are official application, processing, assessment, rate, levy, licence, permit or certificate fees. Payments are non-refundable after successful processing, except in cases of confirmed duplicate payment, excess payment or payment-system error formally verified and approved by Odeda Local Government. Rejection of an application does not automatically create a right to a refund.”
+“All fees paid through the IJEBU NORTH EAST LOGMAS platform are official application, processing, assessment, rate, levy, licence, permit or certificate fees. Payments are non-refundable after successful processing, except in cases of confirmed duplicate payment, excess payment or payment-system error formally verified and approved by Ijebu North East Local Government. Rejection of an application does not automatically create a right to a refund.”
 
 ## Certificate Disclaimer
 
-“A certificate, licence, permit or approval is valid only when its QR code or verification number returns a valid record on the official Odeda Local Government LOGMAS verification page. Any alteration, duplication, forgery or unauthorised use may lead to cancellation and possible legal action.”
+“A certificate, licence, permit or approval is valid only when its QR code or verification number returns a valid record on the official IJEBU NORTH EAST LOGMAS verification page. Any alteration, duplication, forgery or unauthorised use may lead to cancellation and possible legal action.”
 
 ---
 
@@ -1792,7 +1792,7 @@ Audit logs must not be editable by ordinary administrators.
 After implementation, a citizen should be able to:
 
 1. Register on LOGMAS.
-2. Select an Odeda LGA service.
+2. Select an Ijebu North East LGA service.
 3. Complete the correct application form.
 4. Upload documents.
 5. Certify that the information is correct.
@@ -1807,4 +1807,4 @@ After implementation, a citizen should be able to:
 14. Download the approved certificate or licence.
 15. Present the QR code for verification.
 
-At the same time, authorised Odeda LGA administrators should be able to monitor every application, assessment, invoice, payment, inspection, approval and certificate issuance from their dashboards in real time.
+At the same time, authorised Ijebu North East LGA administrators should be able to monitor every application, assessment, invoice, payment, inspection, approval and certificate issuance from their dashboards in real time.

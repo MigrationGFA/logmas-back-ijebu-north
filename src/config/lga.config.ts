@@ -3,14 +3,14 @@
  *
  * Single source of truth for LGA-specific labels used by payment,
  * notification, and seeding code. Mirrors the frontend's
- * `logmas-odeda/src/config/lga.config.ts` (identity subset).
+ * `logmas-ijebu-north/src/config/lga.config.ts` (identity subset).
  *
  * TO ONBOARD A NEW LGA (backend side):
  *   1. Either add a preset to LGA_PRESETS below, OR set the LGA_* env vars
  *      in `.env` (env vars always win; a preset is required only for the
  *      fields you leave out of env).
  *   2. Drop the services data file at `prisma/data/<LGA_ID>.services.json`
- *      (see `prisma/data/odeda.services.json` for the format; use the
+ *      (see `prisma/data/ijebu-north-east.services.json` for the format; use the
  *      `{lgaName}` token in descriptions so they follow the active LGA).
  *   3. Run `npm run prisma:migrate` and `npx prisma db seed`.
  *
@@ -21,15 +21,15 @@
  */
 
 export interface LgaBackendConfig {
-  /** Unique system identifier / slug (e.g. "odeda", "kosofe"). Matches `prisma/data/<id>.services.json`. */
+  /** Unique system identifier / slug (e.g. "ijebu-north-east", "kosofe"). Matches `prisma/data/<id>.services.json`. */
   id: string;
-  /** Short common name (e.g. "Odeda") — used in user-facing copy (emails, SMS, payment labels). */
+  /** Short common name (e.g. "Ijebu North East") — used in user-facing copy (emails, SMS, payment labels). */
   name: string;
-  /** Full official council name (e.g. "Odeda Local Government"). */
+  /** Full official council name (e.g. "Ijebu North East Local Government"). */
   fullName: string;
-  /** Short code used in identifiers (e.g. "ODE"). */
+  /** Short code used in identifiers (e.g. "INE"). */
   shortCode: string;
-  /** Prefix for gateway account labels (e.g. "ODEDA" → "ODEDA/INV-0001"). */
+  /** Prefix for gateway account labels (e.g. "IJEBUNORTHEAST" → "IJEBUNORTHEAST/INV-0001"). */
   accountPrefix: string;
 }
 
@@ -39,17 +39,17 @@ export interface LgaBackendConfig {
  * LGA_ACCOUNT_PREFIX). A preset simply keeps values in version control.
  */
 const LGA_PRESETS: Record<string, LgaBackendConfig> = {
-  odeda: {
-    id: "odeda",
-    name: "Odeda",
-    fullName: "Odeda Local Government",
-    shortCode: "ODE",
-    accountPrefix: "ODEDA",
+  "ijebu-north-east": {
+    id: "ijebu-north-east",
+    name: "Ijebu North East",
+    fullName: "Ijebu North East Local Government",
+    shortCode: "INE",
+    accountPrefix: "IJEBUNORTHEAST",
   },
 };
 
 function resolveLgaConfig(): LgaBackendConfig {
-  const id = process.env.LGA_ID?.trim() || "odeda";
+  const id = process.env.LGA_ID?.trim() || "ijebu-north-east";
   const preset = LGA_PRESETS[id];
 
   const name = process.env.LGA_NAME?.trim() || preset?.name;

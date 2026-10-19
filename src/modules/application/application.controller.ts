@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+﻿import { Request, Response, NextFunction } from "express";
 import path from "path";
 import fs from "fs";
 import multer from "multer";
@@ -14,12 +14,12 @@ export const createApplication = async (
   res: Response,
   next: NextFunction,
 ) => {
-  let files: multer.File[] | undefined;
+  let files: Express.Multer.File[] | undefined;
 
   try {
     const user = req.user!;
 
-    files = (req as any).files as multer.File[] | undefined;
+    files = (req as any).files as Express.Multer.File[] | undefined;
 
     const raw = req.body || {};
 

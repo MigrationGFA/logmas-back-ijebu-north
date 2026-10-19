@@ -7,3 +7,12 @@ node_modules
 dist
 /public/uploads/*
 tmp
+
+# Local runtime / editor noise (never belongs in the repo)
+*.log
+server.log
+stderr.log
+ts-node-dev
+logmas-backend@*
+.DS_Store
+Thumbs.db

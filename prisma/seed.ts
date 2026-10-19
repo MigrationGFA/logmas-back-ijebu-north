@@ -32,7 +32,7 @@ const prisma = new PrismaClient({ adapter });
 // stays independent of the backend tsconfig, which excludes `prisma/`.
 // ───────────────────────────────────────────────────────────────────────────
 
-const lgaId = process.env.LGA_ID?.trim() || "odeda";
+const lgaId = process.env.LGA_ID?.trim() || "ijebu-north-east";
 const lgaName = process.env.LGA_NAME?.trim() || lgaId;
 const lgaFullName =
   process.env.LGA_FULL_NAME?.trim() || `${lgaName} Local Government`;

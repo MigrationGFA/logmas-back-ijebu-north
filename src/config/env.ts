@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const envSchema = z.object({
-  PORT: z.string().default('3004'),
+  PORT: z.string().default('3006'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   DATABASE_URL: z.string().url(),
   JWT_SECRET: z.string(),
@@ -17,6 +17,7 @@ const envSchema = z.object({
   // Set these when onboarding a new LGA deployment.
   LGA_ID: z.string().optional(),
   LGA_NAME: z.string().optional(),
+  LGA_FULL_NAME: z.string().optional(),
   LGA_SHORT_CODE: z.string().optional(),
   LGA_ACCOUNT_PREFIX: z.string().optional(),
 });

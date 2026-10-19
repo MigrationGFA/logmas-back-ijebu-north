@@ -6,7 +6,7 @@
  * code or the services data. Run it after cloning this repo for a new LGA.
  *
  * Usage:
- *   node scripts/check-lga-swap.mjs            # active LGA from LGA_ID env (default: odeda)
+ *   node scripts/check-lga-swap.mjs            # active LGA from LGA_ID env (default: ijebu-north-east)
  *   LGA_ID=kosofe node scripts/check-lga-swap.mjs
  *   EXTRA_TOKENS="ward-name" node scripts/check-lga-swap.mjs
  *
@@ -22,7 +22,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 // ─── Active LGA (same contract as src/config/lga.config.ts / seed.ts) ────────
-const activeId = (process.env.LGA_ID || "odeda").trim().toLowerCase();
+const activeId = (process.env.LGA_ID || "ijebu-north-east").trim().toLowerCase();
 const activeName = (process.env.LGA_NAME || activeId).trim().toLowerCase();
 const activeTokens = [activeId, activeName];
 

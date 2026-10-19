@@ -1,12 +1,12 @@
-# Odeda Local Government Revenue & Service Management Portal (LOGMAS)
+﻿# LOGMAS Backend — Prisma Schema Structure
 ## Updated Prisma Database Schema Specification (`schema.md`)
 
-This document defines the production-ready Prisma schema designed for the unified **Odeda Local Government Area (LGA) LOGMAS Portal**.
+This document defines the production-ready Prisma schema designed for the unified **Local Government Area (LGA) LOGMAS Portal**.
 
 ---
 
 ### Key Schema Architecture Improvements
-1. **Unified Services & Applications Framework**: Replaced hardcoded single-purpose models (`StateOfOriginApplication`, `LevyConfig`, `PermitConfig`) with flexible `Service`, `FeeSchedule`, and `ServiceApplication` models capable of powering all 12 Odeda Local Government services seamlessly.
+1. **Unified Services & Applications Framework**: Replaced hardcoded single-purpose models (`StateOfOriginApplication`, `LevyConfig`, `PermitConfig`) with flexible `Service`, `FeeSchedule`, and `ServiceApplication` models capable of powering the LGA's statutory services seamlessly.
 2. **Comprehensive 13-Step Citizen Workflow Support**: Supports draft auto-save, statutory certification & non-refundable declaration tracking, field officer inspection reports, Treasury tariff assessment, dedicated virtual payment accounts, LGA Admin approval loops, and automated certificate generation.
 3. **Role-Based Workflows**: Tailored for **Citizens**, **Business Owners**, **Field Officers**, **Treasurers**, **LGA Admins**, **Ward Councillors**, **Auditors**, and **Contractors**.
 
@@ -323,7 +323,7 @@ model ServiceFeeSchedule {
 
 model ServiceApplication {
   id            String            @id @default(uuid())
-  applicationNo String            @unique @default(cuid()) // e.g. "ODE-APP-2026-001"
+  applicationNo String            @unique @default(cuid()) // e.g. "INE-APP-2026-001"
   status        ApplicationStatus @default(draft)
 
   serviceId String
@@ -347,7 +347,7 @@ model ServiceApplication {
   // Step 5: Certification & Legal Declaration Audit
   declarationAcceptedAt DateTime?
   declarationIpAddress  String?
-  declarationVersion    String?   @default("v1.0-odeda-2026")
+  declarationVersion    String?   @default("v1.0-lga-2026")
 
   // Workflow Inspection, Assessment & Approval Audit Relations
   inspectionReport   FieldInspection?
@@ -428,7 +428,7 @@ model ApplicationApproval {
 
 model Invoice {
   id            String        @id @default(uuid())
-  invoiceNumber String        @unique @default(cuid()) // e.g. "ODE/INV/2026/00101"
+  invoiceNumber String        @unique @default(cuid()) // e.g. "<LGA_SHORT_CODE>/INV/2026/00101"
   status        InvoiceStatus @default(draft)
   revenueHead   String
   description   String?
@@ -442,7 +442,7 @@ model Invoice {
 
   // Step 10: Dedicated / Virtual Bank Account Details
   virtualAccountNo   String?
-  virtualAccountBank String? @default("Zenith Bank / Odeda Treasury")
+  virtualAccountBank String? @default("Zenith Bank / LGA Treasury")
   virtualAccountRef  String? @unique
   qrToken            String  @unique @default(cuid())
   verificationCode   String  @unique @default(cuid())
@@ -486,7 +486,7 @@ model Payment {
 
 model Receipt {
   id               String   @id @default(uuid())
-  receiptNumber    String   @unique // e.g. "ODE/RCP/2026/00101"
+  receiptNumber    String   @unique // e.g. "<LGA_SHORT_CODE>/RCP/2026/00101"
   verificationCode String   @unique
   qrToken          String   @unique
   amountPaid       Decimal  @db.Decimal(12, 2)
@@ -507,7 +507,7 @@ model Receipt {
 
 model Certificate {
   id                String             @id @default(uuid())
-  certificateNumber String             @unique // e.g. "ODE/CERT/2026/00101"
+  certificateNumber String             @unique // e.g. "<LGA_SHORT_CODE>/CERT/2026/00101"
   verificationCode  String             @unique
   qrToken           String             @unique
   issuedAt          DateTime           @default(now())
@@ -649,5 +649,5 @@ model AuditLog {
 
 ### Migration Summary for VS Code / Backend Setup
 1. **Remove Old Single-Purpose Tables**: Drop legacy tables `state_of_origin_applications`, `levy_configs`, and `permit_configs`.
-2. **Apply New Prisma Migration**: Run `npx prisma migrate dev --name init_odeda_services_schema`.
-3. **Seed Initial 12 Odeda Services**: Execute seed script to populate the `Service` and `ServiceFeeSchedule` tables with the 12 core statutory Odeda Local Government services.
+2. **Apply New Prisma Migration**: Run `npx prisma migrate dev --name init_lga_services_schema`.
+3. **Seed the Initial LGA Services**: Execute seed script to populate the `Service` and `ServiceFeeSchedule` tables with the core statutory LGA services.

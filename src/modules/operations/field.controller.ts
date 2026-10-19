@@ -1,4 +1,4 @@
-// src/modules/fieldOfficer/fieldOfficer.controller.ts
+﻿// src/modules/fieldOfficer/fieldOfficer.controller.ts
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../../utils/prisma";
 import { sendSuccess, sendError } from "../../utils/response";
@@ -280,7 +280,7 @@ export const uploadPaymentProof = async (
     let { paymentId } = req.params;
     if (Array.isArray(paymentId)) paymentId = paymentId[0];
 
-    const file = (req as any).file as multer.File | undefined;
+    const file = (req as any).file as Express.Multer.File | undefined;
     if (!file) {
       return sendError(res, "A proof file is required", "VALIDATION_ERROR", null, 400);
     }

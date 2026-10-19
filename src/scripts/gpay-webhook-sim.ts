@@ -46,7 +46,7 @@ async function main() {
   const url =
     flag("url")?.trim() ||
     process.env.GPAY_WEBHOOK_URL?.trim() ||
-    "http://localhost:3004/api/v1/payments/gpay/webhook";
+    "http://localhost:3006/api/v1/payments/gpay/webhook";
   const encoding = (flag("encoding") ?? "hex").toLowerCase();
   const digest = encoding === "base64" ? "base64" : "hex";
   const amount = flag("amount") ?? "100.00";

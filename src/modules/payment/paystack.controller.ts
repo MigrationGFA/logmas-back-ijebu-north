@@ -22,7 +22,7 @@ import { sendEmail } from "../notification/email.service";
 
  const callbackUrl = process.env.NODE_ENV === "production"
       ? `${process.env.PAYSTACK_CALLBACK_URL}/payment/result`
-      : "http://localhost:3000/payment/result";
+      : "http://localhost:3002/payment/result";
 
 export const initializePaystackPayment = async (
   req: Request,

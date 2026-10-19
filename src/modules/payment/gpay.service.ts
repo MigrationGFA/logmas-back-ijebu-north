@@ -82,7 +82,7 @@ export const gpayWebhookUrl = (() => {
   console.warn(
     "[gpay.service] GPAY_WEBHOOK_URL is not set — falling back to a localhost URL. GPay will not be able to reach this webhook; use the local simulator script.",
   );
-  return "http://localhost:3004/api/v1/payments/gpay/webhook";
+  return "http://localhost:3006/api/v1/payments/gpay/webhook";
 })();
 
 // ── Status normalisation ──────────────────────────────────────

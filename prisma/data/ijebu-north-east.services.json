@@ -1,0 +1,13 @@
+[
+  {
+    "code": "state_of_origin",
+    "certificateType": "CERTIFICATE_OF_ORIGIN",
+    "name": "State of Origin Certificate",
+    "description": "Certificate of Origin / State of Origin issued by {lgaFullName} for residents.",
+    "category": "CERTIFICATE",
+    "revenueHead": "1010 - State of Origin Fees",
+    "requirements": ["passport_photo", "nin_slip", "proof_of_residency"],
+    "estimatedDays": 5,
+    "fee": 7500
+  }
+]

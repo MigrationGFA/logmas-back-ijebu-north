@@ -1,7 +1,7 @@
 import env from './config/env';
 import app from './app';
 
-const PORT = env.PORT || 3004;
+const PORT = env.PORT || 3006;
 
 if (!process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET is not defined in environment variables');

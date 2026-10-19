@@ -1,42 +1,83 @@
-[repositories/logmas-backend (22)] [getfjupm@premium291 logmas-backend]$ git pull
-remote: Invalid username or token. Password authentication is not supported for Git operations.
-fatal: Authentication failed for 'https://github.com/MigrationGFA/logmas-backend.git/'
-[repositories/logmas-backend (22)] [getfjupm@premium291 logmas-backend]$ git fetch origin
-remote: Invalid username or token. Password authentication is not supported for Git operations.
-fatal: Authentication failed for 'https://github.com/MigrationGFA/logmas-backend.git/'
-[repositories/logmas-backend (22)] [getfjupm@premium291 logmas-backend]$ ^C
-[repositories/logmas-backend (22)] [getfjupm@premium291 logmas-backend]$ git remote set-url origin https://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@github.com/MigrationGFA/logmas-backend.git
-[repositories/logmas-backend (22)] [getfjupm@premium291 logmas-backend]$ git fetch originremote: Enumerating objects: 12, done.
-remote: Counting objects: 100% (12/12), done.
-remote: Compressing objects: 100% (1/1), done.
-remote: Total 7 (delta 6), reused 7 (delta 6), pack-reused 0 (from 0)
-Unpacking objects: 100% (7/7), 1.87 KiB | 382.00 KiB/s, done.
-From https://github.com/MigrationGFA/logmas-backend
-   00870fe..b68e336  main       -> origin/main
-[repositories/logmas-backend (22)] [getfjupm@premium291 logmas-backend]$
+﻿# DEPLOYING THE LOGMAS BACKEND
 
+> Deploy target in the notes below: a cPanel/WHM shared-hosting box running
+> Passenger, with the app checked out under `~/repositories/<app-name>`.
 
-dont forget to get token from developer settings fine token grain
+## 1. Authenticate with GitHub
 
-# 1. Install any new dependencies you might have added locally
+Do **not** paste a personal access token into the remote URL — that leaks it
+into `.git/config`, shell history, and any committed file. Use an SSH remote
+(recommended) or a credential helper:
+
+```bash
+# Preferred: SSH
+git remote set-url origin git@github.com:MigrationGFA/logmas-back-ijebu-north.git
+
+# Or HTTPS with a credential manager (prompts, stores the token in the OS vault)
+git remote set-url origin https://github.com/MigrationGFA/logmas-back-ijebu-north.git
+git fetch origin
+```
+
+If a token was ever pasted into a URL, **revoke it on GitHub immediately**
+(Settings → Developer settings → Personal access tokens) and issue a new one.
+
+## 2. Pull the code
+
+```bash
+git pull origin main
+```
+
+## 3. Install dependencies
+
+```bash
 npm install
+```
 
-# 2. Sync your database schema and refresh the Prisma client types
+## 4. Sync the database schema and refresh the Prisma client types
+
+```bash
 npx prisma db push
 npx prisma generate
+```
 
-# 3. Compile your TypeScript code into production-ready JavaScript
+For a production database use the migration workflow instead:
+
+```bash
+npm run prisma:deploy
+```
+
+## 5. Load the service catalog (seed)
+
+```bash
+npx prisma db seed
+```
+
+The seed reads `prisma/data/<LGA_ID>.services.json` and upserts both the
+`services` rows and their fee rows. Expected tail:
+
+```
+✅ <LGA Name> (<lga-id>) services and service fees seeded successfully
+```
+
+Re-running the seed is safe — it upserts by `code`, so it updates existing
+services instead of duplicating them. See "ADDING OR CHANGING A SERVICE" in
+`LGA_ONBOARDING_BACKEND.md`.
+
+## 6. Compile and restart
+
+```bash
 npm run build
+pkill -u getfjupm node   # let Passenger boot the fresh build
+```
 
-# 4. Kill the stale processes so Passenger boots up using the fresh build folder
-pkill -u getfjupm node
+## 7. Environment
 
+Copy `.env.example` to `.env` and fill in real values. **Never commit `.env`** —
+it is already in `.gitignore`. Each LGA needs its own:
 
-npx prisma db push
+- `DATABASE_URL` (a database that belongs to this LGA only)
+- `LGA_ID` / `LGA_NAME` / `LGA_FULL_NAME` / `LGA_SHORT_CODE` / `LGA_ACCOUNT_PREFIX`
+- `FRONTEND_URL` / `BACKEND_URL` / `API_BASE_URL`
+- `GPAY_*` merchant credentials for this LGA
 
-npx prisma migrate dev --name major_paystack_update
-
-
-# seed plan for revenue category if need be
-hard code the categories using npx prisma db seed
-make sure the seed file is properly typed
+Never reuse another LGA's database, merchant credentials, or webhook secret.
