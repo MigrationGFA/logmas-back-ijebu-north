@@ -444,6 +444,7 @@ export const listApplications = async (
       user,
       page,
       limit,
+      req.query,
     );
 
     return sendSuccess(res, result.items, result.meta);

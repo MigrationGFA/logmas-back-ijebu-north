@@ -598,9 +598,28 @@ export const completeNewApplicationAfterPayment = async ({
   const fullName =
     `${result.user.firstName} ${result.user.lastName}`.trim();
 
+  // The confirmation email is part of this flow's contract: the generated
+  // login credentials are ONLY delivered by email, so a silently-failed send
+  // strands the new citizen with no way to log in. Capture every outcome
+  // instead of swallowing it — the verify endpoint returns EMAIL_SEND_FAILED
+  // when emailSent is false (the webhook path just logs it). The payment
+  // itself is already settled either way.
+  let emailSent = true;
+  let emailFailReason: string | null = null;
+  const noteEmailFailure = (label: string, reason: unknown) => {
+    emailSent = false;
+    const text =
+      typeof reason === "string"
+        ? reason
+        : reason instanceof Error
+          ? reason.message
+          : JSON.stringify(reason);
+    emailFailReason = `${label}: ${text}`;
+  };
+
   if (result.newUserCreated) {
     try {
-      await notify({
+      const accountNotify = await notify({
         userId: result.user.id,
         to: {
           email: result.user.email,
@@ -610,23 +629,33 @@ export const completeNewApplicationAfterPayment = async ({
         vars: {
           applicant_name: fullName,
           application_number: result.application.applicationNumber,
-         service_name: result.application.serviceName,
+          service_name: result.application.serviceName,
           application_id: result.application.id,
           fee_amount: result.application.feeAmount.toString(),
           temp_password: result.generatedPassword,
         },
         channels: ["email", "sms"],
       });
+      if (accountNotify.email && !accountNotify.email.success) {
+        noteEmailFailure(
+          "credentials email",
+          accountNotify.email.error ??
+            (accountNotify.email.skipped
+              ? "email channel unavailable (missing template or address)"
+              : "unknown reason"),
+        );
+      }
     } catch (notifyErr) {
       console.error(
-        "[completeNewApplicationAfterPayment] account notification failed, continuing:",
+        "[completeNewApplicationAfterPayment] account notification failed:",
         notifyErr,
       );
+      noteEmailFailure("credentials email", notifyErr);
     }
   }
 
   try {
-    await notify({
+    const completionNotify = await notify({
       userId: result.user.id,
       to: {
         email: result.user.email,
@@ -636,20 +665,36 @@ export const completeNewApplicationAfterPayment = async ({
       vars: {
         applicant_name: fullName,
         application_number: result.application.applicationNumber,
-       service_name: result.application.serviceName,
+        service_name: result.application.serviceName,
         application_id: result.application.id,
       },
       channels: ["email", "sms"],
     });
+    if (completionNotify.email && !completionNotify.email.success) {
+      noteEmailFailure(
+        "completion email",
+        completionNotify.email.error ??
+          (completionNotify.email.skipped
+            ? "email channel unavailable (missing template or address)"
+            : "unknown reason"),
+      );
+    }
   } catch (notifyErr) {
     console.error(
-      "[completeNewApplicationAfterPayment] completion notification failed, continuing:",
+      "[completeNewApplicationAfterPayment] completion notification failed:",
       notifyErr,
     );
+    noteEmailFailure("completion email", notifyErr);
   }
+
+  if (!emailSent) {
+    console.error(
+      `[completeNewApplicationAfterPayment] confirmation email NOT sent to ${result.user.email}: ${emailFailReason}`,
+    );
+  }
+
+  Object.assign(result, { emailSent, emailFailReason });
 }
 
-return result;
-
-  return result
+  return result;
 };

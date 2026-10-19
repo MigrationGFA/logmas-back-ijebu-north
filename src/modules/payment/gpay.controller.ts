@@ -913,11 +913,27 @@ export const verifyGpayPayment = async (
       );
     }
 
-    return sendSuccess(res, {
+    const confirmedPayload: any = {
       status: "confirmed",
       flow: intent.flow,
       ...(outcome.status === "confirmed" ? outcome.result : {}),
-    });
+    };
+
+    // The payment IS settled, but the confirmation/credentials email didn't go
+    // out. Surface it as an error (EMAIL_SEND_FAILED): the result page reads
+    // backendDetails to show "paid, but the email failed" instead of a silent
+    // success the citizen would never notice.
+    if (confirmedPayload.emailSent === false) {
+      return sendError(
+        res,
+        `Payment confirmed for ${reference}, but the confirmation email could not be sent. Contact the LGA with this reference.`,
+        "EMAIL_SEND_FAILED",
+        confirmedPayload,
+        502,
+      );
+    }
+
+    return sendSuccess(res, confirmedPayload);
   } catch (err) {
     next(err);
   }

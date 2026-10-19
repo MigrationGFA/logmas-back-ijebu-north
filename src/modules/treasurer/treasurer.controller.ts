@@ -1,3 +1,4 @@
+import { fetchFieldOfficerMetrics } from "./field-officer-metrics";
 // src/modules/treasurer/treasurer.controller.ts
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../../utils/prisma";
@@ -649,208 +650,9 @@ export const getFieldOfficersList = async (req: Request, res: Response) => {
   try {
     const { id: userId, role } = req.user!;
 
-    const whereClause: Prisma.UserWhereInput = {};
-
-    // ---------------------------------------------------------
-    // Access scope
-    // ---------------------------------------------------------
-    if (role === "contractor") {
-      whereClause.role = {
-        in: ["agent", "field_officer"],
-      };
-    } else if (role === "agent") {
-      whereClause.role = "field_officer";
-    } else {
-      whereClause.role = {
-        in: ["agent", "field_officer"],
-      };
-    }
-
-    // ---------------------------------------------------------
-    // Fetch personnel + their collection data
-    // ---------------------------------------------------------
-    const officers = await prisma.user.findMany({
-      where: whereClause,
-
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        phone: true,
-        role: true,
-        isActive: true,
-        suspendedAt: true,
-        createdAt: true,
-
-        ward: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-
-        createdBy: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-          },
-        },
-
-        // Invoices created by this officer/agent
-        invoicesCreated: {
-          select: {
-            id: true,
-            payments: {
-              where: {
-                status: "confirmed",
-              },
-              select: {
-                amount: true,
-              },
-            },
-          },
-        },
-
-        // Invoices assigned to this officer
-        invoicesAssignedTo: {
-          select: {
-            id: true,
-            payments: {
-              where: {
-                status: "confirmed",
-              },
-              select: {
-                amount: true,
-              },
-            },
-          },
-        },
-      },
-
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    // ---------------------------------------------------------
-    // Map personnel
-    // ---------------------------------------------------------
-    const mappedOfficers = officers.map((officer) => {
-      let status: "active" | "suspended" | "deactivated";
-
-      if (officer.suspendedAt) {
-        status = "suspended";
-      } else if (!officer.isActive) {
-        status = "deactivated";
-      } else {
-        status = "active";
-      }
-
-      // -------------------------------------------------------
-      // Calculate confirmed collections
-      // -------------------------------------------------------
-      const createdCollected = officer.invoicesCreated.reduce(
-        (total, invoice) => {
-          return (
-            total +
-            invoice.payments.reduce(
-              (sum, payment) => sum + Number(payment.amount),
-              0,
-            )
-          );
-        },
-        0,
-      );
-
-      const assignedCollected = officer.invoicesAssignedTo.reduce(
-        (total, invoice) => {
-          return (
-            total +
-            invoice.payments.reduce(
-              (sum, payment) => sum + Number(payment.amount),
-              0,
-            )
-          );
-        },
-        0,
-      );
-
-      // Avoid double-counting where an invoice was both created
-      // and assigned to the same officer.
-      const createdInvoiceIds = new Set(
-        officer.invoicesCreated.map((invoice) => invoice.id),
-      );
-
-      const additionalAssignedCollected = officer.invoicesAssignedTo
-        .filter((invoice) => !createdInvoiceIds.has(invoice.id))
-        .reduce((total, invoice) => {
-          return (
-            total +
-            invoice.payments.reduce(
-              (sum, payment) => sum + Number(payment.amount),
-              0,
-            )
-          );
-        }, 0);
-
-      const totalCollected = createdCollected + additionalAssignedCollected;
-
-      return {
-        id: officer.id,
-
-        name: `${officer.firstName} ${officer.lastName}`.trim(),
-
-        email: officer.email,
-        phone: officer.phone,
-
-        role: officer.role,
-
-        ward: officer.ward
-          ? {
-              id: officer.ward.id,
-              name: officer.ward.name,
-            }
-          : null,
-
-        status,
-
-        totalCollected,
-
-        createdAt: officer.createdAt,
-
-        createdBy: officer.createdBy
-          ? {
-              id: officer.createdBy.id,
-              name: `${officer.createdBy.firstName} ${officer.createdBy.lastName}`.trim(),
-            }
-          : null,
-      };
-    });
-
-    // ---------------------------------------------------------
-    // Stats
-    // ---------------------------------------------------------
-    const stats = {
-      totalOfficers: mappedOfficers.length,
-
-      active: mappedOfficers.filter((officer) => officer.status === "active")
-        .length,
-
-      suspended: mappedOfficers.filter(
-        (officer) => officer.status === "suspended",
-      ).length,
-
-      deactivated: mappedOfficers.filter(
-        (officer) => officer.status === "deactivated",
-      ).length,
-
-      totalCollected: mappedOfficers.reduce(
-        (total, officer) => total + officer.totalCollected,
-        0,
-      ),
-    };
+    const { stats, officers: mappedOfficers } = await fetchFieldOfficerMetrics(
+      role === "contractor" || role === "agent" ? userId : undefined,
+    );
 
     return res.status(200).json({
       success: true,
@@ -888,7 +690,16 @@ export const listAwaitingConfirmation = async (
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 25;
 
-    const where = { status: "awaiting_payment_confirmation" as const };
+    const status = String(req.query.status || "pending");
+    const paymentWhere: Prisma.PaymentWhereInput = {
+      method: "bank_transfer",
+      ...(status === "confirmed" ? { status: "confirmed" } :
+          status === "rejected" ? { matchStatus: "rejected" } :
+          status === "pending" ? { status: "pending", NOT: { matchStatus: "rejected" } } : {}),
+    };
+    const where: Prisma.ApplicationWhereInput = {
+      invoice: { is: { payments: { some: paymentWhere } } },
+    };
 
     const [items, total] = await Promise.all([
       prisma.application.findMany({
@@ -898,7 +709,7 @@ export const listAwaitingConfirmation = async (
         take: limit,
         include: {
           service: true,
-          invoice: { include: { payments: { orderBy: { createdAt: "desc" } } } },
+          invoice: { include: { payments: { where: paymentWhere, orderBy: { createdAt: "desc" }, include: { proofUploadedBy: { select: { id: true, firstName: true, lastName: true } } } } } },
           applicant: {
             select: { id: true, firstName: true, lastName: true, email: true, phone: true },
           },
@@ -964,6 +775,9 @@ export const confirmStaticAccountPayment = async (
       );
     }
 
+    if (payment.method !== "bank_transfer" || !payment.proofUrl) {
+      return sendError(res, "Upload payment proof before confirmation", "BAD_REQUEST", null, 400);
+    }
     const invoiceId = payment.invoiceId!;
 
     const result = await prisma.$transaction(async (tx) => {
@@ -1090,10 +904,7 @@ export const declineStaticAccountPayment = async (
       const updatedPayment = await tx.payment.update({
         where: { id: payment.id },
         data: {
-          matchStatus: "unmatched",
-          proofUrl: null,
-          proofUploadedById: null,
-          proofUploadedAt: null,
+          matchStatus: "rejected",
         },
       });
 

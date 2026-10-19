@@ -346,6 +346,9 @@ export const getInvoiceById = async (
             confirmedAt: true,
             createdAt: true,
             paidById: true,
+            proofUrl: true,
+            proofUploadedById: true,
+            proofUploadedAt: true,
           },
         },
         receipts: {
@@ -505,3 +508,166 @@ export const recordInvoicePayment = async (
     next(err);
   }
 };
+
+// POST /api/v1/invoices/:invoiceNumber/payment-proof
+//
+// Citizen (or staff on their behalf) uploads evidence of a manual bank
+// transfer for a PENDING invoice. Records the proof on the invoice's pending
+// `bank_transfer` Payment — the same row whose `reference` the reserved-
+// account tab displays (pendingTransferReference) — and parks the linked
+// application at `awaiting_payment_confirmation` so the treasurer's Payment
+// Confirmations worklist picks it up (same mechanism the field-officer flow
+// uses). NEVER confirms the payment; that stays the treasurer's call.
+export const uploadInvoicePaymentProof = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const uploaderId = req.user!.id;
+    const { role } = req.user!;
+    const invoiceNumber = String(
+      Array.isArray(req.params.invoiceNumber)
+        ? req.params.invoiceNumber[0]
+        : req.params.invoiceNumber,
+    );
+
+    const file = (req as any).file as
+      | { originalname?: string; path: string }
+      | undefined;
+    if (!file) {
+      return sendError(res, "A proof file is required", "VALIDATION_ERROR", null, 400);
+    }
+
+    // Same access rules as getInvoiceById: privileged roles view any invoice,
+    // citizens/business owners only their own.
+    const privilegedRoles: Role[] = [
+      "super_admin",
+      "lga_admin",
+      "chairman",
+      "treasurer",
+      "auditor",
+      "ward_councillor",
+      "field_officer",
+    ];
+    const isPrivileged = privilegedRoles.includes(role);
+
+    const whereClause: any = { invoiceNumber };
+    if (!isPrivileged) {
+      whereClause.OR = [
+        { application: { applicantId: uploaderId } },
+        { createdById: uploaderId },
+        { assignedOfficerId: uploaderId },
+        { payments: { some: { paidById: uploaderId } } },
+      ];
+    }
+
+    const invoice = await prisma.invoice.findFirst({
+      where: whereClause,
+      include: {
+        application: { select: { id: true, status: true } },
+        service: { select: { code: true, name: true } },
+        payments: {
+          orderBy: { createdAt: "desc" },
+          select: { id: true, amount: true, status: true, method: true },
+        },
+      },
+    });
+
+    if (!invoice) {
+      return sendError(
+        res,
+        "Invoice not found or you don't have permission to view it",
+        "NOT_FOUND",
+        null,
+        404,
+      );
+    }
+
+    if (invoice.paymentStatus !== "pending") {
+      return sendError(res, "Invoice is not awaiting payment", "BAD_REQUEST", null, 400);
+    }
+
+    const serverUrl = `${req.protocol}://${req.get("host")}`;
+    const normalizedRelativePath = file.path.replace(/\\/g, "/");
+    const proofUrl = `${serverUrl}/${normalizedRelativePath}`;
+
+    // Attach to the pending bank_transfer Payment the citizen was shown.
+    // Reuse the newest one (the VA endpoint refreshes it inside its reuse
+    // window); only mint a row if the reserved-account tab was never opened.
+    let payment: { id: string } | undefined = invoice.payments.find(
+      (p) => p.status === "pending" && p.method === "bank_transfer",
+    );
+
+    if (!payment) {
+      const paidAmount = invoice.payments
+        .filter((p) => p.status === "confirmed")
+        .reduce((sum, p) => sum + Number(p.amount), 0);
+      const balanceDue = Math.max(Number(invoice.amount) - paidAmount, 0);
+      payment = await prisma.payment.create({
+        data: {
+          reference: generateReference(),
+          amount: balanceDue,
+          method: "bank_transfer",
+          status: "pending",
+          serviceCode: invoice.service.code,
+          narration: `Citizen proof upload — ${invoice.service.name}`,
+          invoice: { connect: { id: invoice.id } },
+        },
+        select: { id: true },
+      });
+    }
+
+    const updated = await prisma.payment.update({
+      where: { id: payment.id },
+      data: {
+        proofUrl,
+        proofUploadedById: uploaderId,
+        proofUploadedAt: new Date(),
+      },
+    });
+
+    // Surface it to the treasurer: the Payment Confirmations worklist only
+    // lists applications parked at awaiting_payment_confirmation. Park from
+    // the pre-payment states only — never yank an application out of an
+    // in-progress review.
+    let parkedForConfirmation = false;
+    if (invoice.application) {
+      if (invoice.application.status === "awaiting_payment_confirmation") {
+        parkedForConfirmation = true;
+      } else if (["submitted", "payment_pending"].includes(invoice.application.status)) {
+        await prisma.application.update({
+          where: { id: invoice.application.id },
+          data: { status: "awaiting_payment_confirmation" },
+        });
+        parkedForConfirmation = true;
+      }
+    }
+
+    await prisma.auditLog.create({
+      data: {
+        action: "payment_confirmed",
+        entity: "Payment",
+        entityId: payment.id,
+        userId: uploaderId,
+        details: {
+          event: "proof_uploaded",
+          invoiceNumber: invoice.invoiceNumber,
+          applicationId: invoice.application?.id ?? null,
+          parkedForConfirmation,
+          proofUrl,
+        },
+        ipAddress: getIp(req),
+      },
+    });
+
+    return sendSuccess(
+      res,
+      { payment: updated, proofUrl, parkedForConfirmation },
+      "Proof of payment uploaded",
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+

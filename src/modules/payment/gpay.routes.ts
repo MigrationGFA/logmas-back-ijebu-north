@@ -78,25 +78,28 @@ router.get(
 // GET /api/v1/payments/gpay/dynamic-account/verify/:reference
 // Public poll for a minted transfer account — the frontend hits this while
 // the expiry countdown runs (webhook is the primary settlement signal).
-router.get("/dynamic-account/verify/:reference", verifyDynamicAccountPayment);
+// (commented out — dynamic one-shot transfer account flow is disabled)
+// router.get("/dynamic-account/verify/:reference", verifyDynamicAccountPayment);
 
 // POST /api/v1/payments/gpay/dynamic-account/invoices/:invoiceNumber
 // Authenticated invoice payment by one-shot transfer account (15-min expiry).
-router.post(
-  "/dynamic-account/invoices/:invoiceNumber",
-  jsonBody,
-  requireAuth,
-  createDynamicAccountForInvoice,
-);
+// (commented out — dynamic flow disabled; use static reserved account)
+// router.post(
+//   "/dynamic-account/invoices/:invoiceNumber",
+//   jsonBody,
+//   requireAuth,
+//   createDynamicAccountForInvoice,
+// );
 
 // POST /api/v1/payments/gpay/dynamic-account/public
 // Public "apply + pay first" flow via one-shot transfer account.
-router.post(
-  "/dynamic-account/public",
-  jsonBody,
-  validateBody(gpayPublicInitializeSchema),
-  createDynamicAccountPublicPayment,
-);
+// (commented out — dynamic flow disabled; use static reserved account)
+// router.post(
+//   "/dynamic-account/public",
+//   jsonBody,
+//   validateBody(gpayPublicInitializeSchema),
+//   createDynamicAccountPublicPayment,
+// );
 
 // POST /api/v1/payments/gpay/webhook — GPay calls this. Signature verification
 // happens inside gpayWebhook, so no auth middleware here.

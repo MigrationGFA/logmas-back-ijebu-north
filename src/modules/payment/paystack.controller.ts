@@ -270,11 +270,26 @@ export const verifyPaystackPayment = async (
         metadata,
       });
 
-      return sendSuccess(res, {
+      const payload: any = {
         status: "confirmed",
         flow: "new_application",
         ...result,
-      });
+      };
+
+      // Payment settled, but the confirmation/credentials email failed —
+      // return an error (details keep the settlement facts for the result
+      // page, which renders "paid, but the email failed").
+      if (payload.emailSent === false) {
+        return sendError(
+          res,
+          `Payment confirmed for ${reference}, but the confirmation email could not be sent. Contact the LGA with this reference.`,
+          "EMAIL_SEND_FAILED",
+          payload,
+          502,
+        );
+      }
+
+      return sendSuccess(res, payload);
     }
 
     // =====================================================

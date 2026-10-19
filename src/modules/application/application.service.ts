@@ -317,6 +317,7 @@ export const listApplicationsForUser = async (
   user: any,
   page = 1,
   limit = 25,
+  filters: Record<string, unknown> = {},
 ) => {
   const skip = (page - 1) * limit;
   const where: any = {};
@@ -326,6 +327,22 @@ export const listApplicationsForUser = async (
   } else if (user.role === "field_officer") {
     where.createdById = user.id;
   }
+    if (typeof filters.status === "string" && filters.status) where.status = filters.status;
+    if (typeof filters.serviceId === "string" && filters.serviceId) where.serviceId = filters.serviceId;
+    if (typeof filters.search === "string" && filters.search.trim()) {
+      const contains = filters.search.trim();
+      where.OR = [
+        { applicationNumber: { contains, mode: "insensitive" } },
+        { applicant: { is: { OR: ["firstName", "lastName", "email", "phone"].map((key) => ({ [key]: { contains, mode: "insensitive" } })) } } },
+        ...["fullName", "email", "phone"].map((key) => ({ formData: { path: [key], string_contains: contains, mode: "insensitive" } })),
+      ];
+    }
+    if (typeof filters.wardId === "string" && filters.wardId) {
+      where.AND = [{ OR: [
+        { formData: { path: ["ward"], equals: filters.wardId } },
+        { applicant: { is: { ward: { is: { name: filters.wardId } } } } },
+      ] }];
+    }
   // For privileged roles (super_admin, lga_admin, etc.) - no restrictions
 
   const items = await prisma.application.findMany({
