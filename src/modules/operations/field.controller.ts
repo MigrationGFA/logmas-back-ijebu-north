@@ -280,7 +280,7 @@ export const uploadPaymentProof = async (
     let { paymentId } = req.params;
     if (Array.isArray(paymentId)) paymentId = paymentId[0];
 
-    const file = (req as any).file as Express.Multer.File | undefined;
+    const file = (req as any).file as multer.File | undefined;
     if (!file) {
       return sendError(res, "A proof file is required", "VALIDATION_ERROR", null, 400);
     }

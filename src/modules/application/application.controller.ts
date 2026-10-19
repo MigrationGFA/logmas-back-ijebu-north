@@ -14,12 +14,12 @@ export const createApplication = async (
   res: Response,
   next: NextFunction,
 ) => {
-  let files: Express.Multer.File[] | undefined;
+  let files: multer.File[] | undefined;
 
   try {
     const user = req.user!;
 
-    files = (req as any).files as Express.Multer.File[] | undefined;
+    files = (req as any).files as multer.File[] | undefined;
 
     const raw = req.body || {};
 

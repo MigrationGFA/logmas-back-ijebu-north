@@ -108,7 +108,6 @@
 
 
 
-
 //for cpanel or prod env
 
 import { Router, Request, Response, NextFunction } from 'express';
@@ -121,20 +120,20 @@ import { UPLOAD_FOLDER_MAP, ensureDirectoryExists } from '../../utils/fileStorag
 
 // Extend Express Request type to include file from multer
 interface MulterRequest extends Request {
-  file?: Express.Multer.File;
+  file?: multer.File;
 }
 
 const router = Router();
 
 // Configure custom Multer storage engine
 const diskStorage = multer.diskStorage({
-  destination: (req: Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
+  destination: (req: Request, file: multer.File, cb: (error: Error | null, destination: string) => void) => {
     const uploadType = (req.query.type as string) || 'documents';
     const targetFolder = UPLOAD_FOLDER_MAP[uploadType] || UPLOAD_FOLDER_MAP.documents;
     ensureDirectoryExists(targetFolder);
     cb(null, targetFolder);
   },
-  filename: (req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
+  filename: (req: Request, file: multer.File, cb: (error: Error | null, filename: string) => void) => {
     const uniqueSuffix = `${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
     const fileExtension = path.extname(file.originalname);
     cb(null, `${file.fieldname}-${uniqueSuffix}${fileExtension}`);
@@ -145,7 +144,7 @@ const diskStorage = multer.diskStorage({
 const upload = multer({
   storage: diskStorage,
   limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+  fileFilter: (req: Request, file: multer.File, cb: multer.FileFilterCallback) => {
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'application/pdf'];
     if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);
