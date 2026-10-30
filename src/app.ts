@@ -15,6 +15,7 @@ import lgaRoutes from './modules/lgaAdmin/lgaAdmin.routes';
 import reportRoutes from './modules/report/report.routes';
 import auditorRoutes   from './modules/auditor/auditor.routes';
 import chairmanRoutes   from './modules/chairman/chairman.routes';
+import offlineRoutes from './modules/offline/offline.routes';
 import treasurerRoutes from './modules/treasurer/treasurer.routes';
 import gernralRoutes from './modules/general/general.routes';
 import invoiceRoutes from './modules/invoice/invoice.routes';
@@ -99,6 +100,7 @@ app.use('/api/v1/uploads', uploadRoutes);
 app.use('/api/v1/receipts', receiptRoutes);
 app.use('/api/v1/certificates', certificateRoutes);
 app.use('/api/v1/chairman',    chairmanRoutes);
+app.use('/api/v1/offline',   offlineRoutes);
 app.use('/api/v1', newsRoutes); // News & Updates: /news* (public) + /lga/news* (chairman, lga_admin)
 
 

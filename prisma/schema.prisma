@@ -166,6 +166,7 @@ enum CertificateType {
   QUARRY_PERMIT
   STREET_NAMING_CERTIFICATE
   KIOSK_LICENCE
+  MARRIAGE_CERTIFICATE
 }
 
 enum FeeStatus {
@@ -362,6 +363,7 @@ model Application {
   invoice              Invoice?
   certificate          Certificate?
   applicationDocuments ApplicationDocument[]
+  offlineSyncs OfflineSync[]  @relation("ApplicationOfflineSyncs")
 
   @@index([serviceId])
   @@index([applicantId])
@@ -727,4 +729,31 @@ model AuditLog {
   user   User?   @relation(fields: [userId], references: [id])
 
   @@map("audit_logs")
+}
+
+// ============================================================
+// OFFLINE FORM SYNC QUEUE
+// ============================================================
+
+model OfflineSync {
+  id               String   @id @default(uuid())
+  applicationId    String?
+
+  application      Application? @relation("ApplicationOfflineSyncs", fields: [applicationId], references: [id])
+
+  formType         String
+
+  formData         Json
+
+  source           String
+
+  status           String
+
+  submittedAt      DateTime @default(now())
+
+  syncedAt         DateTime?
+
+  createdAt        DateTime @default(now())
+
+  updatedAt        DateTime @updatedAt
 }
