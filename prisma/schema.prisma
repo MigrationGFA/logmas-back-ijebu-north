@@ -250,6 +250,7 @@ model User {
   complaintsRaised      Complaint[]        @relation("ComplaintRaisedBy")
   complaintsAssigned    Complaint[]        @relation("ComplaintAssignedTo")
   violationsLogged      Violation[]        @relation("ViolationLoggedBy")
+  offlineSyncs          OfflineSync[]      @relation("OfficerOfflineSyncs")
 
   auditLogs AuditLog[]
   // invoices  Invoice[]  @relation("InvoiceCreatedBy")
@@ -673,6 +674,8 @@ model Violation {
   loggedById String
   loggedBy   User   @relation("ViolationLoggedBy", fields: [loggedById], references: [id])
 
+  offlineSyncs OfflineSync[] @relation("ViolationOfflineSyncs")
+
   resolvedAt   DateTime?
   resolvedNote String?
 
@@ -736,24 +739,51 @@ model AuditLog {
 // ============================================================
 
 model OfflineSync {
-  id               String   @id @default(uuid())
-  applicationId    String?
+  id             String       @id @default(uuid())
+  // Client generated id for the captured record. Unique, so a record that is
+  // sent twice (auto sync plus manual retry, a flaky network, a double tap)
+  // can never create a second application or violation on the server.
+  clientRecordId String       @unique
+  // What the officer captured on the device: "application" | "violation".
+  recordType     String       @default("application")
+  // The field officer who captured the record. The queue on a device belongs
+  // to one officer, and so does its sync history on the server.
+  officerId      String
+  officer        User         @relation("OfficerOfflineSyncs", fields: [officerId], references: [id])
+  // The real records this sync created, once it has succeeded.
+  applicationId  String?
+  application    Application? @relation("ApplicationOfflineSyncs", fields: [applicationId], references: [id])
+  violationId    String?
+  violation      Violation?   @relation("ViolationOfflineSyncs", fields: [violationId], references: [id])
+  // Service code as captured (for example "farmers_registration"). This is a
+  // code from the services table, never a hardcoded list, so a cloned LGA
+  // with different services syncs without code changes.
+  formType       String
+  formData       Json
+  // Citizen snapshot supplied with an application capture, when the citizen
+  // was registered on the spot. Kept so a failed sync can be understood and
+  // resent exactly as captured.
+  applicantData  Json?
+  // Manifest of the files the device uploaded before syncing:
+  // [{ documentType, originalName, fileName, url, mimeType, fileSize }]
+  files          Json?
+  // Automatic trail of every edit the officer made on the device before
+  // sync: [{ field, oldValue, newValue, editedAt }]
+  editHistory    Json?
+  source         String       @default("field_officer")
+  // pending | processing | synced | failed. Set by the sync endpoint itself,
+  // in the same request that creates the real record. Nothing waits for a
+  // background processor.
+  status         String       @default("pending")
+  failureReason  String?
+  // When the officer actually captured the record on the device. This can be
+  // hours before submittedAt, which is when it reached the server.
+  capturedAt     DateTime
+  submittedAt    DateTime     @default(now())
+  syncedAt       DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
-  application      Application? @relation("ApplicationOfflineSyncs", fields: [applicationId], references: [id])
-
-  formType         String
-
-  formData         Json
-
-  source           String
-
-  status           String
-
-  submittedAt      DateTime @default(now())
-
-  syncedAt         DateTime?
-
-  createdAt        DateTime @default(now())
-
-  updatedAt        DateTime @updatedAt
+  @@index([officerId])
+  @@index([status])
 }
