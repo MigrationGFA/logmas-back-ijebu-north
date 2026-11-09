@@ -558,11 +558,34 @@ export const SERVICE_CODE_BY_SERVICE: Record<string, string> = {
  * Bank: Providus Bank | Bank Code: 000023 | Status: Active
  */
 export const DEDICATED_VIRTUAL_ACCOUNTS: Record<string, ReservedVirtualAccount> = {
-  // Per-LGA dedicated Providus virtual accounts go here when GPay issues them for this LGA.
-  // Ported empty from the Ifo implementation on purpose: Ifo's account numbers belong to Ifo.
-  // Until entries are added, resolution falls through to the reserved-account pool and the
-  // statutory account below, exactly as this platform behaved before the Ifo update.
-
+  // Ijebu North East's dedicated Providus virtual accounts, issued by the GPay team
+  // and received on Nov 9, 2026. Services without an entry here (street naming, baale
+  // registration, marriage, demand notices) still fall through to the reserved-account
+  // pool and the statutory account below until their accounts are issued.
+  COMDEVLEVY: {
+    accountNumber: "9655091579",
+    accountName: "GFA-LG TRUST AC(INE/COMDEVLEV)",
+    bankName: "Providus Bank",
+    bankCode: "000023",
+    serviceCode: "COMDEVLEVY",
+    status: "active",
+  },
+  ORIGINCER: {
+    accountNumber: "9641690324",
+    accountName: "GFA-LG TRUST AC(INE/ORIGINCER)",
+    bankName: "Providus Bank",
+    bankCode: "000023",
+    serviceCode: "ORIGINCER",
+    status: "active",
+  },
+  HAULAGEFE: {
+    accountNumber: "9656216942",
+    accountName: "GFA-LG TRUST AC(INE/HAULAGEFE)",
+    bankName: "Providus Bank",
+    bankCode: "000023",
+    serviceCode: "HAULAGEFE",
+    status: "active",
+  },
 };
 
 /**
