@@ -1229,7 +1229,7 @@ export const applicantResubmitApplication = async (
     let { id } = req.params;
     if (Array.isArray(id)) id = id[0];
     const user = req.user!;
-    const files = ((req as any).files as Express.Multer.File[]) || [];
+    const files = ((req as any).files as multer.File[]) || [];
     const { comment, correctionResponse, updatedFields } = req.body || {};
 
     const app = await prisma.application.findUnique({
