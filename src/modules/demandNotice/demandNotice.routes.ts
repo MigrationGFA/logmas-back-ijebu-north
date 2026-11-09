@@ -1,1 +1,24 @@
-aW1wb3J0IHsgUm91dGVyIH0gZnJvbSAiZXhwcmVzcyI7CmltcG9ydCB7IHJlcXVpcmVBdXRoIH0gZnJvbSAiLi4vLi4vbWlkZGxld2FyZS9hdXRoLm1pZGRsZXdhcmUiOwppbXBvcnQgewogIGNyZWF0ZURlbWFuZE5vdGljZSwKICBsaXN0RGVtYW5kTm90aWNlcywKICBnZXREZW1hbmROb3RpY2VCeVJlZiwKICBjYW5jZWxEZW1hbmROb3RpY2UsCiAgcmVzZW5kRGVtYW5kTm90aWNlLAp9IGZyb20gIi4vZGVtYW5kTm90aWNlLmNvbnRyb2xsZXIiOwoKY29uc3Qgcm91dGVyID0gUm91dGVyKCk7CgovLyBQdWJsaWMgLyBQYXllciBsb29rdXAgb2YgYSBzaW5nbGUgbm90aWNlIGJ5IHJlZmVyZW5jZSBvciBhcHBsaWNhdGlvbiBudW1iZXIKcm91dGVyLmdldCgiLzpyZWZlcmVuY2UiLCBnZXREZW1hbmROb3RpY2VCeVJlZik7CgovLyBBdXRoZW50aWNhdGVkIE9mZmljZXIgJiBBZG1pbiBvcGVyYXRpb25zCnJvdXRlci51c2UocmVxdWlyZUF1dGgpOwoKcm91dGVyLnBvc3QoIi8iLCBjcmVhdGVEZW1hbmROb3RpY2UpOwpyb3V0ZXIuZ2V0KCIvIiwgbGlzdERlbWFuZE5vdGljZXMpOwpyb3V0ZXIucG9zdCgiLzppZC9jYW5jZWwiLCBjYW5jZWxEZW1hbmROb3RpY2UpOwpyb3V0ZXIucG9zdCgiLzppZC9yZXNlbmQiLCByZXNlbmREZW1hbmROb3RpY2UpOwoKZXhwb3J0IGRlZmF1bHQgcm91dGVyOwo=
+import { Router } from "express";
+import { requireAuth } from "../../middleware/auth.middleware";
+import {
+  createDemandNotice,
+  listDemandNotices,
+  getDemandNoticeByRef,
+  cancelDemandNotice,
+  resendDemandNotice,
+} from "./demandNotice.controller";
+
+const router = Router();
+
+// Public / Payer lookup of a single notice by reference or application number
+router.get("/:reference", getDemandNoticeByRef);
+
+// Authenticated Officer & Admin operations
+router.use(requireAuth);
+
+router.post("/", createDemandNotice);
+router.get("/", listDemandNotices);
+router.post("/:id/cancel", cancelDemandNotice);
+router.post("/:id/resend", resendDemandNotice);
+
+export default router;

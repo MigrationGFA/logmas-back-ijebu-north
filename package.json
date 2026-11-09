@@ -1,1 +1,61 @@
-ewogICJuYW1lIjogImxvZ21hcy1iYWNrZW5kIiwKICAidmVyc2lvbiI6ICIxLjAuMCIsCiAgImRlc2NyaXB0aW9uIjogIkxvY2FsIEdvdmVybm1lbnQgTWFuYWdlbWVudCAmIEF1dG9tYXRpb24gU3lzdGVtIEJhY2tlbmQiLAogICJtYWluIjogInNyYy9zZXJ2ZXIudHMiLAogICJ0eXBlIjogImNvbW1vbmpzIiwKICAic2NyaXB0cyI6IHsKICAgICJidWlsZCI6ICJ0c2MiLAogICAgInN0YXJ0IjogIm5vZGUgZGlzdC9zZXJ2ZXIuanMiLAogICAgImRldiI6ICJ0cy1ub2RlLWRldiAtLXJlc3Bhd24gLS10cmFuc3BpbGUtb25seSBzcmMvc2VydmVyLnRzIiwKICAgICJwcmlzbWE6bWlncmF0ZSI6ICJucHggcHJpc21hIG1pZ3JhdGUgZGV2IiwKICAgICJwcmlzbWE6ZGVwbG95IjogIm5weCBwcmlzbWEgbWlncmF0ZSBkZXBsb3kiLAogICAgInByaXNtYTpnZW5lcmF0ZSI6ICJucHggcHJpc21hIGdlbmVyYXRlIiwKICAgICJ0ZXN0OmF3YWl0aW5nLWZvcm0iOiAidHMtbm9kZSBzcmMvc2NyaXB0cy9jcmVhdGUtYXdhaXRpbmctZm9ybS10ZXN0LnRzIgogIH0sCiAgInByaXNtYSI6IHsKICAgICJzZWVkIjogInRzLW5vZGUgcHJpc21hL3NlZWQudHMiCiAgfSwKICAia2V5d29yZHMiOiBbXSwKICAiYXV0aG9yIjogIiIsCiAgImxpY2Vuc2UiOiAiSVNDIiwKICAiZGVwZW5kZW5jaWVzIjogewogICAgIkBwcmlzbWEvYWRhcHRlci1wZyI6ICJeNy44LjAiLAogICAgIkBwcmlzbWEvY2xpZW50IjogIl43LjguMCIsCiAgICAiQHR5cGVzL3N3YWdnZXItdWktZXhwcmVzcyI6ICJeNC4xLjgiLAogICAgImJjcnlwdGpzIjogIl4zLjAuMyIsCiAgICAiY29ycyI6ICJeMi44LjYiLAogICAgImRvdGVudiI6ICJeMTcuNC4yIiwKICAgICJleHByZXNzIjogIl41LjIuMSIsCiAgICAiZXhwcmVzcy1yYXRlLWxpbWl0IjogIl44LjYuMCIsCiAgICAiZ29vZ2xlLWF1dGgtbGlicmFyeSI6ICJeMTAuNi4yIiwKICAgICJoZWxtZXQiOiAiXjguMi4wIiwKICAgICJqc29ud2VidG9rZW4iOiAiXjkuMC4zIiwKICAgICJtb3JnYW4iOiAiXjEuMTAuMSIsCiAgICAibXVsdGVyIjogIl4yLjEuMSIsCiAgICAibm9kZW1haWxlciI6ICJeOS4wLjMiLAogICAgInBnIjogIl44LjIxLjAiLAogICAgInN3YWdnZXItanNkb2MiOiAiXjYuMy4wIiwKICAgICJzd2FnZ2VyLXVpLWV4cHJlc3MiOiAiXjUuMC4xIiwKICAgICJ6b2QiOiAiXjQuNC4zIiwKICAgICJjb21wcmVzc2lvbiI6ICJeMS44LjIiCiAgfSwKICAiZGV2RGVwZW5kZW5jaWVzIjogewogICAgIkB0eXBlcy9iY3J5cHRqcyI6ICJeMi40LjYiLAogICAgIkB0eXBlcy9jb3JzIjogIl4yLjguMTkiLAogICAgIkB0eXBlcy9leHByZXNzIjogIl41LjAuNiIsCiAgICAiQHR5cGVzL2pzb253ZWJ0b2tlbiI6ICJeOS4wLjEwIiwKICAgICJAdHlwZXMvbW9yZ2FuIjogIl4xLjkuMTAiLAogICAgIkB0eXBlcy9tdWx0ZXIiOiAiXjIuMS4wIiwKICAgICJAdHlwZXMvbm9kZSI6ICJeMjUuOS41IiwKICAgICJAdHlwZXMvbm9kZW1haWxlciI6ICJeOC4wLjEiLAogICAgIkB0eXBlcy9wZyI6ICJeOC4yMC4wIiwKICAgICJAdHlwZXMvc3dhZ2dlci1qc2RvYyI6ICJeNi4wLjQiLAogICAgInByaXNtYSI6ICJeNy44LjAiLAogICAgInRzLW5vZGUiOiAiXjEwLjkuMiIsCiAgICAidHMtbm9kZS1kZXYiOiAiXjIuMC4wIiwKICAgICJ0c3giOiAiXjQuMjMuMTMiLAogICAgInR5cGVzY3JpcHQiOiAiXjYuMC4zIiwKICAgICJAdHlwZXMvY29tcHJlc3Npb24iOiAiXjEuOC4xIgogIH0KfQo=
+{
+  "name": "logmas-backend",
+  "version": "1.0.0",
+  "description": "Local Government Management & Automation System Backend",
+  "main": "src/server.ts",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:deploy": "npx prisma migrate deploy",
+    "prisma:generate": "npx prisma generate",
+    "test:awaiting-form": "ts-node src/scripts/create-awaiting-form-test.ts"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@types/swagger-ui-express": "^4.1.8",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.6.0",
+    "google-auth-library": "^10.6.2",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.10.1",
+    "multer": "^2.1.1",
+    "nodemailer": "^9.0.3",
+    "pg": "^8.21.0",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1",
+    "zod": "^4.4.3",
+    "compression": "^1.8.2"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^25.9.5",
+    "@types/nodemailer": "^8.0.1",
+    "@types/pg": "^8.20.0",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "prisma": "^7.8.0",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.23.13",
+    "typescript": "^6.0.3",
+    "@types/compression": "^1.8.1"
+  }
+}

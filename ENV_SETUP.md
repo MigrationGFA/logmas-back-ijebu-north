@@ -1,1 +1,82 @@
-IyBMT0dNQVMgQmFja2VuZDogRW52aXJvbm1lbnQgVmFyaWFibGVzCgpUaGlzIGJhY2tlbmQgaXMgaG9zdGVkIG9uICoqY1BhbmVsKiogKE5vZGUuanMgYXBwKS4gU2V0IHRoZXNlIHZhcmlhYmxlcyBpbgpjUGFuZWwgdW5kZXIgKipTb2Z0d2FyZSA+IFNldHVwIE5vZGUuanMgQXBwID4gRW52aXJvbm1lbnQgVmFyaWFibGVzKiogKG9yIGluIGEKYC5lbnZgIGZpbGUgaW4gdGhlIGFwcGxpY2F0aW9uIHJvb3QpLCB0aGVuICoqcmVzdGFydCB0aGUgYXBwKiogc28gaXQgcGlja3MKdGhlbSB1cC4gYFBPUlRgIGlzIGFzc2lnbmVkIGJ5IGNQYW5lbC9QYXNzZW5nZXIgYXV0b21hdGljYWxseTsgZG8gbm90IHNldCBpdC4KClRoaXMgZmlsZSBsaXN0cyB2YXJpYWJsZSBOQU1FUyBhbmQgd2hhdCB0aGV5IGFyZSBmb3Igb25seS4gTmV2ZXIgY29tbWl0IHJlYWwKc2VjcmV0IHZhbHVlcyB0byB0aGlzIHJlcG9zaXRvcnkuCgojIyBOZXcgb3IgbmV3bHkgaW1wb3J0YW50IHdpdGggdGhlIE5vdiA1LCAyMDI2IElmbyBwb3J0Cgp8IFZhcmlhYmxlIHwgTm90ZXMgfAp8IC0tLSB8IC0tLSB8CnwgYEdQQVlfU0VDUkVUX0tFWWAgfCAqKlJlcXVpcmVkLioqIFRoZSB0cmVhc3VyZXIgR1BheSBNb25pdG9yaW5nIEh1YiBjYWxscyBmYWlsIHdpdGhvdXQgaXQuIEEgaGFyZGNvZGVkIGZhbGxiYWNrIHRoYXQgZXhpc3RlZCBpbiB0aGUgSWZvIGNvZGUgd2FzIGRlbGliZXJhdGVseSByZW1vdmVkIGZyb20gdGhpcyBwb3J0OyB0aGUga2V5IG11c3QgY29tZSBmcm9tIGhlcmUuIHwKfCBgU1RBVFVUT1JZX0FDQ09VTlRfTlVNQkVSYCB8ICoqUmVxdWlyZWQgZm9yIGRlbWFuZCBub3RpY2VzLioqIFByaW50ZWQgb24gZGVtYW5kIG5vdGljZXMgYW5kIHVzZWQgYXMgdGhlIHN0YXR1dG9yeSByZXZlbnVlIGFjY291bnQgZmFsbGJhY2suIFRoaXMgTEdBJ3Mgb3duIFByb3ZpZHVzIGFjY291bnQgbnVtYmVyLiB8CnwgYFNUQVRVVE9SWV9BQ0NPVU5UX05BTUVgIHwgQWNjb3VudCBuYW1lIG1hdGNoaW5nIHRoZSBudW1iZXIgYWJvdmUuIHwKfCBgU1RBVFVUT1JZX0JBTktfTkFNRWAgfCBPcHRpb25hbC4gRGVmYXVsdHMgdG8gUHJvdmlkdXMgQmFuayBQbGMuIHwKfCBgU1RBVFVUT1JZX0JBTktfQ09ERWAgfCBPcHRpb25hbC4gRGVmYXVsdHMgdG8gMDAwMDIzLiB8CnwgYEFQUF9VUkxgIHwgUHVibGljIFVSTCBvZiB0aGlzIHBsYXRmb3JtLCB1c2VkIGluIGRlbWFuZCBub3RpY2UgZW1haWwgbGlua3MuIEZhbGxzIGJhY2sgdG8gYEdQQVlfUkVUVVJOX1VSTGAgd2hlbiB1bnNldC4gfAoKIyMgQ29yZQoKfCBWYXJpYWJsZSB8IE5vdGVzIHwKfCAtLS0gfCAtLS0gfAp8IGBEQVRBQkFTRV9VUkxgIHwgUG9zdGdyZVNRTCBjb25uZWN0aW9uIHN0cmluZyBmb3IgdGhpcyBMR0EncyBkYXRhYmFzZS4gfAp8IGBKV1RfU0VDUkVUYCB8IFNpZ25zIGFjY2VzcyB0b2tlbnMgKDEgZGF5KS4gfAp8IGBKV1RfUkVGUkVTSF9TRUNSRVRgIHwgU2lnbnMgcmVmcmVzaCB0b2tlbnMgKDcgZGF5cykuIHwKfCBgTk9ERV9FTlZgIHwgU2V0IHRvIGBwcm9kdWN0aW9uYCBvbiB0aGUgc2VydmVyLiB8CgojIyBQbGF0Zm9ybSBVUkxzCgp8IFZhcmlhYmxlIHwgTm90ZXMgfAp8IC0tLSB8IC0tLSB8CnwgYEZST05URU5EX1VSTGAgfCBQdWJsaWMgVVJMIG9mIHRoZSBWZXJjZWwgZnJvbnRlbmQgKENPUlMgYW5kIGxpbmtzKS4gfAp8IGBCQUNLRU5EX1VSTGAgfCBQdWJsaWMgVVJMIG9mIHRoaXMgQVBJIG9uIGNQYW5lbC4gfAp8IGBBUElfQkFTRV9VUkxgIHwgQVBJIGJhc2UgdXNlZCBpbiBnZW5lcmF0ZWQgbGlua3MsIGVuZHMgd2l0aCBgL2FwaS92MWAuIHwKCiMjIFRoaXMgTEdBJ3MgaWRlbnRpdHkKCnwgVmFyaWFibGUgfCBWYWx1ZSBmb3IgdGhpcyBwbGF0Zm9ybSB8CnwgLS0tIHwgLS0tIHwKfCBgTEdBX0lEYCB8IGBpamVidS1ub3J0aC1lYXN0YCB8CnwgYExHQV9OQU1FYCB8IGBJamVidSBOb3J0aCBFYXN0YCB8CnwgYExHQV9GVUxMX05BTUVgIHwgVGhpcyBMR0EncyBmdWxsIG9mZmljaWFsIG5hbWUgfAp8IGBMR0FfU0hPUlRfQ09ERWAgfCBgSU5FYCB8CnwgYExHQV9BQ0NPVU5UX1BSRUZJWGAgfCBgSUpFQlVOT1JUSEVBU1RgIHwKCiMjIEdQYXkgZ2F0ZXdheQoKfCBWYXJpYWJsZSB8IE5vdGVzIHwKfCAtLS0gfCAtLS0gfAp8IGBHUEFZX0FQSV9LRVlgIHwgR2F0ZXdheSBBUEkga2V5LiB8CnwgYEdQQVlfU0VDUkVUX0tFWWAgfCBTZWUgdGhlIE5vdiA1IHNlY3Rpb24gYWJvdmUuIHwKfCBgR1BBWV9BVVRIX1NFQ1JFVGAgfCBHYXRld2F5IGF1dGggc2VjcmV0LiB8CnwgYEdQQVlfV0VCSE9PS19TRUNSRVRgIHwgVmVyaWZpZXMgd2ViaG9vayBzaWduYXR1cmVzLiB8CnwgYEdQQVlfV0VCSE9PS19VUkxgIHwgUHVibGljIHdlYmhvb2sgZW5kcG9pbnQgZm9yIHRoaXMgQVBJLiB8CnwgYEdQQVlfUkVUVVJOX1VSTGAgfCBXaGVyZSBwYXllcnMgbGFuZCBhZnRlciBjaGVja291dC4gfAp8IGBHUEFZX0JBU0VfVVJMYCB8IE9wdGlvbmFsLiBEZWZhdWx0cyB0byBodHRwczovL2dwYXkuZ2ZhLXRlY2guY29tL2FwaS92MSB8CnwgYEdQQVlfVElNRU9VVF9NU2AgfCBPcHRpb25hbCBnYXRld2F5IHRpbWVvdXQuIHwKfCBgR1BBWV9VU0VfRElSRUNUX0NIRUNLT1VUYCB8IE9wdGlvbmFsIGNoZWNrb3V0IG1vZGUgZmxhZy4gfAp8IGBHUEFZX0RZTkFNSUNfQUNDT1VOVF9FWFBJUllfTUlOVVRFU2AgfCBMZWdhY3kuIFRoZSBkeW5hbWljIGFjY291bnQgZmxvdyB3YXMgcmVtb3ZlZCBpbiB0aGUgTm92IDUgcG9ydDsgaGFybWxlc3MgaWYgbGVmdCBzZXQuIHwKCiMjIFBheXN0YWNrCgp8IFZhcmlhYmxlIHwgTm90ZXMgfAp8IC0tLSB8IC0tLSB8CnwgYFBBWVNUQUNLX1NFQ1JFVF9LRVlgIHwgUGF5c3RhY2sgc2VjcmV0IGtleSBmb3IgY2FyZCBwYXltZW50cy4gfAp8IGBQQVlTVEFDS19DQUxMQkFDS19VUkxgIHwgUGF5bWVudCBjb21wbGV0aW9uIGNhbGxiYWNrIFVSTC4gfAoKIyMgRW1haWwgKFNNVFApIGFuZCBTTVMKCnwgVmFyaWFibGUgfCBOb3RlcyB8CnwgLS0tIHwgLS0tIHwKfCBgU01UUF9IT1NUYCwgYFNNVFBfUE9SVGAsIGBTTVRQX1VTRVJgLCBgU01UUF9QQVNTYCwgYFNNVFBfRlJPTV9OQU1FYCB8IE1haWxlciB1c2VkIGZvciByZWNlaXB0cywgZGVtYW5kIG5vdGljZXMgYW5kIG5vdGlmaWNhdGlvbnMuIHwKfCBgVEVSTUlJX0FQSV9LRVlgLCBgVEVSTUlJX1NFTkRFUl9JRGAgfCBTTVMgc2VuZGluZyB2aWEgVGVybWlpLiB8CnwgYFRFUk1JSV9CQVNFX1VSTGAsIGBURVJNSUlfQ0hBTk5FTGAgfCBPcHRpb25hbCBUZXJtaWkgb3ZlcnJpZGVzLiB8CnwgYEdPT0dMRV9DTElFTlRfSURgIHwgR29vZ2xlIHNpZ24taW4gY2xpZW50IGlkOyBtdXN0IG1hdGNoIHRoZSBmcm9udGVuZCdzIGBORVhUX1BVQkxJQ19HT09HTEVfQ0xJRU5UX0lEYCBwcm9qZWN0LiB8CgojIyBUZXN0IG9ubHkgKGxlYXZlIHVuc2V0IGluIHByb2R1Y3Rpb24pCgpgTk9USUZJQ0FUSU9OX1RFU1RfTU9ERWAsIGBURVNUX1JFQ0lQSUVOVF9FTUFJTGAsIGBURVNUX1JFQ0lQSUVOVF9QSE9ORWAK
+# LOGMAS Backend: Environment Variables
+
+This backend is hosted on **cPanel** (Node.js app). Set these variables in
+cPanel under **Software > Setup Node.js App > Environment Variables** (or in a
+`.env` file in the application root), then **restart the app** so it picks
+them up. `PORT` is assigned by cPanel/Passenger automatically; do not set it.
+
+This file lists variable NAMES and what they are for only. Never commit real
+secret values to this repository.
+
+## New or newly important with the Nov 5, 2026 Ifo port
+
+| Variable | Notes |
+| --- | --- |
+| `GPAY_SECRET_KEY` | **Required.** The treasurer GPay Monitoring Hub calls fail without it. A hardcoded fallback that existed in the Ifo code was deliberately removed from this port; the key must come from here. |
+| `STATUTORY_ACCOUNT_NUMBER` | **Required for demand notices.** Printed on demand notices and used as the statutory revenue account fallback. This LGA's own Providus account number. |
+| `STATUTORY_ACCOUNT_NAME` | Account name matching the number above. |
+| `STATUTORY_BANK_NAME` | Optional. Defaults to Providus Bank Plc. |
+| `STATUTORY_BANK_CODE` | Optional. Defaults to 000023. |
+| `APP_URL` | Public URL of this platform, used in demand notice email links. Falls back to `GPAY_RETURN_URL` when unset. |
+
+## Core
+
+| Variable | Notes |
+| --- | --- |
+| `DATABASE_URL` | PostgreSQL connection string for this LGA's database. |
+| `JWT_SECRET` | Signs access tokens (1 day). |
+| `JWT_REFRESH_SECRET` | Signs refresh tokens (7 days). |
+| `NODE_ENV` | Set to `production` on the server. |
+
+## Platform URLs
+
+| Variable | Notes |
+| --- | --- |
+| `FRONTEND_URL` | Public URL of the Vercel frontend (CORS and links). |
+| `BACKEND_URL` | Public URL of this API on cPanel. |
+| `API_BASE_URL` | API base used in generated links, ends with `/api/v1`. |
+
+## This LGA's identity
+
+| Variable | Value for this platform |
+| --- | --- |
+| `LGA_ID` | `ijebu-north-east` |
+| `LGA_NAME` | `Ijebu North East` |
+| `LGA_FULL_NAME` | This LGA's full official name |
+| `LGA_SHORT_CODE` | `INE` |
+| `LGA_ACCOUNT_PREFIX` | `IJEBUNORTHEAST` |
+
+## GPay gateway
+
+| Variable | Notes |
+| --- | --- |
+| `GPAY_API_KEY` | Gateway API key. |
+| `GPAY_SECRET_KEY` | See the Nov 5 section above. |
+| `GPAY_AUTH_SECRET` | Gateway auth secret. |
+| `GPAY_WEBHOOK_SECRET` | Verifies webhook signatures. |
+| `GPAY_WEBHOOK_URL` | Public webhook endpoint for this API. |
+| `GPAY_RETURN_URL` | Where payers land after checkout. |
+| `GPAY_BASE_URL` | Optional. Defaults to https://gpay.gfa-tech.com/api/v1 |
+| `GPAY_TIMEOUT_MS` | Optional gateway timeout. |
+| `GPAY_USE_DIRECT_CHECKOUT` | Optional checkout mode flag. |
+| `GPAY_DYNAMIC_ACCOUNT_EXPIRY_MINUTES` | Legacy. The dynamic account flow was removed in the Nov 5 port; harmless if left set. |
+
+## Paystack
+
+| Variable | Notes |
+| --- | --- |
+| `PAYSTACK_SECRET_KEY` | Paystack secret key for card payments. |
+| `PAYSTACK_CALLBACK_URL` | Payment completion callback URL. |
+
+## Email (SMTP) and SMS
+
+| Variable | Notes |
+| --- | --- |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM_NAME` | Mailer used for receipts, demand notices and notifications. |
+| `TERMII_API_KEY`, `TERMII_SENDER_ID` | SMS sending via Termii. |
+| `TERMII_BASE_URL`, `TERMII_CHANNEL` | Optional Termii overrides. |
+| `GOOGLE_CLIENT_ID` | Google sign-in client id; must match the frontend's `NEXT_PUBLIC_GOOGLE_CLIENT_ID` project. |
+
+## Test only (leave unset in production)
+
+`NOTIFICATION_TEST_MODE`, `TEST_RECIPIENT_EMAIL`, `TEST_RECIPIENT_PHONE`

@@ -1,1 +1,736 @@
-aW1wb3J0IHsgSW52b2ljZVN0YXR1cywgUm9sZSwgUHJpc21hLCBQYXltZW50TWV0aG9kIH0gZnJvbSAiQHByaXNtYS9jbGllbnQiOwppbXBvcnQgeyBSZXF1ZXN0LCBSZXNwb25zZSwgTmV4dEZ1bmN0aW9uIH0gZnJvbSAiZXhwcmVzcyI7CmltcG9ydCB7IHByaXNtYSB9IGZyb20gIi4uLy4uL3V0aWxzL3ByaXNtYSI7CmltcG9ydCB7IHNlbmRFcnJvciwgc2VuZFN1Y2Nlc3MgfSBmcm9tICIuLi8uLi91dGlscy9yZXNwb25zZSI7CmltcG9ydCB7CiAgZ2VuZXJhdGVRclRva2VuLAogIGdlbmVyYXRlUmVjZWlwdE51bWJlciwKICBnZW5lcmF0ZVJlZmVyZW5jZSwKICBnZW5lcmF0ZVZlcmlmaWNhdGlvbkNvZGUsCn0gZnJvbSAiLi4vLi4vdXRpbHMvZ2VuZXJhdG9ycyI7CmltcG9ydCB7IGdldElwIH0gZnJvbSAiLi4vY29tcGxhaW50cy9jb21wbGFpbnRzLmNvbnRyb2xsZXIiOwppbXBvcnQgeyBjb25maXJtUGF5bWVudCB9IGZyb20gIi4uL3BheW1lbnQvcGF5bWVudC5zZXJ2aWNlIjsKaW1wb3J0IHsgc2FtZUFtb3VudCwgc2VydmljZUNvZGVzRm9yR3BheSwgU0VSVklDRV9DT0RFX0JZX1NFUlZJQ0UgfSBmcm9tICIuLi9wYXltZW50L2dwYXkuc2VydmljZSI7CgppbnRlcmZhY2UgR2V0SW52b2ljZXNRdWVyeSB7CiAgcm9sZTogUm9sZTsKICB1c2VySWQ6IHN0cmluZzsKICB0YWI/OiBzdHJpbmc7CiAgc2VhcmNoPzogc3RyaW5nOwp9CgpleHBvcnQgY29uc3QgZmV0Y2hJbnZvaWNlc0h1YkRhdGEgPSBhc3luYyAoewogIHJvbGUsCiAgdXNlcklkLAogIHRhYiwKICBzZWFyY2gsCn06IEdldEludm9pY2VzUXVlcnkpID0+IHsKICBjb25zdCB3aGVyZTogUHJpc21hLkludm9pY2VXaGVyZUlucHV0ID0ge307CgogIC8vIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogIC8vIEFjY2VzcyBjb250cm9sCiAgLy8gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiAgaWYgKHJvbGUgPT09IFJvbGUuY2l0aXplbiB8fCByb2xlID09PSBSb2xlLmJ1c2luZXNzX293bmVyKSB7CiAgICB3aGVyZS5hcHBsaWNhdGlvbiA9IHsKICAgICAgYXBwbGljYW50SWQ6IHVzZXJJZCwKICAgIH07CiAgfSBlbHNlIGlmIChyb2xlID09PSBSb2xlLmZpZWxkX29mZmljZXIpIHsKICAgIHdoZXJlLmNyZWF0ZWRCeUlkID0gdXNlcklkOwogIH0KCiAgLy8gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiAgLy8gU2VhcmNoCiAgLy8gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiAgaWYgKHNlYXJjaD8udHJpbSgpKSB7CiAgICBjb25zdCB2YWx1ZSA9IHNlYXJjaC50cmltKCk7CgogICAgd2hlcmUuT1IgPSBbCiAgICAgIHsKICAgICAgICBpbnZvaWNlTnVtYmVyOiB7CiAgICAgICAgICBjb250YWluczogdmFsdWUsCiAgICAgICAgICBtb2RlOiAiaW5zZW5zaXRpdmUiLAogICAgICAgIH0sCiAgICAgIH0sCiAgICAgIHsKICAgICAgICBhcHBsaWNhdGlvbjogewogICAgICAgICAgYXBwbGljYXRpb25OdW1iZXI6IHsKICAgICAgICAgICAgY29udGFpbnM6IHZhbHVlLAogICAgICAgICAgICBtb2RlOiAiaW5zZW5zaXRpdmUiLAogICAgICAgICAgfSwKICAgICAgICB9LAogICAgICB9LAogICAgICB7CiAgICAgICAgYXBwbGljYXRpb246IHsKICAgICAgICAgIHNlcnZpY2U6IHsKICAgICAgICAgICAgbmFtZTogewogICAgICAgICAgICAgIGNvbnRhaW5zOiB2YWx1ZSwKICAgICAgICAgICAgICBtb2RlOiAiaW5zZW5zaXRpdmUiLAogICAgICAgICAgICB9LAogICAgICAgICAgfSwKICAgICAgICB9LAogICAgICB9LAogICAgXTsKICB9CgogIC8vIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogIC8vIFBheW1lbnQgc3RhdHVzIGZpbHRlcgogIC8vIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogIGlmICh0YWIgJiYgdGFiICE9PSAiYWxsIikgewogICAgaWYgKHRhYiA9PT0gInBlbmRpbmciKSB7CiAgICAgIHdoZXJlLnBheW1lbnRTdGF0dXMgPSB7CiAgICAgICAgaW46IFsicGVuZGluZyJdLAogICAgICB9OwogICAgfSBlbHNlIGlmICh0YWIgPT09ICJjb25maXJtZWQiKSB7CiAgICAgIHdoZXJlLnBheW1lbnRTdGF0dXMgPSB7CiAgICAgICAgaW46IFsiY29uZmlybWVkIl0sCiAgICAgIH07CiAgICB9IGVsc2UgewogICAgICB3aGVyZS5wYXltZW50U3RhdHVzID0gImZhaWxlZCI7CiAgICB9CiAgfQoKICAvLyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KICAvLyBGZXRjaCBpbnZvaWNlcwogIC8vIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogIGNvbnN0IGludm9pY2VzID0gYXdhaXQgcHJpc21hLmludm9pY2UuZmluZE1hbnkoewogICAgd2hlcmUsCiAgICBpbmNsdWRlOiB7CiAgICAgIGFwcGxpY2F0aW9uOiB7CiAgICAgICAgc2VsZWN0OiB7CiAgICAgICAgICBpZDogdHJ1ZSwKICAgICAgICAgIGFwcGxpY2F0aW9uTnVtYmVyOiB0cnVlLAogICAgICAgICAgYXBwbGljYW50SWQ6IHRydWUsCiAgICAgICAgICBjcmVhdGVkQXQ6IHRydWUsCiAgICAgICAgICBmb3JtRGF0YTogdHJ1ZSwKICAgICAgICAgIHNlcnZpY2U6IHsKICAgICAgICAgICAgc2VsZWN0OiB7CiAgICAgICAgICAgICAgaWQ6IHRydWUsCiAgICAgICAgICAgICAgY29kZTogdHJ1ZSwKICAgICAgICAgICAgICBuYW1lOiB0cnVlLAogICAgICAgICAgICAgIGNhdGVnb3J5OiB0cnVlLAogICAgICAgICAgICB9LAogICAgICAgICAgfSwKICAgICAgICB9LAogICAgICB9LAoKICAgICAgcGF5bWVudHM6IHsKICAgICAgICBzZWxlY3Q6IHsKICAgICAgICAgIGlkOiB0cnVlLAogICAgICAgICAgYW1vdW50OiB0cnVlLAogICAgICAgICAgc3RhdHVzOiB0cnVlLAogICAgICAgICAgY29uZmlybWVkQXQ6IHRydWUsCiAgICAgICAgfSwKICAgICAgfSwKCiAgICAgIHJlY2VpcHRzOiB7CiAgICAgICAgc2VsZWN0OiB7CiAgICAgICAgICBpZDogdHJ1ZSwKICAgICAgICAgIHJlY2VpcHROdW1iZXI6IHRydWUsCiAgICAgICAgfSwKICAgICAgfSwKICAgIH0sCgogICAgb3JkZXJCeTogewogICAgICBjcmVhdGVkQXQ6ICJkZXNjIiwKICAgIH0sCiAgfSk7CgogIC8vIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogIC8vIFN0YXRpc3RpY3MKICAvLyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KICBjb25zdCB0b3RhbENvbGxlY3RlZCA9IGludm9pY2VzLnJlZHVjZSgoc3VtLCBpbnZvaWNlKSA9PiB7CiAgICBjb25zdCBwYWlkID0gaW52b2ljZS5wYXltZW50cwogICAgICAuZmlsdGVyKChwYXltZW50KSA9PiBwYXltZW50LnN0YXR1cyA9PT0gImNvbmZpcm1lZCIpCiAgICAgIC5yZWR1Y2UoKHBheW1lbnRTdW0sIHBheW1lbnQpID0+IHBheW1lbnRTdW0gKyBOdW1iZXIocGF5bWVudC5hbW91bnQpLCAwKTsKCiAgICByZXR1cm4gc3VtICsgcGFpZDsKICB9LCAwKTsKCiAgY29uc3Qgb3V0c3RhbmRpbmcgPSBpbnZvaWNlcy5yZWR1Y2UoKHN1bSwgaW52b2ljZSkgPT4gewogICAgY29uc3QgcGFpZCA9IGludm9pY2UucGF5bWVudHMKICAgICAgLmZpbHRlcigocGF5bWVudCkgPT4gcGF5bWVudC5zdGF0dXMgPT09ICJjb25maXJtZWQiKQogICAgICAucmVkdWNlKChwYXltZW50U3VtLCBwYXltZW50KSA9PiBwYXltZW50U3VtICsgTnVtYmVyKHBheW1lbnQuYW1vdW50KSwgMCk7CgogICAgcmV0dXJuIHN1bSArIE1hdGgubWF4KE51bWJlcihpbnZvaWNlLmFtb3VudCkgLSBwYWlkLCAwKTsKICB9LCAwKTsKCiAgY29uc3QgdHJhbnNhY3Rpb25zID0gaW52b2ljZXMucmVkdWNlKAogICAgKGNvdW50LCBpbnZvaWNlKSA9PiBjb3VudCArIGludm9pY2UucmVjZWlwdHMubGVuZ3RoLAogICAgMCwKICApOwoKICBjb25zdCBhdmdQYXltZW50ID0KICAgIHRyYW5zYWN0aW9ucyA+IDAgPyBNYXRoLnJvdW5kKHRvdGFsQ29sbGVjdGVkIC8gdHJhbnNhY3Rpb25zKSA6IDA7CgogIC8vIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogIC8vIFJldHVybgogIC8vIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogIHJldHVybiB7CiAgICBzdGF0czogewogICAgICBvdXRzdGFuZGluZywKICAgICAgdG90YWxDb2xsZWN0ZWQsCiAgICAgIHRyYW5zYWN0aW9ucywKICAgICAgYXZnUGF5bWVudCwKICAgIH0sCgogICAgaW52b2ljZXM6IGludm9pY2VzLm1hcCgoaW52b2ljZSkgPT4gewogICAgICBjb25zdCBmb3JtRGF0YSA9CiAgICAgICAgaW52b2ljZS5hcHBsaWNhdGlvbj8uZm9ybURhdGEgJiYKICAgICAgICB0eXBlb2YgaW52b2ljZS5hcHBsaWNhdGlvbi5mb3JtRGF0YSA9PT0gIm9iamVjdCIKICAgICAgICAgID8gKGludm9pY2UuYXBwbGljYXRpb24uZm9ybURhdGEgYXMgUmVjb3JkPHN0cmluZywgYW55PikKICAgICAgICAgIDoge307CgogICAgICBjb25zdCBjdXN0b21lck5hbWUgPQogICAgICAgIGZvcm1EYXRhLmZ1bGxOYW1lIHx8CiAgICAgICAgZm9ybURhdGEuYXBwbGljYW50TmFtZSB8fAogICAgICAgIGZvcm1EYXRhLm93bmVyTmFtZSB8fAogICAgICAgIGZvcm1EYXRhLmJ1c2luZXNzTmFtZSB8fAogICAgICAgIGZvcm1EYXRhLmNvbXBhbnlOYW1lIHx8CiAgICAgICAgbnVsbDsKCiAgICAgIGNvbnN0IGNvbmZpcm1lZFBheW1lbnRzID0gaW52b2ljZS5wYXltZW50cwogICAgICAgIC5maWx0ZXIoKHBheW1lbnQpID0+IHBheW1lbnQuc3RhdHVzID09PSAiY29uZmlybWVkIikKICAgICAgICAuc29ydCgKICAgICAgICAgIChhLCBiKSA9PgogICAgICAgICAgICAoYi5jb25maXJtZWRBdD8uZ2V0VGltZSgpID8/IDApIC0gKGEuY29uZmlybWVkQXQ/LmdldFRpbWUoKSA/PyAwKSwKICAgICAgICApOwoKICAgICAgcmV0dXJuIHsKICAgICAgICBpZDogaW52b2ljZS5pZCwKICAgICAgICByZWZlcmVuY2U6IGludm9pY2UuaW52b2ljZU51bWJlciwKICAgICAgICBhbW91bnQ6IE51bWJlcihpbnZvaWNlLmFtb3VudCksCiAgICAgICAgcGF5bWVudFN0YXR1czogaW52b2ljZS5wYXltZW50U3RhdHVzLAogICAgICAgIGN1c3RvbWVyTmFtZSwKICAgICAgICBwYWlkQXQ6IGludm9pY2UucGFpZEF0ID8/IGNvbmZpcm1lZFBheW1lbnRzWzBdPy5jb25maXJtZWRBdCA/PyBudWxsLAogICAgICAgIGNyZWF0ZWRBdDogaW52b2ljZS5jcmVhdGVkQXQsCiAgICAgICAgZGF0ZU9mQXBwbGljYXRpb246IGludm9pY2UuYXBwbGljYXRpb24/LmNyZWF0ZWRBdCA/PyBudWxsLAoKICAgICAgICBhcHBsaWNhdGlvbjogaW52b2ljZS5hcHBsaWNhdGlvbgogICAgICAgICAgPyB7CiAgICAgICAgICAgICAgaWQ6IGludm9pY2UuYXBwbGljYXRpb24uaWQsCiAgICAgICAgICAgICAgYXBwbGljYXRpb25OdW1iZXI6IGludm9pY2UuYXBwbGljYXRpb24uYXBwbGljYXRpb25OdW1iZXIsCiAgICAgICAgICAgICAgYXBwbGljYW50SWQ6IGludm9pY2UuYXBwbGljYXRpb24uYXBwbGljYW50SWQsCiAgICAgICAgICAgIH0KICAgICAgICAgIDogbnVsbCwKCiAgICAgICAgc2VydmljZTogaW52b2ljZS5hcHBsaWNhdGlvbj8uc2VydmljZQogICAgICAgICAgPyB7CiAgICAgICAgICAgICAgaWQ6IGludm9pY2UuYXBwbGljYXRpb24uc2VydmljZS5pZCwKICAgICAgICAgICAgICBjb2RlOiBpbnZvaWNlLmFwcGxpY2F0aW9uLnNlcnZpY2UuY29kZSwKICAgICAgICAgICAgICBuYW1lOiBpbnZvaWNlLmFwcGxpY2F0aW9uLnNlcnZpY2UubmFtZSwKICAgICAgICAgICAgICBjYXRlZ29yeTogaW52b2ljZS5hcHBsaWNhdGlvbi5zZXJ2aWNlLmNhdGVnb3J5LAogICAgICAgICAgICB9CiAgICAgICAgICA6IG51bGwsCgogICAgICAgIHJlY2VpcHRzOiBpbnZvaWNlLnJlY2VpcHRzLAogICAgICB9OwogICAgfSksCiAgfTsKfTsKCi8qKgogKiBAZGVzYyAgICBHZXQgSW52b2ljZXMgTGVkZ2VyIExpc3QgYW5kIFN0YXRzIE92ZXJ2aWV3IGluIGEgc2luZ2xlIGJhdGNoIHF1ZXJ5CiAqIEByb3V0ZSAgIEdFVCAvYXBpL3YxL2ludm9pY2VzL2h1YgogKiBAYWNjZXNzICBBdXRoZW50aWNhdGVkCiAqLwpleHBvcnQgY29uc3QgZ2V0SW52b2ljZXNIdWJPdmVydmlldyA9IGFzeW5jICgKICByZXE6IFJlcXVlc3QsCiAgcmVzOiBSZXNwb25zZSwKICBuZXh0OiBOZXh0RnVuY3Rpb24sCik6IFByb21pc2U8dm9pZD4gPT4gewogIHRyeSB7CiAgICBjb25zdCB7IGlkOiB1c2VySWQsIHJvbGUgfSA9IChyZXEgYXMgYW55KS51c2VyIGFzIHsKICAgICAgaWQ6IHN0cmluZzsKICAgICAgcm9sZTogUm9sZTsKICAgIH07CiAgICBjb25zdCB7IHRhYiwgc2VhcmNoIH0gPSByZXEucXVlcnkgYXMgeyB0YWI/OiBzdHJpbmc7IHNlYXJjaD86IHN0cmluZyB9OwoKICAgIGNvbnN0IHBheWxvYWQgPSBhd2FpdCBmZXRjaEludm9pY2VzSHViRGF0YSh7CiAgICAgIHJvbGUsCiAgICAgIHVzZXJJZCwKICAgICAgdGFiLAogICAgICBzZWFyY2gsCiAgICB9KTsKCiAgICByZXMuc3RhdHVzKDIwMCkuanNvbih7CiAgICAgIHN1Y2Nlc3M6IHRydWUsCiAgICAgIC4uLnBheWxvYWQsCiAgICB9KTsKICB9IGNhdGNoIChlcnJvcikgewogICAgbmV4dChlcnJvcik7CiAgfQp9OwoKLy8gR0VUIC9hcGkvdjEvaW52b2ljZXMvOmlkCmV4cG9ydCBjb25zdCBnZXRJbnZvaWNlQnlJZCA9IGFzeW5jICgKICByZXE6IFJlcXVlc3QsCiAgcmVzOiBSZXNwb25zZSwKICBuZXh0OiBOZXh0RnVuY3Rpb24sCikgPT4gewogIHRyeSB7CiAgICBjb25zdCB7IGlkIH0gPSByZXEucGFyYW1zOwogICAgY29uc3QgeyBpZDogdXNlcklkLCByb2xlIH0gPSByZXEudXNlciE7CgogICAgLy8gRGVmaW5lIHJvbGVzIHRoYXQgY2FuIHZpZXcgYW55IGludm9pY2UKICAgIGNvbnN0IHByaXZpbGVnZWRSb2xlczogUm9sZVtdID0gWwogICAgICAic3VwZXJfYWRtaW4iLAogICAgICAibGdhX2FkbWluIiwKICAgICAgInN1Yl9hZG1pbiIgYXMgUm9sZSwKICAgICAgImNoYWlybWFuIiwKICAgICAgInRyZWFzdXJlciIsCiAgICAgICJhdWRpdG9yIiwKICAgICAgIndhcmRfY291bmNpbGxvciIsCiAgICAgICJmaWVsZF9vZmZpY2VyIiwKICAgIF07CgogICAgY29uc3QgaXNQcml2aWxlZ2VkID0gcHJpdmlsZWdlZFJvbGVzLmluY2x1ZGVzKHJvbGUpOwoKICAgIC8vIEJ1aWxkIHdoZXJlIGNsYXVzZSBiYXNlZCBvbiByb2xlCiAgICBjb25zdCB3aGVyZUNsYXVzZTogYW55ID0gewogICAgICBpbnZvaWNlTnVtYmVyOiBTdHJpbmcoaWQpLAogICAgfTsKCiAgICAvLyBJZiBub3QgcHJpdmlsZWdlZCwgcmVzdHJpY3QgdG8gb3duIGludm9pY2VzCiAgICBpZiAoIWlzUHJpdmlsZWdlZCkgewogICAgICB3aGVyZUNsYXVzZS5PUiA9IFsKICAgICAgICB7CiAgICAgICAgICBhcHBsaWNhdGlvbjogewogICAgICAgICAgICBhcHBsaWNhbnRJZDogdXNlcklkLAogICAgICAgICAgfSwKICAgICAgICB9LAogICAgICAgIHsKICAgICAgICAgIGNyZWF0ZWRCeUlkOiB1c2VySWQsCiAgICAgICAgfSwKICAgICAgICB7CiAgICAgICAgICBhc3NpZ25lZE9mZmljZXJJZDogdXNlcklkLAogICAgICAgIH0sCiAgICAgICAgewogICAgICAgICAgcGF5bWVudHM6IHsKICAgICAgICAgICAgc29tZTogewogICAgICAgICAgICAgIHBhaWRCeUlkOiB1c2VySWQsCiAgICAgICAgICAgIH0sCiAgICAgICAgICB9LAogICAgICAgIH0sCiAgICAgIF07CiAgICB9CgogICAgY29uc3QgaW52b2ljZSA9IGF3YWl0IHByaXNtYS5pbnZvaWNlLmZpbmRGaXJzdCh7CiAgICAgIHdoZXJlOiB3aGVyZUNsYXVzZSwKICAgICAgaW5jbHVkZTogewogICAgICAgIGFwcGxpY2F0aW9uOiB7CiAgICAgICAgICBzZWxlY3Q6IHsKICAgICAgICAgICAgaWQ6IHRydWUsCiAgICAgICAgICAgIGFwcGxpY2F0aW9uTnVtYmVyOiB0cnVlLAogICAgICAgICAgICBhcHBsaWNhbnRJZDogdHJ1ZSwKICAgICAgICAgICAgc3RhdHVzOiB0cnVlLAogICAgICAgICAgICBmb3JtRGF0YTogdHJ1ZSwKICAgICAgICAgICAgc2VydmljZTogewogICAgICAgICAgICAgIHNlbGVjdDogewogICAgICAgICAgICAgICAgaWQ6IHRydWUsCiAgICAgICAgICAgICAgICBjb2RlOiB0cnVlLAogICAgICAgICAgICAgICAgbmFtZTogdHJ1ZSwKICAgICAgICAgICAgICB9LAogICAgICAgICAgICB9LAogICAgICAgICAgfSwKICAgICAgICB9LAogICAgICAgIHBheW1lbnRzOiB7CiAgICAgICAgICBvcmRlckJ5OiB7CiAgICAgICAgICAgIGNyZWF0ZWRBdDogImRlc2MiLAogICAgICAgICAgfSwKICAgICAgICAgIHNlbGVjdDogewogICAgICAgICAgICBpZDogdHJ1ZSwKICAgICAgICAgICAgYW1vdW50OiB0cnVlLAogICAgICAgICAgICBtZXRob2Q6IHRydWUsCiAgICAgICAgICAgIHN0YXR1czogdHJ1ZSwKICAgICAgICAgICAgbWF0Y2hTdGF0dXM6IHRydWUsCiAgICAgICAgICAgIHBheWVyTmFtZTogdHJ1ZSwKICAgICAgICAgICAgcmVmZXJlbmNlOiB0cnVlLAogICAgICAgICAgICBnYXRld2F5UmVmOiB0cnVlLAogICAgICAgICAgICBuYXJyYXRpb246IHRydWUsCiAgICAgICAgICAgIGNvbmZpcm1lZEF0OiB0cnVlLAogICAgICAgICAgICBjcmVhdGVkQXQ6IHRydWUsCiAgICAgICAgICAgIHBhaWRCeUlkOiB0cnVlLAogICAgICAgICAgICBwcm9vZlVybDogdHJ1ZSwKICAgICAgICAgICAgcHJvb2ZVcGxvYWRlZEJ5SWQ6IHRydWUsCiAgICAgICAgICAgIHByb29mVXBsb2FkZWRBdDogdHJ1ZSwKICAgICAgICAgIH0sCiAgICAgICAgfSwKICAgICAgICByZWNlaXB0czogewogICAgICAgICAgb3JkZXJCeTogewogICAgICAgICAgICBpc3N1ZWRBdDogImRlc2MiLAogICAgICAgICAgfSwKICAgICAgICAgIHNlbGVjdDogewogICAgICAgICAgICBpZDogdHJ1ZSwKICAgICAgICAgICAgcmVjZWlwdE51bWJlcjogdHJ1ZSwKICAgICAgICAgICAgdmVyaWZpY2F0aW9uQ29kZTogdHJ1ZSwKICAgICAgICAgICAgcXJUb2tlbjogdHJ1ZSwKICAgICAgICAgICAgYW1vdW50UGFpZDogdHJ1ZSwKICAgICAgICAgICAgcGRmVXJsOiB0cnVlLAogICAgICAgICAgICBpc3N1ZWRBdDogdHJ1ZSwKICAgICAgICAgICAgaXNzdWVkQnlJZDogdHJ1ZSwKICAgICAgICAgIH0sCiAgICAgICAgfSwKICAgICAgICBjcmVhdGVkQnk6IHsKICAgICAgICAgIHNlbGVjdDogewogICAgICAgICAgICBpZDogdHJ1ZSwKICAgICAgICAgICAgZW1haWw6IHRydWUsCiAgICAgICAgICAgIGZpcnN0TmFtZTogdHJ1ZSwKICAgICAgICAgICAgbGFzdE5hbWU6IHRydWUsCiAgICAgICAgICB9LAogICAgICAgIH0sCiAgICAgICAgc2VydmljZTogewogICAgICAgICAgc2VsZWN0OiB7CiAgICAgICAgICAgIGlkOiB0cnVlLAogICAgICAgICAgICBjb2RlOiB0cnVlLAogICAgICAgICAgICBuYW1lOiB0cnVlLAogICAgICAgICAgICBkZXNjcmlwdGlvbjogdHJ1ZSwKICAgICAgICAgIH0sCiAgICAgICAgfSwKICAgICAgfSwKICAgIH0pOwoKICAgIGlmICghaW52b2ljZSkgewogICAgICByZXR1cm4gc2VuZEVycm9yKAogICAgICAgIHJlcywKICAgICAgICAiSW52b2ljZSBub3QgZm91bmQgb3IgeW91IGRvbid0IGhhdmUgcGVybWlzc2lvbiB0byB2aWV3IGl0IiwKICAgICAgICAiTk9UX0ZPVU5EIiwKICAgICAgICBudWxsLAogICAgICAgIDQwNCwKICAgICAgKTsKICAgIH0KCiAgICBpZiAoIWlzUHJpdmlsZWdlZCAmJiAocm9sZSA9PT0gImJ1c2luZXNzX293bmVyIiB8fCByb2xlID09PSAiY2l0aXplbiIpKSB7CiAgICAgIGNvbnN0IGlzT3duZXIgPQogICAgICAgIGludm9pY2UuYXBwbGljYXRpb24/LmFwcGxpY2FudElkID09PSB1c2VySWQgfHwKICAgICAgICBpbnZvaWNlLmNyZWF0ZWRCeUlkID09PSB1c2VySWQgfHwKICAgICAgICBpbnZvaWNlLmFzc2lnbmVkT2ZmaWNlcklkID09PSB1c2VySWQgfHwKICAgICAgICBpbnZvaWNlLnBheW1lbnRzLnNvbWUoKHBheW1lbnQpID0+IHBheW1lbnQucGFpZEJ5SWQgPT09IHVzZXJJZCk7CgogICAgICBpZiAoIWlzT3duZXIpIHsKICAgICAgICByZXR1cm4gc2VuZEVycm9yKAogICAgICAgICAgcmVzLAogICAgICAgICAgIllvdSBkb24ndCBoYXZlIHBlcm1pc3Npb24gdG8gdmlldyB0aGlzIGludm9pY2UiLAogICAgICAgICAgIkZPUkJJRERFTiIsCiAgICAgICAgICBudWxsLAogICAgICAgICAgNDAzLAogICAgICAgICk7CiAgICAgIH0KICAgIH0KCiAgICByZXR1cm4gc2VuZFN1Y2Nlc3MocmVzLCBpbnZvaWNlKTsKICB9IGNhdGNoIChlcnIpIHsKICAgIG5leHQoZXJyKTsKICB9Cn07CgovLyBQT1NUIC9hcGkvdjEvaW52b2ljZXMvOmlkL3BheQpleHBvcnQgY29uc3QgcmVjb3JkSW52b2ljZVBheW1lbnQgPSBhc3luYyAoCiAgcmVxOiBSZXF1ZXN0LAogIHJlczogUmVzcG9uc2UsCiAgbmV4dDogTmV4dEZ1bmN0aW9uLAopID0+IHsKICB0cnkgewogICAgY29uc3QgeyBpZCB9ID0gcmVxLnBhcmFtczsKICAgIGNvbnN0IHVzZXJJZCA9IHJlcS51c2VyIS5pZDsKICAgIGNvbnN0IHJvbGUgPSByZXEudXNlciEucm9sZTsKICAgIGNvbnN0IHsgbWV0aG9kLCBhbW91bnQsIHJlZmVyZW5jZSwgbmFycmF0aW9uIH0gPSByZXEuYm9keTsKCiAgICBjb25zdCBpbnZvaWNlID0gYXdhaXQgcHJpc21hLmludm9pY2UuZmluZFVuaXF1ZSh7CiAgICAgIHdoZXJlOiB7IGludm9pY2VOdW1iZXI6IFN0cmluZyhpZCkgfSwKICAgIH0pOwogICAgaWYgKCFpbnZvaWNlKQogICAgICByZXR1cm4gc2VuZEVycm9yKHJlcywgIkludm9pY2Ugbm90IGZvdW5kIiwgIk5PVF9GT1VORCIsIG51bGwsIDQwNCk7CgogICAgaWYgKFsicGFpZCIsICJjYW5jZWxsZWQiXS5pbmNsdWRlcyhpbnZvaWNlLnBheW1lbnRTdGF0dXMpKSB7CiAgICAgIHJldHVybiBzZW5kRXJyb3IoCiAgICAgICAgcmVzLAogICAgICAgICJJbnZvaWNlIGlzIGFscmVhZHkgcGFpZCBvciBjYW5jZWxsZWQiLAogICAgICAgICJCQURfUkVRVUVTVCIsCiAgICAgICAgbnVsbCwKICAgICAgICA0MDAsCiAgICAgICk7CiAgICB9CgogICAgaWYgKCFbImZpZWxkX29mZmljZXIiLCAibGdhX2FkbWluIiwgInN1cGVyX2FkbWluIiwgInN1Yl9hZG1pbiJdLmluY2x1ZGVzKHJvbGUpKSB7CiAgICAgIHJldHVybiBzZW5kRXJyb3IoCiAgICAgICAgcmVzLAogICAgICAgICJPbmx5IGZpZWxkIG9mZmljZXJzIGNhbiByZWNvcmQgY2FzaCBvciBQT1MgcGF5bWVudHMiLAogICAgICAgICJGT1JCSURERU4iLAogICAgICAgIG51bGwsCiAgICAgICAgNDAzLAogICAgICApOwogICAgfQoKICAgIGNvbnN0IHBheW1lbnRBbW91bnQgPSBOdW1iZXIoYW1vdW50KTsKCiAgICBjb25zdCByZXN1bHQgPSBhd2FpdCBjb25maXJtUGF5bWVudCh7CiAgICAgIGludm9pY2VJZDogaW52b2ljZS5pZCwKICAgICAgYW1vdW50OiBwYXltZW50QW1vdW50LAogICAgICBtZXRob2QsCiAgICAgIHJlZmVyZW5jZSwKICAgICAgbmFycmF0aW9uLAogICAgICBwYWlkQnlJZDogaW52b2ljZS5jcmVhdGVkQnlJZCwKICAgICAgY29uZmlybWVkQnlJZDogdXNlcklkLAogICAgfSk7CgogICAgYXdhaXQgcHJpc21hLmF1ZGl0TG9nLmNyZWF0ZSh7CiAgICAgIGRhdGE6IHsKICAgICAgICBhY3Rpb246ICJwYXltZW50X2NvbmZpcm1lZCIsCiAgICAgICAgZW50aXR5OiAiUGF5bWVudCIsCiAgICAgICAgZW50aXR5SWQ6IHJlc3VsdC5wYXltZW50LmlkLAogICAgICAgIHVzZXI6IHsgY29ubmVjdDogeyBpZDogdXNlcklkIH0gfSwKICAgICAgICBkZXRhaWxzOiB7CiAgICAgICAgICBpbnZvaWNlSWQ6IGlkLAogICAgICAgICAgYW1vdW50OiBwYXltZW50QW1vdW50LAogICAgICAgICAgbWV0aG9kLAogICAgICAgICAgaXNGdWxsUGF5bWVudDogcmVzdWx0LmlzRnVsbFBheW1lbnQsCiAgICAgICAgfSwKICAgICAgICBpcEFkZHJlc3M6IGdldElwKHJlcSksCiAgICAgIH0sCiAgICB9KTsKCiAgICByZXR1cm4gc2VuZFN1Y2Nlc3MoCiAgICAgIHJlcywKICAgICAgewogICAgICAgIHBheW1lbnQ6IHJlc3VsdC5wYXltZW50LAogICAgICAgIGludm9pY2U6IHJlc3VsdC5pbnZvaWNlLAogICAgICAgIHJlY2VpcHQ6IHJlc3VsdC5yZWNlaXB0LAogICAgICAgIGlzRnVsbFBheW1lbnQ6IHJlc3VsdC5pc0Z1bGxQYXltZW50LAogICAgICAgIG1lc3NhZ2U6IHJlc3VsdC5pc0Z1bGxQYXltZW50CiAgICAgICAgICA/ICJQYXltZW50IGNvbmZpcm1lZC4gUmVjZWlwdCBnZW5lcmF0ZWQuIgogICAgICAgICAgOiBgUGFydGlhbCBwYXltZW50IHJlY29yZGVkLiBCYWxhbmNlIGR1ZTog4oKmJHtOdW1iZXIocmVzdWx0Lmludm9pY2UuYmFsYW5jZUR1ZSl9YCwKICAgICAgfSwKICAgICAgcmVzdWx0LmlzRnVsbFBheW1lbnQgPyAiUGF5bWVudCBjb21wbGV0ZSIgOiAiUGFydGlhbCBwYXltZW50IHJlY29yZGVkIiwKICAgICk7CiAgfSBjYXRjaCAoZXJyKSB7CiAgICBuZXh0KGVycik7CiAgfQp9OwoKLy8gUE9TVCAvYXBpL3YxL2ludm9pY2VzLzppbnZvaWNlTnVtYmVyL3BheW1lbnQtcHJvb2YKLy8KLy8gQ2hhbm5lbCAxICgiSSBIYXZlIFBhaWQiICsgT3B0aW9uYWwgUHJvb2YgVXBsb2FkKToKLy8gQ2l0aXplbiAob3Igc3RhZmYgb24gdGhlaXIgYmVoYWxmKSBub3RpZmllcyB0aGUgc3lzdGVtIHRoYXQgYSBiYW5rIHRyYW5zZmVyCi8vIHRvIHRoZSBEZWRpY2F0ZWQgUHJvdmlkdXMgU3RhdGljIFZpcnR1YWwgQWNjb3VudCBoYXMgYmVlbiBjb21wbGV0ZWQsIHdpdGgKLy8gYW4gb3B0aW9uYWwgcHJvb2Ygb2YgcGF5bWVudCBmaWxlLgovLyAxLiBQbGFjZXMgdGhlIGFwcGxpY2F0aW9uICYgcGF5bWVudCBpbnRvICJQYXltZW50IFZlcmlmaWNhdGlvbiBpbiBQcm9ncmVzcyIKLy8gICAgKGF3YWl0aW5nX3BheW1lbnRfY29uZmlybWF0aW9uIC8gbWF0Y2hTdGF0dXM6ICJhd2FpdGluZ192ZXJpZmljYXRpb24iKS4KLy8gMi4gQ2hlY2tzIGlmIGEgbWF0Y2hpbmcgUHJvdmlkdXMgd2ViaG9vayBzZXR0bGVtZW50IGFscmVhZHkgYXJyaXZlZCBmb3IKLy8gICAgdGhpcyBTZXJ2aWNlIEFjY291bnQgKyBFeGFjdCBBbW91bnQg4oCUIGlmIHNvLCBjb25maXJtcyBpbW1lZGlhdGVseSBhbmQKLy8gICAgaXNzdWVzIHRoZSBPZmZpY2lhbCBSZWNlaXB0IHdpdGhvdXQgd2FpdGluZyBmb3IgdGhlIFRyZWFzdXJlciEKZXhwb3J0IGNvbnN0IHVwbG9hZEludm9pY2VQYXltZW50UHJvb2YgPSBhc3luYyAoCiAgcmVxOiBSZXF1ZXN0LAogIHJlczogUmVzcG9uc2UsCiAgbmV4dDogTmV4dEZ1bmN0aW9uLAopID0+IHsKICB0cnkgewogICAgY29uc3QgdXBsb2FkZXJJZCA9IHJlcS51c2VyIS5pZDsKICAgIGNvbnN0IHsgcm9sZSB9ID0gcmVxLnVzZXIhOwogICAgY29uc3QgaW52b2ljZU51bWJlciA9IFN0cmluZygKICAgICAgQXJyYXkuaXNBcnJheShyZXEucGFyYW1zLmludm9pY2VOdW1iZXIpCiAgICAgICAgPyByZXEucGFyYW1zLmludm9pY2VOdW1iZXJbMF0KICAgICAgICA6IHJlcS5wYXJhbXMuaW52b2ljZU51bWJlciwKICAgICk7CgogICAgY29uc3QgZmlsZSA9IChyZXEgYXMgYW55KS5maWxlIGFzCiAgICAgIHwgeyBvcmlnaW5hbG5hbWU/OiBzdHJpbmc7IHBhdGg6IHN0cmluZyB9CiAgICAgIHwgdW5kZWZpbmVkOwoKICAgIGNvbnN0IHByaXZpbGVnZWRSb2xlczogUm9sZVtdID0gWwogICAgICAic3VwZXJfYWRtaW4iLAogICAgICAibGdhX2FkbWluIiwKICAgICAgInN1Yl9hZG1pbiIgYXMgUm9sZSwKICAgICAgImNoYWlybWFuIiwKICAgICAgInRyZWFzdXJlciIsCiAgICAgICJhdWRpdG9yIiwKICAgICAgIndhcmRfY291bmNpbGxvciIsCiAgICAgICJmaWVsZF9vZmZpY2VyIiwKICAgIF07CiAgICBjb25zdCBpc1ByaXZpbGVnZWQgPSBwcml2aWxlZ2VkUm9sZXMuaW5jbHVkZXMocm9sZSk7CgogICAgY29uc3Qgd2hlcmVDbGF1c2U6IGFueSA9IHsgaW52b2ljZU51bWJlciB9OwogICAgaWYgKCFpc1ByaXZpbGVnZWQpIHsKICAgICAgd2hlcmVDbGF1c2UuT1IgPSBbCiAgICAgICAgeyBhcHBsaWNhdGlvbjogeyBhcHBsaWNhbnRJZDogdXBsb2FkZXJJZCB9IH0sCiAgICAgICAgeyBjcmVhdGVkQnlJZDogdXBsb2FkZXJJZCB9LAogICAgICAgIHsgYXNzaWduZWRPZmZpY2VySWQ6IHVwbG9hZGVySWQgfSwKICAgICAgICB7IHBheW1lbnRzOiB7IHNvbWU6IHsgcGFpZEJ5SWQ6IHVwbG9hZGVySWQgfSB9IH0sCiAgICAgIF07CiAgICB9CgogICAgY29uc3QgaW52b2ljZSA9IGF3YWl0IHByaXNtYS5pbnZvaWNlLmZpbmRGaXJzdCh7CiAgICAgIHdoZXJlOiB3aGVyZUNsYXVzZSwKICAgICAgaW5jbHVkZTogewogICAgICAgIGFwcGxpY2F0aW9uOiB7CiAgICAgICAgICBpbmNsdWRlOiB7CiAgICAgICAgICAgIGFwcGxpY2FudDogeyBzZWxlY3Q6IHsgaWQ6IHRydWUsIGZpcnN0TmFtZTogdHJ1ZSwgbGFzdE5hbWU6IHRydWUsIGVtYWlsOiB0cnVlLCBwaG9uZTogdHJ1ZSB9IH0sCiAgICAgICAgICB9LAogICAgICAgIH0sCiAgICAgICAgc2VydmljZTogeyBzZWxlY3Q6IHsgY29kZTogdHJ1ZSwgbmFtZTogdHJ1ZSB9IH0sCiAgICAgICAgcGF5bWVudHM6IHsKICAgICAgICAgIG9yZGVyQnk6IHsgY3JlYXRlZEF0OiAiZGVzYyIgfSwKICAgICAgICAgIHNlbGVjdDogeyBpZDogdHJ1ZSwgcmVmZXJlbmNlOiB0cnVlLCBhbW91bnQ6IHRydWUsIHN0YXR1czogdHJ1ZSwgbWV0aG9kOiB0cnVlLCBwcm9vZlVybDogdHJ1ZSB9LAogICAgICAgIH0sCiAgICAgIH0sCiAgICB9KTsKCiAgICBpZiAoIWludm9pY2UpIHsKICAgICAgcmV0dXJuIHNlbmRFcnJvcigKICAgICAgICByZXMsCiAgICAgICAgIkludm9pY2Ugbm90IGZvdW5kIG9yIHlvdSBkb24ndCBoYXZlIHBlcm1pc3Npb24gdG8gdmlldyBpdCIsCiAgICAgICAgIk5PVF9GT1VORCIsCiAgICAgICAgbnVsbCwKICAgICAgICA0MDQsCiAgICAgICk7CiAgICB9CgogICAgaWYgKGludm9pY2UucGF5bWVudFN0YXR1cyAhPT0gInBlbmRpbmciKSB7CiAgICAgIHJldHVybiBzZW5kRXJyb3IocmVzLCAiSW52b2ljZSBpcyBub3QgYXdhaXRpbmcgcGF5bWVudCIsICJCQURfUkVRVUVTVCIsIG51bGwsIDQwMCk7CiAgICB9CgogICAgY29uc3Qgc2VydmVyVXJsID0gYCR7cmVxLnByb3RvY29sfTovLyR7cmVxLmdldCgiaG9zdCIpfWA7CiAgICBjb25zdCBub3JtYWxpemVkUmVsYXRpdmVQYXRoID0gZmlsZSA/IGZpbGUucGF0aC5yZXBsYWNlKC9cXC9nLCAiLyIpIDogIiI7CiAgICBjb25zdCBwcm9vZlVybCA9IGZpbGUgPyBgJHtzZXJ2ZXJVcmx9LyR7bm9ybWFsaXplZFJlbGF0aXZlUGF0aH1gIDogdW5kZWZpbmVkOwoKICAgIGNvbnN0IHBhaWRBbW91bnQgPSBpbnZvaWNlLnBheW1lbnRzCiAgICAgIC5maWx0ZXIoKHApID0+IHAuc3RhdHVzID09PSAiY29uZmlybWVkIikKICAgICAgLnJlZHVjZSgoc3VtLCBwKSA9PiBzdW0gKyBOdW1iZXIocC5hbW91bnQpLCAwKTsKICAgIGNvbnN0IGJhbGFuY2VEdWUgPSBNYXRoLm1heChOdW1iZXIoaW52b2ljZS5hbW91bnQpIC0gcGFpZEFtb3VudCwgMCk7CgogICAgY29uc3QgYXBwbGljYW50RnVsbE5hbWUgPSBpbnZvaWNlLmFwcGxpY2F0aW9uPy5hcHBsaWNhbnQKICAgICAgPyBgJHtpbnZvaWNlLmFwcGxpY2F0aW9uLmFwcGxpY2FudC5maXJzdE5hbWV9ICR7aW52b2ljZS5hcHBsaWNhdGlvbi5hcHBsaWNhbnQubGFzdE5hbWV9YC50cmltKCkKICAgICAgOiB1bmRlZmluZWQ7CgogICAgbGV0IHBheW1lbnQ6IHsgaWQ6IHN0cmluZzsgcmVmZXJlbmNlOiBzdHJpbmcgfSB8IHVuZGVmaW5lZCA9IGludm9pY2UucGF5bWVudHMuZmluZCgKICAgICAgKHApID0+IHAuc3RhdHVzID09PSAicGVuZGluZyIgJiYgcC5tZXRob2QgPT09ICJiYW5rX3RyYW5zZmVyIiwKICAgICk7CgogICAgaWYgKCFwYXltZW50KSB7CiAgICAgIHBheW1lbnQgPSBhd2FpdCBwcmlzbWEucGF5bWVudC5jcmVhdGUoewogICAgICAgIGRhdGE6IHsKICAgICAgICAgIHJlZmVyZW5jZTogZ2VuZXJhdGVSZWZlcmVuY2UoKSwKICAgICAgICAgIGFtb3VudDogYmFsYW5jZUR1ZSwKICAgICAgICAgIG1ldGhvZDogImJhbmtfdHJhbnNmZXIiLAogICAgICAgICAgc3RhdHVzOiAicGVuZGluZyIsCiAgICAgICAgICBtYXRjaFN0YXR1czogImF3YWl0aW5nX3ZlcmlmaWNhdGlvbiIsCiAgICAgICAgICBzZXJ2aWNlQ29kZTogaW52b2ljZS5zZXJ2aWNlLmNvZGUsCiAgICAgICAgICBwYXllck5hbWU6IGFwcGxpY2FudEZ1bGxOYW1lIHx8IG51bGwsCiAgICAgICAgICBuYXJyYXRpb246IGBCYW5rIHRyYW5zZmVyIG1hcmtlZCBwYWlkIOKAlCAke2ludm9pY2Uuc2VydmljZS5uYW1lfWAsCiAgICAgICAgICBpbnZvaWNlOiB7IGNvbm5lY3Q6IHsgaWQ6IGludm9pY2UuaWQgfSB9LAogICAgICAgIH0sCiAgICAgICAgc2VsZWN0OiB7IGlkOiB0cnVlLCByZWZlcmVuY2U6IHRydWUgfSwKICAgICAgfSk7CiAgICB9CgogICAgY29uc3QgdXBkYXRlZCA9IGF3YWl0IHByaXNtYS5wYXltZW50LnVwZGF0ZSh7CiAgICAgIHdoZXJlOiB7IGlkOiBwYXltZW50LmlkIH0sCiAgICAgIGRhdGE6IHsKICAgICAgICAuLi4ocHJvb2ZVcmwgPyB7IHByb29mVXJsIH0gOiB7fSksCiAgICAgICAgcHJvb2ZVcGxvYWRlZEJ5SWQ6IHVwbG9hZGVySWQsCiAgICAgICAgcHJvb2ZVcGxvYWRlZEF0OiBuZXcgRGF0ZSgpLAogICAgICAgIG1hdGNoU3RhdHVzOiAiYXdhaXRpbmdfdmVyaWZpY2F0aW9uIiwKICAgICAgICBwYXllck5hbWU6IGFwcGxpY2FudEZ1bGxOYW1lIHx8IHVuZGVmaW5lZCwKICAgICAgfSwKICAgIH0pOwoKICAgIC8vIENoZWNrIGlmIGFuIHVubWF0Y2hlZCBSZXNlcnZlZCBWQSB3ZWJob29rIHNldHRsZW1lbnQgYWxyZWFkeSBhcnJpdmVkIGZvciB0aGlzIHNlcnZpY2UgKyBhbW91bnQKICAgIGNvbnN0IGdwYXlDb2RlID0gU0VSVklDRV9DT0RFX0JZX1NFUlZJQ0VbaW52b2ljZS5zZXJ2aWNlLmNvZGVdOwogICAgY29uc3QgbWF0Y2hpbmdDb2RlcyA9IGdwYXlDb2RlID8gc2VydmljZUNvZGVzRm9yR3BheShncGF5Q29kZSkgOiBbaW52b2ljZS5zZXJ2aWNlLmNvZGVdOwogICAgY29uc3QgdW5tYXRjaGVkQ3JlZGl0cyA9IGF3YWl0IHByaXNtYS5wYXltZW50LmZpbmRNYW55KHsKICAgICAgd2hlcmU6IHsKICAgICAgICBzdGF0dXM6ICJwZW5kaW5nIiwKICAgICAgICBtZXRob2Q6ICJ2aXJ0dWFsX2FjY291bnQiLAogICAgICAgIG1hdGNoU3RhdHVzOiAidW5tYXRjaGVkIiwKICAgICAgICBpbnZvaWNlSWQ6IG51bGwsCiAgICAgICAgc2VydmljZUNvZGU6IHsgaW46IG1hdGNoaW5nQ29kZXMgfSwKICAgICAgICBjcmVhdGVkQXQ6IHsgZ3RlOiBuZXcgRGF0ZShEYXRlLm5vdygpIC0gMjQgKiA2MCAqIDYwICogMTAwMCkgfSwKICAgICAgfSwKICAgICAgb3JkZXJCeTogeyBjcmVhdGVkQXQ6ICJkZXNjIiB9LAogICAgfSk7CgogICAgY29uc3QgZXhhY3RBbW91bnRDcmVkaXRzID0gdW5tYXRjaGVkQ3JlZGl0cy5maWx0ZXIoKGMpID0+IHNhbWVBbW91bnQoYy5hbW91bnQsIGJhbGFuY2VEdWUpKTsKICAgIGlmIChleGFjdEFtb3VudENyZWRpdHMubGVuZ3RoID09PSAxKSB7CiAgICAgIGNvbnN0IGNyZWRpdCA9IGV4YWN0QW1vdW50Q3JlZGl0c1swXTsKICAgICAgYXdhaXQgcHJpc21hLnBheW1lbnQudXBkYXRlKHsKICAgICAgICB3aGVyZTogeyBpZDogcGF5bWVudC5pZCB9LAogICAgICAgIGRhdGE6IHsKICAgICAgICAgIGdhdGV3YXlSZWY6IGNyZWRpdC5nYXRld2F5UmVmLAogICAgICAgICAgcGF5ZXJOYW1lOiBjcmVkaXQucGF5ZXJOYW1lIHx8IGFwcGxpY2FudEZ1bGxOYW1lIHx8IG51bGwsCiAgICAgICAgICBwYXllckFjY291bnQ6IGNyZWRpdC5wYXllckFjY291bnQsCiAgICAgICAgICBwYXllckJhbms6IGNyZWRpdC5wYXllckJhbmssCiAgICAgICAgICBzZXR0bGVkQXQ6IGNyZWRpdC5zZXR0bGVkQXQsCiAgICAgICAgICByYXdQYXlsb2FkOiBjcmVkaXQucmF3UGF5bG9hZCA/PyB1bmRlZmluZWQsCiAgICAgICAgICBtYXRjaFN0YXR1czogIm1hdGNoZWQiLAogICAgICAgIH0sCiAgICAgIH0pOwogICAgICBhd2FpdCBwcmlzbWEucGF5bWVudC5kZWxldGUoeyB3aGVyZTogeyBpZDogY3JlZGl0LmlkIH0gfSkuY2F0Y2goKCkgPT4ge30pOwoKICAgICAgY29uc3QgY29uZmlybVJlcyA9IGF3YWl0IGNvbmZpcm1QYXltZW50KHsKICAgICAgICBpbnZvaWNlSWQ6IGludm9pY2UuaWQsCiAgICAgICAgYW1vdW50OiBiYWxhbmNlRHVlLAogICAgICAgIG1ldGhvZDogImJhbmtfdHJhbnNmZXIiLAogICAgICAgIHJlZmVyZW5jZTogcGF5bWVudC5yZWZlcmVuY2UsCiAgICAgICAgZ2F0ZXdheVJlZjogY3JlZGl0LmdhdGV3YXlSZWYgfHwgdW5kZWZpbmVkLAogICAgICAgIG5hcnJhdGlvbjogYFByb3ZpZHVzIEJhbmsgVkEgc2V0dGxlbWVudCAoJHtpbnZvaWNlLnNlcnZpY2UuY29kZX0pYCwKICAgICAgICBwYWlkQnlJZDogdXBsb2FkZXJJZCwKICAgICAgfSk7CgogICAgICByZXR1cm4gc2VuZFN1Y2Nlc3MoCiAgICAgICAgcmVzLAogICAgICAgIHsKICAgICAgICAgIHN0YXR1czogImNvbmZpcm1lZCIsCiAgICAgICAgICBwYXltZW50OiBjb25maXJtUmVzLnBheW1lbnQsCiAgICAgICAgICByZWNlaXB0OiBjb25maXJtUmVzLnJlY2VpcHQsCiAgICAgICAgICBwcm9vZlVybDogdXBkYXRlZC5wcm9vZlVybCA/PyBudWxsLAogICAgICAgICAgcGFya2VkRm9yQ29uZmlybWF0aW9uOiBmYWxzZSwKICAgICAgICB9LAogICAgICAgICJQYXltZW50IHZlcmlmaWVkIGFuZCBjb25maXJtZWQhIE9mZmljaWFsIFJlY2VpcHQgZ2VuZXJhdGVkLiIsCiAgICAgICk7CiAgICB9CgogICAgbGV0IHBhcmtlZEZvckNvbmZpcm1hdGlvbiA9IGZhbHNlOwogICAgaWYgKGludm9pY2UuYXBwbGljYXRpb24pIHsKICAgICAgaWYgKGludm9pY2UuYXBwbGljYXRpb24uc3RhdHVzID09PSAiYXdhaXRpbmdfcGF5bWVudF9jb25maXJtYXRpb24iKSB7CiAgICAgICAgcGFya2VkRm9yQ29uZmlybWF0aW9uID0gdHJ1ZTsKICAgICAgfSBlbHNlIGlmIChbInN1Ym1pdHRlZCIsICJwYXltZW50X3BlbmRpbmciLCAiYXdhaXRpbmdfZm9ybSJdLmluY2x1ZGVzKGludm9pY2UuYXBwbGljYXRpb24uc3RhdHVzKSkgewogICAgICAgIGF3YWl0IHByaXNtYS5hcHBsaWNhdGlvbi51cGRhdGUoewogICAgICAgICAgd2hlcmU6IHsgaWQ6IGludm9pY2UuYXBwbGljYXRpb24uaWQgfSwKICAgICAgICAgIGRhdGE6IHsgc3RhdHVzOiAiYXdhaXRpbmdfcGF5bWVudF9jb25maXJtYXRpb24iIH0sCiAgICAgICAgfSk7CiAgICAgICAgcGFya2VkRm9yQ29uZmlybWF0aW9uID0gdHJ1ZTsKICAgICAgfQogICAgfQoKICAgIGF3YWl0IHByaXNtYS5hdWRpdExvZy5jcmVhdGUoewogICAgICBkYXRhOiB7CiAgICAgICAgYWN0aW9uOiAicGF5bWVudF9jb25maXJtZWQiLAogICAgICAgIGVudGl0eTogIlBheW1lbnQiLAogICAgICAgIGVudGl0eUlkOiBwYXltZW50LmlkLAogICAgICAgIHVzZXJJZDogdXBsb2FkZXJJZCwKICAgICAgICBkZXRhaWxzOiB7CiAgICAgICAgICBldmVudDogcHJvb2ZVcmwgPyAicHJvb2ZfdXBsb2FkZWQiIDogInRyYW5zZmVyX21hcmtlZF9wYWlkIiwKICAgICAgICAgIGludm9pY2VOdW1iZXI6IGludm9pY2UuaW52b2ljZU51bWJlciwKICAgICAgICAgIGFwcGxpY2F0aW9uSWQ6IGludm9pY2UuYXBwbGljYXRpb24/LmlkID8/IG51bGwsCiAgICAgICAgICBwYXJrZWRGb3JDb25maXJtYXRpb24sCiAgICAgICAgICBwcm9vZlVybDogdXBkYXRlZC5wcm9vZlVybCA/PyBudWxsLAogICAgICAgIH0sCiAgICAgICAgaXBBZGRyZXNzOiBnZXRJcChyZXEpLAogICAgICB9LAogICAgfSk7CgogICAgcmV0dXJuIHNlbmRTdWNjZXNzKAogICAgICByZXMsCiAgICAgIHsKICAgICAgICBzdGF0dXM6ICJhd2FpdGluZ19wYXltZW50X2NvbmZpcm1hdGlvbiIsCiAgICAgICAgcGF5bWVudDogdXBkYXRlZCwKICAgICAgICBwcm9vZlVybDogdXBkYXRlZC5wcm9vZlVybCA/PyBudWxsLAogICAgICAgIHBhcmtlZEZvckNvbmZpcm1hdGlvbiwKICAgICAgfSwKICAgICAgcHJvb2ZVcmwKICAgICAgICA/ICJQYXltZW50IFZlcmlmaWNhdGlvbiBpbiBQcm9ncmVzcyDigJQgcHJvb2YgdXBsb2FkZWQiCiAgICAgICAgOiAiUGF5bWVudCBWZXJpZmljYXRpb24gaW4gUHJvZ3Jlc3Mg4oCUIHRyYW5zZmVyIG5vdGlmaWNhdGlvbiByZWNvcmRlZCIsCiAgICApOwogIH0gY2F0Y2ggKGVycikgewogICAgbmV4dChlcnIpOwogIH0KfTsK
+import { InvoiceStatus, Role, Prisma, PaymentMethod } from "@prisma/client";
+import { Request, Response, NextFunction } from "express";
+import { prisma } from "../../utils/prisma";
+import { sendError, sendSuccess } from "../../utils/response";
+import {
+  generateQrToken,
+  generateReceiptNumber,
+  generateReference,
+  generateVerificationCode,
+} from "../../utils/generators";
+import { getIp } from "../complaints/complaints.controller";
+import { confirmPayment } from "../payment/payment.service";
+import { sameAmount, serviceCodesForGpay, SERVICE_CODE_BY_SERVICE } from "../payment/gpay.service";
+
+interface GetInvoicesQuery {
+  role: Role;
+  userId: string;
+  tab?: string;
+  search?: string;
+}
+
+export const fetchInvoicesHubData = async ({
+  role,
+  userId,
+  tab,
+  search,
+}: GetInvoicesQuery) => {
+  const where: Prisma.InvoiceWhereInput = {};
+
+  // ---------------------------------------------------------
+  // Access control
+  // ---------------------------------------------------------
+  if (role === Role.citizen || role === Role.business_owner) {
+    where.application = {
+      applicantId: userId,
+    };
+  } else if (role === Role.field_officer) {
+    where.createdById = userId;
+  }
+
+  // ---------------------------------------------------------
+  // Search
+  // ---------------------------------------------------------
+  if (search?.trim()) {
+    const value = search.trim();
+
+    where.OR = [
+      {
+        invoiceNumber: {
+          contains: value,
+          mode: "insensitive",
+        },
+      },
+      {
+        application: {
+          applicationNumber: {
+            contains: value,
+            mode: "insensitive",
+          },
+        },
+      },
+      {
+        application: {
+          service: {
+            name: {
+              contains: value,
+              mode: "insensitive",
+            },
+          },
+        },
+      },
+    ];
+  }
+
+  // ---------------------------------------------------------
+  // Payment status filter
+  // ---------------------------------------------------------
+  if (tab && tab !== "all") {
+    if (tab === "pending") {
+      where.paymentStatus = {
+        in: ["pending"],
+      };
+    } else if (tab === "confirmed") {
+      where.paymentStatus = {
+        in: ["confirmed"],
+      };
+    } else {
+      where.paymentStatus = "failed";
+    }
+  }
+
+  // ---------------------------------------------------------
+  // Fetch invoices
+  // ---------------------------------------------------------
+  const invoices = await prisma.invoice.findMany({
+    where,
+    include: {
+      application: {
+        select: {
+          id: true,
+          applicationNumber: true,
+          applicantId: true,
+          createdAt: true,
+          formData: true,
+          service: {
+            select: {
+              id: true,
+              code: true,
+              name: true,
+              category: true,
+            },
+          },
+        },
+      },
+
+      payments: {
+        select: {
+          id: true,
+          amount: true,
+          status: true,
+          confirmedAt: true,
+        },
+      },
+
+      receipts: {
+        select: {
+          id: true,
+          receiptNumber: true,
+        },
+      },
+    },
+
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  // ---------------------------------------------------------
+  // Statistics
+  // ---------------------------------------------------------
+  const totalCollected = invoices.reduce((sum, invoice) => {
+    const paid = invoice.payments
+      .filter((payment) => payment.status === "confirmed")
+      .reduce((paymentSum, payment) => paymentSum + Number(payment.amount), 0);
+
+    return sum + paid;
+  }, 0);
+
+  const outstanding = invoices.reduce((sum, invoice) => {
+    const paid = invoice.payments
+      .filter((payment) => payment.status === "confirmed")
+      .reduce((paymentSum, payment) => paymentSum + Number(payment.amount), 0);
+
+    return sum + Math.max(Number(invoice.amount) - paid, 0);
+  }, 0);
+
+  const transactions = invoices.reduce(
+    (count, invoice) => count + invoice.receipts.length,
+    0,
+  );
+
+  const avgPayment =
+    transactions > 0 ? Math.round(totalCollected / transactions) : 0;
+
+  // ---------------------------------------------------------
+  // Return
+  // ---------------------------------------------------------
+  return {
+    stats: {
+      outstanding,
+      totalCollected,
+      transactions,
+      avgPayment,
+    },
+
+    invoices: invoices.map((invoice) => {
+      const formData =
+        invoice.application?.formData &&
+        typeof invoice.application.formData === "object"
+          ? (invoice.application.formData as Record<string, any>)
+          : {};
+
+      const customerName =
+        formData.fullName ||
+        formData.applicantName ||
+        formData.ownerName ||
+        formData.businessName ||
+        formData.companyName ||
+        null;
+
+      const confirmedPayments = invoice.payments
+        .filter((payment) => payment.status === "confirmed")
+        .sort(
+          (a, b) =>
+            (b.confirmedAt?.getTime() ?? 0) - (a.confirmedAt?.getTime() ?? 0),
+        );
+
+      return {
+        id: invoice.id,
+        reference: invoice.invoiceNumber,
+        amount: Number(invoice.amount),
+        paymentStatus: invoice.paymentStatus,
+        customerName,
+        paidAt: invoice.paidAt ?? confirmedPayments[0]?.confirmedAt ?? null,
+        createdAt: invoice.createdAt,
+        dateOfApplication: invoice.application?.createdAt ?? null,
+
+        application: invoice.application
+          ? {
+              id: invoice.application.id,
+              applicationNumber: invoice.application.applicationNumber,
+              applicantId: invoice.application.applicantId,
+            }
+          : null,
+
+        service: invoice.application?.service
+          ? {
+              id: invoice.application.service.id,
+              code: invoice.application.service.code,
+              name: invoice.application.service.name,
+              category: invoice.application.service.category,
+            }
+          : null,
+
+        receipts: invoice.receipts,
+      };
+    }),
+  };
+};
+
+/**
+ * @desc    Get Invoices Ledger List and Stats Overview in a single batch query
+ * @route   GET /api/v1/invoices/hub
+ * @access  Authenticated
+ */
+export const getInvoicesHubOverview = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { id: userId, role } = (req as any).user as {
+      id: string;
+      role: Role;
+    };
+    const { tab, search } = req.query as { tab?: string; search?: string };
+
+    const payload = await fetchInvoicesHubData({
+      role,
+      userId,
+      tab,
+      search,
+    });
+
+    res.status(200).json({
+      success: true,
+      ...payload,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// GET /api/v1/invoices/:id
+export const getInvoiceById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+    const { id: userId, role } = req.user!;
+
+    // Define roles that can view any invoice
+    const privilegedRoles: Role[] = [
+      "super_admin",
+      "lga_admin",
+      "sub_admin" as Role,
+      "chairman",
+      "treasurer",
+      "auditor",
+      "ward_councillor",
+      "field_officer",
+    ];
+
+    const isPrivileged = privilegedRoles.includes(role);
+
+    // Build where clause based on role
+    const whereClause: any = {
+      invoiceNumber: String(id),
+    };
+
+    // If not privileged, restrict to own invoices
+    if (!isPrivileged) {
+      whereClause.OR = [
+        {
+          application: {
+            applicantId: userId,
+          },
+        },
+        {
+          createdById: userId,
+        },
+        {
+          assignedOfficerId: userId,
+        },
+        {
+          payments: {
+            some: {
+              paidById: userId,
+            },
+          },
+        },
+      ];
+    }
+
+    const invoice = await prisma.invoice.findFirst({
+      where: whereClause,
+      include: {
+        application: {
+          select: {
+            id: true,
+            applicationNumber: true,
+            applicantId: true,
+            status: true,
+            formData: true,
+            service: {
+              select: {
+                id: true,
+                code: true,
+                name: true,
+              },
+            },
+          },
+        },
+        payments: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          select: {
+            id: true,
+            amount: true,
+            method: true,
+            status: true,
+            matchStatus: true,
+            payerName: true,
+            reference: true,
+            gatewayRef: true,
+            narration: true,
+            confirmedAt: true,
+            createdAt: true,
+            paidById: true,
+            proofUrl: true,
+            proofUploadedById: true,
+            proofUploadedAt: true,
+          },
+        },
+        receipts: {
+          orderBy: {
+            issuedAt: "desc",
+          },
+          select: {
+            id: true,
+            receiptNumber: true,
+            verificationCode: true,
+            qrToken: true,
+            amountPaid: true,
+            pdfUrl: true,
+            issuedAt: true,
+            issuedById: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+        service: {
+          select: {
+            id: true,
+            code: true,
+            name: true,
+            description: true,
+          },
+        },
+      },
+    });
+
+    if (!invoice) {
+      return sendError(
+        res,
+        "Invoice not found or you don't have permission to view it",
+        "NOT_FOUND",
+        null,
+        404,
+      );
+    }
+
+    if (!isPrivileged && (role === "business_owner" || role === "citizen")) {
+      const isOwner =
+        invoice.application?.applicantId === userId ||
+        invoice.createdById === userId ||
+        invoice.assignedOfficerId === userId ||
+        invoice.payments.some((payment) => payment.paidById === userId);
+
+      if (!isOwner) {
+        return sendError(
+          res,
+          "You don't have permission to view this invoice",
+          "FORBIDDEN",
+          null,
+          403,
+        );
+      }
+    }
+
+    return sendSuccess(res, invoice);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// POST /api/v1/invoices/:id/pay
+export const recordInvoicePayment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user!.id;
+    const role = req.user!.role;
+    const { method, amount, reference, narration } = req.body;
+
+    const invoice = await prisma.invoice.findUnique({
+      where: { invoiceNumber: String(id) },
+    });
+    if (!invoice)
+      return sendError(res, "Invoice not found", "NOT_FOUND", null, 404);
+
+    if (["paid", "cancelled"].includes(invoice.paymentStatus)) {
+      return sendError(
+        res,
+        "Invoice is already paid or cancelled",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    if (!["field_officer", "lga_admin", "super_admin", "sub_admin"].includes(role)) {
+      return sendError(
+        res,
+        "Only field officers can record cash or POS payments",
+        "FORBIDDEN",
+        null,
+        403,
+      );
+    }
+
+    const paymentAmount = Number(amount);
+
+    const result = await confirmPayment({
+      invoiceId: invoice.id,
+      amount: paymentAmount,
+      method,
+      reference,
+      narration,
+      paidById: invoice.createdById,
+      confirmedById: userId,
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        action: "payment_confirmed",
+        entity: "Payment",
+        entityId: result.payment.id,
+        user: { connect: { id: userId } },
+        details: {
+          invoiceId: id,
+          amount: paymentAmount,
+          method,
+          isFullPayment: result.isFullPayment,
+        },
+        ipAddress: getIp(req),
+      },
+    });
+
+    return sendSuccess(
+      res,
+      {
+        payment: result.payment,
+        invoice: result.invoice,
+        receipt: result.receipt,
+        isFullPayment: result.isFullPayment,
+        message: result.isFullPayment
+          ? "Payment confirmed. Receipt generated."
+          : `Partial payment recorded. Balance due: ₦${Number(result.invoice.balanceDue)}`,
+      },
+      result.isFullPayment ? "Payment complete" : "Partial payment recorded",
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
+// POST /api/v1/invoices/:invoiceNumber/payment-proof
+//
+// Channel 1 ("I Have Paid" + Optional Proof Upload):
+// Citizen (or staff on their behalf) notifies the system that a bank transfer
+// to the Dedicated Providus Static Virtual Account has been completed, with
+// an optional proof of payment file.
+// 1. Places the application & payment into "Payment Verification in Progress"
+//    (awaiting_payment_confirmation / matchStatus: "awaiting_verification").
+// 2. Checks if a matching Providus webhook settlement already arrived for
+//    this Service Account + Exact Amount — if so, confirms immediately and
+//    issues the Official Receipt without waiting for the Treasurer!
+export const uploadInvoicePaymentProof = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const uploaderId = req.user!.id;
+    const { role } = req.user!;
+    const invoiceNumber = String(
+      Array.isArray(req.params.invoiceNumber)
+        ? req.params.invoiceNumber[0]
+        : req.params.invoiceNumber,
+    );
+
+    const file = (req as any).file as
+      | { originalname?: string; path: string }
+      | undefined;
+
+    const privilegedRoles: Role[] = [
+      "super_admin",
+      "lga_admin",
+      "sub_admin" as Role,
+      "chairman",
+      "treasurer",
+      "auditor",
+      "ward_councillor",
+      "field_officer",
+    ];
+    const isPrivileged = privilegedRoles.includes(role);
+
+    const whereClause: any = { invoiceNumber };
+    if (!isPrivileged) {
+      whereClause.OR = [
+        { application: { applicantId: uploaderId } },
+        { createdById: uploaderId },
+        { assignedOfficerId: uploaderId },
+        { payments: { some: { paidById: uploaderId } } },
+      ];
+    }
+
+    const invoice = await prisma.invoice.findFirst({
+      where: whereClause,
+      include: {
+        application: {
+          include: {
+            applicant: { select: { id: true, firstName: true, lastName: true, email: true, phone: true } },
+          },
+        },
+        service: { select: { code: true, name: true } },
+        payments: {
+          orderBy: { createdAt: "desc" },
+          select: { id: true, reference: true, amount: true, status: true, method: true, proofUrl: true },
+        },
+      },
+    });
+
+    if (!invoice) {
+      return sendError(
+        res,
+        "Invoice not found or you don't have permission to view it",
+        "NOT_FOUND",
+        null,
+        404,
+      );
+    }
+
+    if (invoice.paymentStatus !== "pending") {
+      return sendError(res, "Invoice is not awaiting payment", "BAD_REQUEST", null, 400);
+    }
+
+    const serverUrl = `${req.protocol}://${req.get("host")}`;
+    const normalizedRelativePath = file ? file.path.replace(/\\/g, "/") : "";
+    const proofUrl = file ? `${serverUrl}/${normalizedRelativePath}` : undefined;
+
+    const paidAmount = invoice.payments
+      .filter((p) => p.status === "confirmed")
+      .reduce((sum, p) => sum + Number(p.amount), 0);
+    const balanceDue = Math.max(Number(invoice.amount) - paidAmount, 0);
+
+    const applicantFullName = invoice.application?.applicant
+      ? `${invoice.application.applicant.firstName} ${invoice.application.applicant.lastName}`.trim()
+      : undefined;
+
+    let payment: { id: string; reference: string } | undefined = invoice.payments.find(
+      (p) => p.status === "pending" && p.method === "bank_transfer",
+    );
+
+    if (!payment) {
+      payment = await prisma.payment.create({
+        data: {
+          reference: generateReference(),
+          amount: balanceDue,
+          method: "bank_transfer",
+          status: "pending",
+          matchStatus: "awaiting_verification",
+          serviceCode: invoice.service.code,
+          payerName: applicantFullName || null,
+          narration: `Bank transfer marked paid — ${invoice.service.name}`,
+          invoice: { connect: { id: invoice.id } },
+        },
+        select: { id: true, reference: true },
+      });
+    }
+
+    const updated = await prisma.payment.update({
+      where: { id: payment.id },
+      data: {
+        ...(proofUrl ? { proofUrl } : {}),
+        proofUploadedById: uploaderId,
+        proofUploadedAt: new Date(),
+        matchStatus: "awaiting_verification",
+        payerName: applicantFullName || undefined,
+      },
+    });
+
+    // Check if an unmatched Reserved VA webhook settlement already arrived for this service + amount
+    const gpayCode = SERVICE_CODE_BY_SERVICE[invoice.service.code];
+    const matchingCodes = gpayCode ? serviceCodesForGpay(gpayCode) : [invoice.service.code];
+    const unmatchedCredits = await prisma.payment.findMany({
+      where: {
+        status: "pending",
+        method: "virtual_account",
+        matchStatus: "unmatched",
+        invoiceId: null,
+        serviceCode: { in: matchingCodes },
+        createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const exactAmountCredits = unmatchedCredits.filter((c) => sameAmount(c.amount, balanceDue));
+    if (exactAmountCredits.length === 1) {
+      const credit = exactAmountCredits[0];
+      await prisma.payment.update({
+        where: { id: payment.id },
+        data: {
+          gatewayRef: credit.gatewayRef,
+          payerName: credit.payerName || applicantFullName || null,
+          payerAccount: credit.payerAccount,
+          payerBank: credit.payerBank,
+          settledAt: credit.settledAt,
+          rawPayload: credit.rawPayload ?? undefined,
+          matchStatus: "matched",
+        },
+      });
+      await prisma.payment.delete({ where: { id: credit.id } }).catch(() => {});
+
+      const confirmRes = await confirmPayment({
+        invoiceId: invoice.id,
+        amount: balanceDue,
+        method: "bank_transfer",
+        reference: payment.reference,
+        gatewayRef: credit.gatewayRef || undefined,
+        narration: `Providus Bank VA settlement (${invoice.service.code})`,
+        paidById: uploaderId,
+      });
+
+      return sendSuccess(
+        res,
+        {
+          status: "confirmed",
+          payment: confirmRes.payment,
+          receipt: confirmRes.receipt,
+          proofUrl: updated.proofUrl ?? null,
+          parkedForConfirmation: false,
+        },
+        "Payment verified and confirmed! Official Receipt generated.",
+      );
+    }
+
+    let parkedForConfirmation = false;
+    if (invoice.application) {
+      if (invoice.application.status === "awaiting_payment_confirmation") {
+        parkedForConfirmation = true;
+      } else if (["submitted", "payment_pending", "awaiting_form"].includes(invoice.application.status)) {
+        await prisma.application.update({
+          where: { id: invoice.application.id },
+          data: { status: "awaiting_payment_confirmation" },
+        });
+        parkedForConfirmation = true;
+      }
+    }
+
+    await prisma.auditLog.create({
+      data: {
+        action: "payment_confirmed",
+        entity: "Payment",
+        entityId: payment.id,
+        userId: uploaderId,
+        details: {
+          event: proofUrl ? "proof_uploaded" : "transfer_marked_paid",
+          invoiceNumber: invoice.invoiceNumber,
+          applicationId: invoice.application?.id ?? null,
+          parkedForConfirmation,
+          proofUrl: updated.proofUrl ?? null,
+        },
+        ipAddress: getIp(req),
+      },
+    });
+
+    return sendSuccess(
+      res,
+      {
+        status: "awaiting_payment_confirmation",
+        payment: updated,
+        proofUrl: updated.proofUrl ?? null,
+        parkedForConfirmation,
+      },
+      proofUrl
+        ? "Payment Verification in Progress — proof uploaded"
+        : "Payment Verification in Progress — transfer notification recorded",
+    );
+  } catch (err) {
+    next(err);
+  }
+};

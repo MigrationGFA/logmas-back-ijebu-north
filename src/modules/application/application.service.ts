@@ -1,1 +1,596 @@
-CmV4cG9ydCBmdW5jdGlvbiBleHRyYWN0TWFycmlhZ2VEYXRhKGZkUmF3OiBhbnkpIHsKICBjb25zdCBmZCA9IChmZFJhdyAmJiB0eXBlb2YgZmRSYXcgPT09ICdvYmplY3QnKSA/IGZkUmF3IDoge307CiAgY29uc3QgcmF3RGF0ZSA9IGZkLndlZGRpbmdEYXRlIHx8IGZkLm1hcnJpYWdlRGF0ZTsKICBjb25zdCB3ZWRkaW5nRGF0ZSA9IHJhd0RhdGUgPyBuZXcgRGF0ZShyYXdEYXRlKSA6IG5ldyBEYXRlKERhdGUubm93KCkgKyAzMCAqIDI0ICogNjAgKiA2MCAqIDEwMDApOwogIHJldHVybiB7CiAgICBncm9vbUZ1bGxOYW1lOiBTdHJpbmcoZmQuZ3Jvb21GdWxsTmFtZSB8fCBmZC5ncm9vbU5hbWUgfHwgZmQuZnVsbE5hbWUgfHwgIkdyb29tIikudHJpbSgpLAogICAgZ3Jvb21Db25kaXRpb246IFN0cmluZyhmZC5ncm9vbUNvbmRpdGlvbiB8fCAiQmFjaGVsb3IiKS50cmltKCksCiAgICBncm9vbU9jY3VwYXRpb246IFN0cmluZyhmZC5ncm9vbU9jY3VwYXRpb24gfHwgIlByaXZhdGUgU2VjdG9yIikudHJpbSgpLAogICAgZ3Jvb21BZ2U6IE51bWJlcihmZC5ncm9vbUFnZSkgfHwgMjUsCiAgICBncm9vbURhdGVPZkJpcnRoOiBmZC5ncm9vbURhdGVPZkJpcnRoID8gU3RyaW5nKGZkLmdyb29tRGF0ZU9mQmlydGgpIDogbnVsbCwKICAgIGdyb29tQWRkcmVzczogU3RyaW5nKGZkLmdyb29tQWRkcmVzcyB8fCBmZC5ncm9vbUR3ZWxsaW5nIHx8IGZkLmFkZHJlc3MgfHwgIiIpLnRyaW0oKSwKICAgIGdyb29tUGhvbmU6IFN0cmluZyhmZC5ncm9vbVBob25lIHx8IGZkLnBob25lIHx8ICIiKS50cmltKCksCiAgICBncm9vbU5pbjogZmQuZ3Jvb21OaW4gPyBTdHJpbmcoZmQuZ3Jvb21OaW4pIDogbnVsbCwKICAgIGdyb29tRmF0aGVyTmFtZTogU3RyaW5nKGZkLmdyb29tRmF0aGVyTmFtZSB8fCAiRmF0aGVyIG9mIEdyb29tIikudHJpbSgpLAogICAgZ3Jvb21GYXRoZXJPY2N1cGF0aW9uOiBTdHJpbmcoZmQuZ3Jvb21GYXRoZXJPY2N1cGF0aW9uIHx8ICJTZWxmIEVtcGxveWVkIikudHJpbSgpLAogICAgYnJpZGVGdWxsTmFtZTogU3RyaW5nKGZkLmJyaWRlRnVsbE5hbWUgfHwgZmQuYnJpZGVOYW1lIHx8ICJCcmlkZSIpLnRyaW0oKSwKICAgIGJyaWRlQ29uZGl0aW9uOiBTdHJpbmcoZmQuYnJpZGVDb25kaXRpb24gfHwgIlNwaW5zdGVyIikudHJpbSgpLAogICAgYnJpZGVPY2N1cGF0aW9uOiBTdHJpbmcoZmQuYnJpZGVPY2N1cGF0aW9uIHx8ICJQcml2YXRlIFNlY3RvciIpLnRyaW0oKSwKICAgIGJyaWRlQWdlOiBOdW1iZXIoZmQuYnJpZGVBZ2UpIHx8IDIzLAogICAgYnJpZGVEYXRlT2ZCaXJ0aDogZmQuYnJpZGVEYXRlT2ZCaXJ0aCA/IFN0cmluZyhmZC5icmlkZURhdGVPZkJpcnRoKSA6IG51bGwsCiAgICBicmlkZUFkZHJlc3M6IFN0cmluZyhmZC5icmlkZUFkZHJlc3MgfHwgZmQuYnJpZGVEd2VsbGluZyB8fCAiIikudHJpbSgpLAogICAgYnJpZGVQaG9uZTogU3RyaW5nKGZkLmJyaWRlUGhvbmUgfHwgIiIpLnRyaW0oKSwKICAgIGJyaWRlTmluOiBmZC5icmlkZU5pbiA/IFN0cmluZyhmZC5icmlkZU5pbikgOiBudWxsLAogICAgYnJpZGVGYXRoZXJOYW1lOiBTdHJpbmcoZmQuYnJpZGVGYXRoZXJOYW1lIHx8ICJGYXRoZXIgb2YgQnJpZGUiKS50cmltKCksCiAgICBicmlkZUZhdGhlck9jY3VwYXRpb246IFN0cmluZyhmZC5icmlkZUZhdGhlck9jY3VwYXRpb24gfHwgIlNlbGYgRW1wbG95ZWQiKS50cmltKCksCiAgICB3ZWRkaW5nRGF0ZTogaXNOYU4od2VkZGluZ0RhdGUuZ2V0VGltZSgpKSA/IG5ldyBEYXRlKCkgOiB3ZWRkaW5nRGF0ZSwKICAgIHJlZ2lzdHJ5TG9jYXRpb246IFN0cmluZyhmZC5yZWdpc3RyeUxvY2F0aW9uIHx8IGZkLm1hcnJpYWdlUGxhY2UgfHwgIklmbyBMb2NhbCBHb3Zlcm5tZW50IE1hcnJpYWdlIFJlZ2lzdHJ5LCBTZWNyZXRhcmlhdCwgSWZvIikudHJpbSgpLAogICAgbWFycmlhZ2VUeXBlOiBTdHJpbmcoZmQubWFycmlhZ2VUeXBlIHx8ICJPcmRpbmFuY2UgTWFycmlhZ2UgKEFjdCkiKS50cmltKCksCiAgICBub3RpY2VOdW1iZXI6IGZkLm5vdGljZU51bWJlciA/IFN0cmluZyhmZC5ub3RpY2VOdW1iZXIpIDogbnVsbCwKICAgIHdpdG5lc3MxTmFtZTogU3RyaW5nKGZkLndpdG5lc3MxTmFtZSB8fCAiV2l0bmVzcyAxIikudHJpbSgpLAogICAgd2l0bmVzczFBZGRyZXNzOiBTdHJpbmcoZmQud2l0bmVzczFBZGRyZXNzIHx8ICIiKS50cmltKCksCiAgICB3aXRuZXNzMVBob25lOiBTdHJpbmcoZmQud2l0bmVzczFQaG9uZSB8fCAiIikudHJpbSgpLAogICAgd2l0bmVzczJOYW1lOiBTdHJpbmcoZmQud2l0bmVzczJOYW1lIHx8ICJXaXRuZXNzIDIiKS50cmltKCksCiAgICB3aXRuZXNzMkFkZHJlc3M6IFN0cmluZyhmZC53aXRuZXNzMkFkZHJlc3MgfHwgIiIpLnRyaW0oKSwKICAgIHdpdG5lc3MyUGhvbmU6IFN0cmluZyhmZC53aXRuZXNzMlBob25lIHx8ICIiKS50cmltKCksCiAgICBjb25zZW50R2l2ZW5CeTogZmQuY29uc2VudEdpdmVuQnkgPyBTdHJpbmcoZmQuY29uc2VudEdpdmVuQnkpIDogbnVsbCwKICAgIGhvbGdhQXBwcm92YWxTdGF0dXM6ICJwZW5kaW5nIiwKICAgIGxnUmVnQ29kZU5vOiAiSUZMRy1NUkciLAogICAgY2VydGlmaWNhdGVTZXJpYWxObzogZ2VuZXJhdGVSZWNlaXB0TnVtYmVyKCJNUkciKSwKICAgIGltY0JhcmNvZGU6IGBJTUMtJHtNYXRoLmZsb29yKDEwMDAwMDAwMDAwMCArIE1hdGgucmFuZG9tKCkgKiA5MDAwMDAwMDAwMDApfWAsCiAgfTsKfQoKaW1wb3J0IHsgcHJpc21hIH0gZnJvbSAiLi4vLi4vdXRpbHMvcHJpc21hIjsKaW1wb3J0IHsgZ2VuZXJhdGVSZWNlaXB0TnVtYmVyIH0gZnJvbSAiLi4vLi4vdXRpbHMvZ2VuZXJhdG9ycyI7CmltcG9ydCBmcyBmcm9tICJmcyI7CmltcG9ydCB7IG5vdGlmeSB9IGZyb20gIi4uL25vdGlmaWNhdGlvbi9ub3RpZmljYXRpb24uc2VydmljZSI7CmltcG9ydCB7IFByaXNtYSB9IGZyb20gIkBwcmlzbWEvY2xpZW50IjsKCnR5cGUgVXBsb2FkZWRGaWxlTWV0YSA9IHsKICBvcmlnaW5hbE5hbWU6IHN0cmluZzsKICBmaWxlTmFtZTogc3RyaW5nOwogIHJlbGF0aXZlUGF0aDogc3RyaW5nOyAvLyBwYXRoIG9uIGRpc2ssIG5vcm1hbGl6ZWQgd2l0aCBmb3J3YXJkIHNsYXNoZXMKICB1cmw6IHN0cmluZzsKICBkb2N1bWVudFR5cGU/OiBzdHJpbmcgfCBudWxsOwogIGFic29sdXRlUGF0aD86IHN0cmluZzsKfTsKCmludGVyZmFjZSBDcmVhdGVPclVwZGF0ZUFwcFBhcmFtcyB7CiAgbW9kZTogImNyZWF0ZSIgfCAiY29tcGxldGUiOwogIGFwcGxpY2F0aW9uSWQ/OiBzdHJpbmc7CiAgYXBwbGljYW50SWQ/OiBzdHJpbmcgfCBudWxsOwogIGNyZWF0ZWRCeUlkPzogc3RyaW5nIHwgbnVsbDsKICBzZXJ2aWNlSWQ6IHN0cmluZzsKICBmb3JtRGF0YTogUHJpc21hLklucHV0SnNvblZhbHVlOwogIGZpbGVzPzogVXBsb2FkZWRGaWxlTWV0YVtdOwogIGNyZWF0ZUludm9pY2U/OiBib29sZWFuOwp9CgpleHBvcnQgY29uc3QgY3JlYXRlT3JVcGRhdGVBcHBsaWNhdGlvbiA9IGFzeW5jICgKICBwYXJhbXM6IENyZWF0ZU9yVXBkYXRlQXBwUGFyYW1zLAopID0+IHsKICBjb25zdCB7CiAgICBtb2RlLAogICAgYXBwbGljYXRpb25JZCwKICAgIGFwcGxpY2FudElkLAogICAgY3JlYXRlZEJ5SWQsCiAgICBzZXJ2aWNlSWQsCiAgICBmb3JtRGF0YSwKICAgIGZpbGVzLAogICAgY3JlYXRlSW52b2ljZSA9IHRydWUsCiAgfSA9IHBhcmFtczsKCiAgY29uc3QgcmVzdWx0ID0gYXdhaXQgcHJpc21hLiR0cmFuc2FjdGlvbihhc3luYyAodHgpID0+IHsKICAgIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQogICAgLy8gQ09NUExFVEUgRVhJU1RJTkcgQVBQTElDQVRJT04KICAgIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQogICAgaWYgKG1vZGUgPT09ICJjb21wbGV0ZSIpIHsKICAgICAgaWYgKCFhcHBsaWNhdGlvbklkKSB7CiAgICAgICAgY29uc3QgZXJyOiBhbnkgPSBuZXcgRXJyb3IoIkFwcGxpY2F0aW9uIElEIGlzIHJlcXVpcmVkIik7CiAgICAgICAgZXJyLnN0YXR1c0NvZGUgPSA0MDA7CiAgICAgICAgZXJyLmNvZGUgPSAiQVBQTElDQVRJT05fSURfUkVRVUlSRUQiOwogICAgICAgIHRocm93IGVycjsKICAgICAgfQoKICAgICAgY29uc29sZS5sb2coIkNPTVBMRVRFIGZpbGVzOiIsIGZpbGVzPy5sZW5ndGgpOwogICAgICBjb25zb2xlLmxvZygKICAgICAgICAiQ09NUExFVEUgZmlsZSBmaWVsZHM64pyFIiwKICAgICAgICBmaWxlcwogICAgICApOwogICAgICBjb25zdCBhcHBsaWNhdGlvbiA9IGF3YWl0IHR4LmFwcGxpY2F0aW9uLmZpbmRVbmlxdWUoewogICAgICAgIHdoZXJlOiB7IGlkOiBhcHBsaWNhdGlvbklkIH0sCiAgICAgICAgaW5jbHVkZTogewogICAgICAgICAgc2VydmljZTogdHJ1ZSwKICAgICAgICAgIGFwcGxpY2FudDogdHJ1ZSwKICAgICAgICAgIGFwcGxpY2F0aW9uRG9jdW1lbnRzOiB0cnVlLAogICAgICBtYXJyaWFnZVJlY29yZDogeyBpbmNsdWRlOiB7IGhvbGdhQXBwcm92ZWRCeTogeyBzZWxlY3Q6IHsgaWQ6IHRydWUsIGZpcnN0TmFtZTogdHJ1ZSwgbGFzdE5hbWU6IHRydWUsIHJvbGU6IHRydWUgfSB9IH0gfSwKICAgICAgICB9LAogICAgICB9KTsKCiAgICAgIGlmICghYXBwbGljYXRpb24pIHsKICAgICAgICBjb25zdCBlcnI6IGFueSA9IG5ldyBFcnJvcigiQXBwbGljYXRpb24gbm90IGZvdW5kIik7CiAgICAgICAgZXJyLnN0YXR1c0NvZGUgPSA0MDQ7CiAgICAgICAgZXJyLmNvZGUgPSAiQVBQTElDQVRJT05fTk9UX0ZPVU5EIjsKICAgICAgICB0aHJvdyBlcnI7CiAgICAgIH0KCiAgICAgIC8vIERvIG5vdCBhbGxvdyB0aGUgY29tcGxldGlvbiByZXF1ZXN0IHRvIHN3aXRjaCBzZXJ2aWNlcy4KICAgICAgaWYgKGFwcGxpY2F0aW9uLnNlcnZpY2VJZCAhPT0gc2VydmljZUlkKSB7CiAgICAgICAgY29uc3QgZXJyOiBhbnkgPSBuZXcgRXJyb3IoCiAgICAgICAgICAiVGhlIHNlcnZpY2UgY2Fubm90IGJlIGNoYW5nZWQgd2hlbiBjb21wbGV0aW5nIGFuIGFwcGxpY2F0aW9uIiwKICAgICAgICApOwogICAgICAgIGVyci5zdGF0dXNDb2RlID0gNDAwOwogICAgICAgIGVyci5jb2RlID0gIlNFUlZJQ0VfQ0hBTkdFX05PVF9BTExPV0VEIjsKICAgICAgICB0aHJvdyBlcnI7CiAgICAgIH0KCiAgICAgIC8vIElmIGFuIGFwcGxpY2FudCB3YXMgc3VwcGxpZWQsIG1ha2Ugc3VyZSBpdCBtYXRjaGVzLgogICAgICBpZiAoCiAgICAgICAgYXBwbGljYW50SWQgJiYKICAgICAgICBhcHBsaWNhdGlvbi5hcHBsaWNhbnRJZCAmJgogICAgICAgIGFwcGxpY2FudElkICE9PSBhcHBsaWNhdGlvbi5hcHBsaWNhbnRJZAogICAgICApIHsKICAgICAgICBjb25zdCBlcnI6IGFueSA9IG5ldyBFcnJvcigKICAgICAgICAgICJZb3UgY2Fubm90IGNvbXBsZXRlIGFuIGFwcGxpY2F0aW9uIGZvciBhbm90aGVyIGFwcGxpY2FudCIsCiAgICAgICAgKTsKICAgICAgICBlcnIuc3RhdHVzQ29kZSA9IDQwMzsKICAgICAgICBlcnIuY29kZSA9ICJBUFBMSUNBTlRfTUlTTUFUQ0giOwogICAgICAgIHRocm93IGVycjsKICAgICAgfQoKICAgICAgLy8gQ2hlY2sgaWYgaW52b2ljZSBwYXltZW50IGhhcyBiZWVuIGNvbmZpcm1lZAogICAgICBjb25zdCBpbnYgPSBhd2FpdCB0eC5pbnZvaWNlLmZpbmRGaXJzdCh7CiAgICAgICAgd2hlcmU6IHsgYXBwbGljYXRpb25JZDogYXBwbGljYXRpb24uaWQgfSwKICAgICAgICBvcmRlckJ5OiB7IGNyZWF0ZWRBdDogImRlc2MiIH0sCiAgICAgIH0pOwogICAgICBjb25zdCBpc1BhaWQgPSBpbnY/LnBheW1lbnRTdGF0dXMgPT09ICJjb25maXJtZWQiOwogICAgICAvLyBJZiBwYXltZW50IGlzIGFscmVhZHkgY29uZmlybWVkLCBhZHZhbmNlIHRvICJzdWJtaXR0ZWQiIGZvciBTdWItQWRtaW4gZmlyc3QtbGV2ZWwgcmV2aWV3LgogICAgICAvLyBJZiBwYXltZW50IGlzIHN0aWxsIGF3YWl0aW5nIHZlcmlmaWNhdGlvbiwgcmV0YWluICJhd2FpdGluZ19wYXltZW50X2NvbmZpcm1hdGlvbiIKICAgICAgLy8gc28gdW5jb25maXJtZWQgY2xhaW1zIGRvIG5vdCBieXBhc3MgdGhlIFRyZWFzdXJ5IGNvbmZpcm1hdGlvbiBnYXRld2F5IQogICAgICBjb25zdCBuZXh0U3RhdHVzID0gaXNQYWlkID8gInN1Ym1pdHRlZCIgOiAiYXdhaXRpbmdfcGF5bWVudF9jb25maXJtYXRpb24iOwoKICAgICAgY29uc3QgZXhpc3RpbmdGb3JtRGF0YSA9CiAgICAgICAgYXBwbGljYXRpb24uZm9ybURhdGEgJiYgdHlwZW9mIGFwcGxpY2F0aW9uLmZvcm1EYXRhID09PSAib2JqZWN0IgogICAgICAgICAgPyAoYXBwbGljYXRpb24uZm9ybURhdGEgYXMgUmVjb3JkPHN0cmluZywgYW55PikKICAgICAgICAgIDoge307CiAgICAgIGNvbnN0IG5ld0Zvcm1EYXRhID0KICAgICAgICBmb3JtRGF0YSAmJiB0eXBlb2YgZm9ybURhdGEgPT09ICJvYmplY3QiCiAgICAgICAgICA/IChmb3JtRGF0YSBhcyBSZWNvcmQ8c3RyaW5nLCBhbnk+KQogICAgICAgICAgOiB7fTsKICAgICAgY29uc3QgbWVyZ2VkRm9ybURhdGEgPSB7CiAgICAgICAgLi4uZXhpc3RpbmdGb3JtRGF0YSwKICAgICAgICAuLi5uZXdGb3JtRGF0YSwKICAgICAgICBfZm9ybUNvbXBsZXRlZDogdHJ1ZSwKICAgICAgICBfZm9ybUNvbXBsZXRlZEF0OiBuZXcgRGF0ZSgpLnRvSVNPU3RyaW5nKCksCiAgICAgIH07CgogICAgICAvLyBVcGRhdGUgdGhlIGFjdHVhbCBhcHBsaWNhdGlvbi4KICAgICAgYXdhaXQgdHguYXBwbGljYXRpb24udXBkYXRlKHsKICAgICAgICB3aGVyZTogeyBpZDogYXBwbGljYXRpb25JZCB9LAogICAgICAgIGRhdGE6IHsKICAgICAgICAgIGZvcm1EYXRhOiBtZXJnZWRGb3JtRGF0YSwKICAgICAgICAgIHN0YXR1czogbmV4dFN0YXR1cywKICAgICAgICB9LAogICAgICAgIGluY2x1ZGU6IHsKICAgICAgICAgIHNlcnZpY2U6IHRydWUsCiAgICAgICAgICBhcHBsaWNhbnQ6IHRydWUsCiAgICAgICAgICBhcHBsaWNhdGlvbkRvY3VtZW50czogdHJ1ZSwKICAgICAgICAgIGludm9pY2U6IHRydWUsCiAgICAgICAgfSwKICAgICAgfSk7CgogICAgICAvLyBSZXBsYWNlIHVwbG9hZGVkIGRvY3VtZW50cyBieSBkb2N1bWVudFR5cGUuCiAgICAgIGlmIChmaWxlcyAmJiBmaWxlcy5sZW5ndGggPiAwKSB7CiAgICAgICAgZm9yIChjb25zdCBmaWxlIG9mIGZpbGVzKSB7CiAgICAgICAgICBjb25zdCBleGlzdGluZ0RvY3VtZW50ID0gYXdhaXQgdHguYXBwbGljYXRpb25Eb2N1bWVudC5maW5kRmlyc3QoewogICAgICAgICAgICB3aGVyZTogewogICAgICAgICAgICAgIGFwcGxpY2F0aW9uSWQsCiAgICAgICAgICAgICAgZG9jdW1lbnRUeXBlOiBmaWxlLmRvY3VtZW50VHlwZSA/PyAic3VwcG9ydGluZ19kb2N1bWVudCIsCiAgICAgICAgICAgIH0sCiAgICAgICAgICB9KTsKCiAgICAgICAgICBpZiAoZXhpc3RpbmdEb2N1bWVudCkgewogICAgICAgICAgICBhd2FpdCB0eC5hcHBsaWNhdGlvbkRvY3VtZW50LnVwZGF0ZSh7CiAgICAgICAgICAgICAgd2hlcmU6IHsKICAgICAgICAgICAgICAgIGlkOiBleGlzdGluZ0RvY3VtZW50LmlkLAogICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgZGF0YTogewogICAgICAgICAgICAgICAgb3JpZ2luYWxOYW1lOiBmaWxlLm9yaWdpbmFsTmFtZSwKICAgICAgICAgICAgICAgIGZpbGVOYW1lOiBmaWxlLmZpbGVOYW1lLAogICAgICAgICAgICAgICAgdXJsOiBmaWxlLnVybCwKICAgICAgICAgICAgICB9LAogICAgICAgICAgICB9KTsKICAgICAgICAgIH0gZWxzZSB7CiAgICAgICAgICAgIGF3YWl0IHR4LmFwcGxpY2F0aW9uRG9jdW1lbnQuY3JlYXRlKHsKICAgICAgICAgICAgICBkYXRhOiB7CiAgICAgICAgICAgICAgICBhcHBsaWNhdGlvbklkLAogICAgICAgICAgICAgICAgZG9jdW1lbnRUeXBlOiBmaWxlLmRvY3VtZW50VHlwZSA/PyAic3VwcG9ydGluZ19kb2N1bWVudCIsCiAgICAgICAgICAgICAgICBvcmlnaW5hbE5hbWU6IGZpbGUub3JpZ2luYWxOYW1lLAogICAgICAgICAgICAgICAgZmlsZU5hbWU6IGZpbGUuZmlsZU5hbWUsCiAgICAgICAgICAgICAgICB1cmw6IGZpbGUudXJsLAogICAgICAgICAgICAgIH0sCiAgICAgICAgICAgIH0pOwogICAgICAgICAgfQogICAgICAgIH0KICAgICAgfQoKICAgICAgaWYgKGFwcGxpY2F0aW9uLnNlcnZpY2U/LmNvZGUgPT09ICJtYXJyaWFnZV9jZXJ0aWZpY2F0ZSIgfHwgKGZvcm1EYXRhICYmIChmb3JtRGF0YSBhcyBhbnkpLmdyb29tRnVsbE5hbWUpKSB7CiAgICAgICAgY29uc3QgbXJnRGF0YSA9IGV4dHJhY3RNYXJyaWFnZURhdGEoZm9ybURhdGEpOwogICAgICAgIGF3YWl0ICh0eCBhcyBhbnkpLm1hcnJpYWdlUmVjb3JkLnVwc2VydCh7CiAgICAgICAgICB3aGVyZTogeyBhcHBsaWNhdGlvbklkIH0sCiAgICAgICAgICBjcmVhdGU6IHsKICAgICAgICAgICAgYXBwbGljYXRpb25JZCwKICAgICAgICAgICAgLi4ubXJnRGF0YSwKICAgICAgICAgIH0sCiAgICAgICAgICB1cGRhdGU6IHsKICAgICAgICAgICAgLi4ubXJnRGF0YSwKICAgICAgICAgIH0sCiAgICAgICAgfSk7CiAgICAgIH0KCiAgICAgIHJldHVybiB7CiAgICAgICAgYXBwbGljYXRpb246IGF3YWl0IHR4LmFwcGxpY2F0aW9uLmZpbmRVbmlxdWUoewogICAgICAgICAgd2hlcmU6IHsgaWQ6IGFwcGxpY2F0aW9uSWQgfSwKICAgICAgICAgIGluY2x1ZGU6IHsKICAgICAgICAgICAgc2VydmljZTogdHJ1ZSwKICAgICAgICAgICAgYXBwbGljYW50OiB0cnVlLAogICAgICAgICAgICBhcHBsaWNhdGlvbkRvY3VtZW50czogdHJ1ZSwKICAgICAgICAgICAgaW52b2ljZTogdHJ1ZSwKICAgICAgICAgIH0sCiAgICAgICAgfSksCiAgICAgICAgaW52b2ljZTogYXdhaXQgdHguaW52b2ljZS5maW5kVW5pcXVlKHsKICAgICAgICAgIHdoZXJlOiB7IGFwcGxpY2F0aW9uSWQgfSwKICAgICAgICB9KSwKICAgICAgfTsKICAgIH0KCiAgICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KICAgIC8vIENSRUFURSBORVcgQVBQTElDQVRJT04KICAgIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQoKICAgIGNvbnN0IHNlcnZpY2UgPSBhd2FpdCB0eC5zZXJ2aWNlLmZpbmRVbmlxdWUoewogICAgICB3aGVyZTogeyBpZDogc2VydmljZUlkIH0sCiAgICAgIGluY2x1ZGU6IHsgZmVlQ29uZmlnOiB0cnVlIH0sCiAgICB9KTsKCiAgICBpZiAoIXNlcnZpY2UpIHsKICAgICAgY29uc3QgZXJyOiBhbnkgPSBuZXcgRXJyb3IoIlNlcnZpY2Ugbm90IGZvdW5kIik7CiAgICAgIGVyci5zdGF0dXNDb2RlID0gNDA0OwogICAgICBlcnIuY29kZSA9ICJTRVJWSUNFX05PVF9GT1VORCI7CiAgICAgIHRocm93IGVycjsKICAgIH0KCiAgICBpZiAoIXNlcnZpY2UuaXNBY3RpdmUpIHsKICAgICAgY29uc3QgZXJyOiBhbnkgPSBuZXcgRXJyb3IoIlNlcnZpY2UgaXMgbm90IGFjdGl2ZSIpOwogICAgICBlcnIuc3RhdHVzQ29kZSA9IDQwMDsKICAgICAgZXJyLmNvZGUgPSAiU0VSVklDRV9JTkFDVElWRSI7CiAgICAgIHRocm93IGVycjsKICAgIH0KCiAgICBjb25zdCBmZWVDb25maWcgPSBhd2FpdCB0eC5zZXJ2aWNlRmVlQ29uZmlnLmZpbmRVbmlxdWUoewogICAgICB3aGVyZTogeyBzZXJ2aWNlSWQgfSwKICAgIH0pOwoKICAgIGNvbnN0IGZkT2JqOiBhbnkgPSAoZm9ybURhdGEgJiYgdHlwZW9mIGZvcm1EYXRhID09PSAib2JqZWN0IikgPyBmb3JtRGF0YSA6IHt9OwogICAgY29uc3QgaXNDdXN0b21VbmNsYXNzaWZpZWRQcm9wZXJ0eSA9CiAgICAgIGZkT2JqLmNsYXNzaWZpY2F0aW9uID09PSAib3RoZXIiIHx8IGZkT2JqLnJlcXVpcmVzT2ZmaWNlckNsYXNzaWZpY2F0aW9uID09PSB0cnVlOwogICAgY29uc3QgZHluYW1pY0NhbGN1bGF0ZWRGZWUgPSBOdW1iZXIoZmRPYmoudG90YWxBc3Nlc3NtZW50ID8/IGZkT2JqLmFzc2Vzc2VkRmVlID8/IDApOwoKICAgIGxldCBmZWVBbW91bnQ6IFByaXNtYS5EZWNpbWFsOwogICAgaWYgKGlzQ3VzdG9tVW5jbGFzc2lmaWVkUHJvcGVydHkpIHsKICAgICAgLy8gRG8gTk9UIGludmVudCBhbiBhdXRvbWF0aWMgZmVlIGZvciBjdXN0b20gcHJvcGVydHkgZGVzY3JpcHRpb25zIOKAlCByb3V0ZSB0byBvZmZpY2VyIGZvciBjbGFzc2lmaWNhdGlvbgogICAgICBmZWVBbW91bnQgPSBuZXcgUHJpc21hLkRlY2ltYWwoMCk7CiAgICB9IGVsc2UgaWYgKGR5bmFtaWNDYWxjdWxhdGVkRmVlID4gMCkgewogICAgICBmZWVBbW91bnQgPSBuZXcgUHJpc21hLkRlY2ltYWwoZHluYW1pY0NhbGN1bGF0ZWRGZWUpOwogICAgfSBlbHNlIGlmIChmZWVDb25maWcgJiYgZmVlQ29uZmlnLnN0YXR1cyA9PT0gIkFDVElWRSIpIHsKICAgICAgZmVlQW1vdW50ID0gZmVlQ29uZmlnLmFtb3VudDsKICAgIH0gZWxzZSB7CiAgICAgIGZlZUFtb3VudCA9IG5ldyBQcmlzbWEuRGVjaW1hbCgwKTsKICAgIH0KCiAgICBjb25zdCBhcHBOdW1iZXIgPSBnZW5lcmF0ZVJlY2VpcHROdW1iZXIoIkFQUCIpOwogICAgY29uc3QgZW5yaWNoZWRGb3JtRGF0YTogYW55ID0gewogICAgICAuLi5mZE9iaiwKICAgICAgdGVybXNBY2NlcHRlZDogdHJ1ZSwKICAgICAgdGVybXNBY2NlcHRlZEF0OiBmZE9iai50ZXJtc0FjY2VwdGVkQXQgfHwgbmV3IERhdGUoKS50b0lTT1N0cmluZygpLAogICAgICB0ZXJtc1ZlcnNpb246IGZkT2JqLnRlcm1zVmVyc2lvbiB8fCAidjEuMC0yMDI2LUlGTy1MR0EiLAogICAgICB0ZXJtc0FjY2VwdGVkQnlBcHBsaWNhbnRJZDogYXBwbGljYW50SWQgfHwgY3JlYXRlZEJ5SWQgfHwgbnVsbCwKICAgICAgdGVybXNBcHBsaWNhdGlvbk51bWJlcjogYXBwTnVtYmVyLAogICAgfTsKCiAgICBjb25zdCBjcmVhdGVEYXRhOiBhbnkgPSB7CiAgICAgIGFwcGxpY2F0aW9uTnVtYmVyOiBhcHBOdW1iZXIsCiAgICAgIHNlcnZpY2U6IHsKICAgICAgICBjb25uZWN0OiB7IGlkOiBzZXJ2aWNlSWQgfSwKICAgICAgfSwKICAgICAgZmVlQW1vdW50LAogICAgICBmb3JtRGF0YTogZW5yaWNoZWRGb3JtRGF0YSwKICAgICAgc3RhdHVzOiAic3VibWl0dGVkIiwKICAgIH07CgogICAgaWYgKGFwcGxpY2FudElkKSB7CiAgICAgIGNyZWF0ZURhdGEuYXBwbGljYW50ID0gewogICAgICAgIGNvbm5lY3Q6IHsgaWQ6IGFwcGxpY2FudElkIH0sCiAgICAgIH07CiAgICB9CgogICAgaWYgKGNyZWF0ZWRCeUlkKSB7CiAgICAgIGNyZWF0ZURhdGEuY3JlYXRlZEJ5ID0gewogICAgICAgIGNvbm5lY3Q6IHsgaWQ6IGNyZWF0ZWRCeUlkIH0sCiAgICAgIH07CiAgICB9IGVsc2UgaWYgKGFwcGxpY2FudElkKSB7CiAgICAgIGNyZWF0ZURhdGEuY3JlYXRlZEJ5ID0gewogICAgICAgIGNvbm5lY3Q6IHsgaWQ6IGFwcGxpY2FudElkIH0sCiAgICAgIH07CiAgICB9CgogICAgLy8gQ3JlYXRlIE1hcnJpYWdlIFJlY29yZCBpZiBzZXJ2aWNlIGlzIG1hcnJpYWdlX2NlcnRpZmljYXRlCiAgICBjb25zdCBhcHBsaWNhdGlvbiA9IGF3YWl0IHR4LmFwcGxpY2F0aW9uLmNyZWF0ZSh7CiAgICAgIGRhdGE6IGNyZWF0ZURhdGEsCiAgICAgIGluY2x1ZGU6IHsKICAgICAgICBzZXJ2aWNlOiB0cnVlLAogICAgICAgIGFwcGxpY2FudDogdHJ1ZSwKICAgICAgfSwKICAgIH0pOwoKICAgIGlmIChzZXJ2aWNlLmNvZGUgPT09ICJtYXJyaWFnZV9jZXJ0aWZpY2F0ZSIgfHwgKGZvcm1EYXRhICYmIChmb3JtRGF0YSBhcyBhbnkpLmdyb29tRnVsbE5hbWUpKSB7CiAgICAgIGNvbnN0IG1yZ0RhdGEgPSBleHRyYWN0TWFycmlhZ2VEYXRhKGZvcm1EYXRhKTsKICAgICAgYXdhaXQgKHR4IGFzIGFueSkubWFycmlhZ2VSZWNvcmQuY3JlYXRlKHsKICAgICAgICBkYXRhOiB7CiAgICAgICAgICBhcHBsaWNhdGlvbklkOiBhcHBsaWNhdGlvbi5pZCwKICAgICAgICAgIC4uLm1yZ0RhdGEsCiAgICAgICAgfSwKICAgICAgfSk7CiAgICB9CgogICAgbGV0IGludm9pY2UgPSBudWxsOwoKICAgIGlmIChjcmVhdGVJbnZvaWNlKSB7CiAgICAgIGNvbnN0IGludm9pY2VDcmVhdG9ySWQgPSBjcmVhdGVkQnlJZCB8fCBhcHBsaWNhbnRJZDsKCiAgICAgIGludm9pY2UgPSBhd2FpdCB0eC5pbnZvaWNlLmNyZWF0ZSh7CiAgICAgICAgZGF0YTogewogICAgICAgICAgaW52b2ljZU51bWJlcjogZ2VuZXJhdGVSZWNlaXB0TnVtYmVyKCJJTlYiKSwKICAgICAgICAgIGFwcGxpY2F0aW9uOiB7CiAgICAgICAgICAgIGNvbm5lY3Q6IHsgaWQ6IGFwcGxpY2F0aW9uLmlkIH0sCiAgICAgICAgICB9LAogICAgICAgICAgc2VydmljZTogewogICAgICAgICAgICBjb25uZWN0OiB7IGlkOiBzZXJ2aWNlSWQgfSwKICAgICAgICAgIH0sCiAgICAgICAgICBhbW91bnQ6IGZlZUFtb3VudCwKICAgICAgICAgIHBheW1lbnRTdGF0dXM6ICJwZW5kaW5nIiwKICAgICAgICAgIC4uLihpbnZvaWNlQ3JlYXRvcklkCiAgICAgICAgICAgID8gewogICAgICAgICAgICAgICAgY3JlYXRlZEJ5OiB7CiAgICAgICAgICAgICAgICAgIGNvbm5lY3Q6IHsgaWQ6IGludm9pY2VDcmVhdG9ySWQgfSwKICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgfQogICAgICAgICAgICA6IHt9KSwKICAgICAgICB9LAogICAgICB9KTsKICAgIH0KCiAgICAvLyBSZWNvcmQgVGVybXMgJiBDb25kaXRpb25zIGFjY2VwdGFuY2UgaW4gQXVkaXRMb2cKICAgIHRyeSB7CiAgICAgIGF3YWl0IHR4LmF1ZGl0TG9nLmNyZWF0ZSh7CiAgICAgICAgZGF0YTogewogICAgICAgICAgYWN0aW9uOiAiZGVjbGFyYXRpb25fYWNjZXB0ZWQiLAogICAgICAgICAgZW50aXR5OiAiQXBwbGljYXRpb24iLAogICAgICAgICAgZW50aXR5SWQ6IGFwcGxpY2F0aW9uLmlkLAogICAgICAgICAgdXNlcklkOiBhcHBsaWNhbnRJZCB8fCBjcmVhdGVkQnlJZCB8fCB1bmRlZmluZWQsCiAgICAgICAgICBkZXRhaWxzOiB7CiAgICAgICAgICAgIGFwcGxpY2F0aW9uTnVtYmVyOiBhcHBsaWNhdGlvbi5hcHBsaWNhdGlvbk51bWJlciwKICAgICAgICAgICAgYXBwbGljYW50SWQ6IGFwcGxpY2FudElkIHx8IGNyZWF0ZWRCeUlkIHx8IG51bGwsCiAgICAgICAgICAgIGFjY2VwdGVkQXQ6IGVucmljaGVkRm9ybURhdGEudGVybXNBY2NlcHRlZEF0LAogICAgICAgICAgICB2ZXJzaW9uOiBlbnJpY2hlZEZvcm1EYXRhLnRlcm1zVmVyc2lvbiwKICAgICAgICAgIH0sCiAgICAgICAgfSwKICAgICAgfSk7CiAgICB9IGNhdGNoIHt9CgogICAgaWYgKGZpbGVzICYmIGZpbGVzLmxlbmd0aCA+IDApIHsKICAgICAgZm9yIChjb25zdCBmaWxlIG9mIGZpbGVzKSB7CiAgICAgICAgYXdhaXQgdHguYXBwbGljYXRpb25Eb2N1bWVudC5jcmVhdGUoewogICAgICAgICAgZGF0YTogewogICAgICAgICAgICBhcHBsaWNhdGlvbklkOiBhcHBsaWNhdGlvbi5pZCwKICAgICAgICAgICAgZG9jdW1lbnRUeXBlOiBmaWxlLmRvY3VtZW50VHlwZSA/PyAic3VwcG9ydGluZ19kb2N1bWVudCIsCiAgICAgICAgICAgIG9yaWdpbmFsTmFtZTogZmlsZS5vcmlnaW5hbE5hbWUsCiAgICAgICAgICAgIGZpbGVOYW1lOiBmaWxlLmZpbGVOYW1lLAogICAgICAgICAgICB1cmw6IGZpbGUudXJsLAogICAgICAgICAgfSwKICAgICAgICB9KTsKICAgICAgfQogICAgfQoKICAgIHJldHVybiB7CiAgICAgIGFwcGxpY2F0aW9uLAogICAgICBpbnZvaWNlLAogICAgfTsKICB9KTsKCiAgcmV0dXJuIHJlc3VsdDsKfTsKCmV4cG9ydCBjb25zdCBnZXRBcHBsaWNhdGlvbkJ5SWRPck51bWJlciA9IGFzeW5jIChpZE9yTnVtYmVyOiBzdHJpbmcpID0+IHsKICBjb25zdCBhcHAgPSBhd2FpdCBwcmlzbWEuYXBwbGljYXRpb24uZmluZEZpcnN0KHsKICAgIHdoZXJlOiB7IE9SOiBbeyBpZDogaWRPck51bWJlciB9LCB7IGFwcGxpY2F0aW9uTnVtYmVyOiBpZE9yTnVtYmVyIH1dIH0sCiAgICBpbmNsdWRlOiB7CiAgICAgIHNlcnZpY2U6IHRydWUsCiAgICAgIGludm9pY2U6IHRydWUsCiAgICAgIGNlcnRpZmljYXRlOiB0cnVlLAogICAgICBhcHBsaWNhdGlvbkRvY3VtZW50czogdHJ1ZSwKICAgICAgYXBwbGljYW50OiB7CiAgICAgICAgc2VsZWN0OiB7CiAgICAgICAgICBpZDogdHJ1ZSwKICAgICAgICAgIGZpcnN0TmFtZTogdHJ1ZSwKICAgICAgICAgIGxhc3ROYW1lOiB0cnVlLAogICAgICAgICAgZW1haWw6IHRydWUsCiAgICAgICAgICBwaG9uZTogdHJ1ZSwKICAgICAgICB9LAogICAgICB9LAogICAgICBjcmVhdGVkQnk6IHsKICAgICAgICBzZWxlY3Q6IHsgaWQ6IHRydWUsIGZpcnN0TmFtZTogdHJ1ZSwgbGFzdE5hbWU6IHRydWUsIHJvbGU6IHRydWUgfSwKICAgICAgfSwKICAgIH0sCiAgfSk7CiAgcmV0dXJuIGFwcDsKfTsKCmV4cG9ydCBjb25zdCBsaXN0QXBwbGljYXRpb25zRm9yVXNlciA9IGFzeW5jICgKICB1c2VyOiBhbnksCiAgcGFnZSA9IDEsCiAgbGltaXQgPSAyNSwKICBmaWx0ZXJzOiBSZWNvcmQ8c3RyaW5nLCB1bmtub3duPiA9IHt9LAopID0+IHsKICBjb25zdCBza2lwID0gKHBhZ2UgLSAxKSAqIGxpbWl0OwogIGNvbnN0IHdoZXJlOiBhbnkgPSB7fTsKCiAgaWYgKHVzZXIucm9sZSA9PT0gImNpdGl6ZW4iIHx8IHVzZXIucm9sZSA9PT0gImJ1c2luZXNzX293bmVyIikgewogICAgd2hlcmUuYXBwbGljYW50SWQgPSB1c2VyLmlkOwogIH0gZWxzZSBpZiAodXNlci5yb2xlID09PSAiZmllbGRfb2ZmaWNlciIpIHsKICAgIHdoZXJlLmNyZWF0ZWRCeUlkID0gdXNlci5pZDsKICB9CiAgICBpZiAodHlwZW9mIGZpbHRlcnMuc3RhdHVzID09PSAic3RyaW5nIiAmJiBmaWx0ZXJzLnN0YXR1cykgd2hlcmUuc3RhdHVzID0gZmlsdGVycy5zdGF0dXM7CiAgICBpZiAodHlwZW9mIGZpbHRlcnMuc2VydmljZUlkID09PSAic3RyaW5nIiAmJiBmaWx0ZXJzLnNlcnZpY2VJZCkgd2hlcmUuc2VydmljZUlkID0gZmlsdGVycy5zZXJ2aWNlSWQ7CiAgICBpZiAodHlwZW9mIGZpbHRlcnMuc2VhcmNoID09PSAic3RyaW5nIiAmJiBmaWx0ZXJzLnNlYXJjaC50cmltKCkpIHsKICAgICAgY29uc3QgY29udGFpbnMgPSBmaWx0ZXJzLnNlYXJjaC50cmltKCk7CiAgICAgIHdoZXJlLk9SID0gWwogICAgICAgIHsgYXBwbGljYXRpb25OdW1iZXI6IHsgY29udGFpbnMsIG1vZGU6ICJpbnNlbnNpdGl2ZSIgfSB9LAogICAgICAgIHsgYXBwbGljYW50OiB7IGlzOiB7IE9SOiBbImZpcnN0TmFtZSIsICJsYXN0TmFtZSIsICJlbWFpbCIsICJwaG9uZSJdLm1hcCgoa2V5KSA9PiAoeyBba2V5XTogeyBjb250YWlucywgbW9kZTogImluc2Vuc2l0aXZlIiB9IH0pKSB9IH0gfSwKICAgICAgICAuLi5bImZ1bGxOYW1lIiwgImVtYWlsIiwgInBob25lIl0ubWFwKChrZXkpID0+ICh7IGZvcm1EYXRhOiB7IHBhdGg6IFtrZXldLCBzdHJpbmdfY29udGFpbnM6IGNvbnRhaW5zLCBtb2RlOiAiaW5zZW5zaXRpdmUiIH0gfSkpLAogICAgICBdOwogICAgfQogICAgaWYgKHR5cGVvZiBmaWx0ZXJzLndhcmRJZCA9PT0gInN0cmluZyIgJiYgZmlsdGVycy53YXJkSWQpIHsKICAgICAgd2hlcmUuQU5EID0gW3sgT1I6IFsKICAgICAgICB7IGZvcm1EYXRhOiB7IHBhdGg6IFsid2FyZCJdLCBlcXVhbHM6IGZpbHRlcnMud2FyZElkIH0gfSwKICAgICAgICB7IGFwcGxpY2FudDogeyBpczogeyB3YXJkOiB7IGlzOiB7IG5hbWU6IGZpbHRlcnMud2FyZElkIH0gfSB9IH0gfSwKICAgICAgXSB9XTsKICAgIH0KICAvLyBGb3IgcHJpdmlsZWdlZCByb2xlcyAoc3VwZXJfYWRtaW4sIGxnYV9hZG1pbiwgZXRjLikgLSBubyByZXN0cmljdGlvbnMKCiAgY29uc3QgaXRlbXMgPSBhd2FpdCBwcmlzbWEuYXBwbGljYXRpb24uZmluZE1hbnkoewogICAgd2hlcmUsCiAgICBzZWxlY3Q6IHsKICAgICAgaWQ6IHRydWUsCiAgICAgIGFwcGxpY2F0aW9uTnVtYmVyOiB0cnVlLAogICAgICBzdGF0dXM6IHRydWUsCiAgICAgIGZlZUFtb3VudDogdHJ1ZSwKICAgICAgZm9ybURhdGE6IHRydWUsCiAgICAgIHBheW1lbnRGaXJzdDogdHJ1ZSwKICAgICAgY3JlYXRlZEF0OiB0cnVlLAogICAgICB1cGRhdGVkQXQ6IHRydWUsCiAgICAgIHJldmlld2VkQXQ6IHRydWUsCiAgICAgIGRlY2xpbmVSZWFzb246IHRydWUsCiAgICAgIHNlcnZpY2VJZDogdHJ1ZSwKICAgICAgYXBwbGljYW50SWQ6IHRydWUsCiAgICAgIGNyZWF0ZWRCeUlkOiB0cnVlLAogICAgICByZXZpZXdlZEJ5SWQ6IHRydWUsCiAgICAgIHNlcnZpY2U6IHsKICAgICAgICBzZWxlY3Q6IHsKICAgICAgICAgIGlkOiB0cnVlLAogICAgICAgICAgY29kZTogdHJ1ZSwKICAgICAgICAgIG5hbWU6IHRydWUsCiAgICAgICAgICBjYXRlZ29yeTogdHJ1ZSwKICAgICAgICAgIHJldmVudWVIZWFkOiB0cnVlLAogICAgICAgICAgZGVzY3JpcHRpb246IHRydWUsCiAgICAgICAgICBlc3RpbWF0ZWREYXlzOiB0cnVlLAogICAgICAgICAgY2VydGlmaWNhdGVUeXBlOiB0cnVlLAogICAgICAgICAgaXNBY3RpdmU6IHRydWUsCiAgICAgICAgfSwKICAgICAgfSwKICAgICAgaW52b2ljZTogewogICAgICAgIHNlbGVjdDogewogICAgICAgICAgaWQ6IHRydWUsCiAgICAgICAgICBpbnZvaWNlTnVtYmVyOiB0cnVlLAogICAgICAgICAgYW1vdW50OiB0cnVlLAogICAgICAgICAgcGF5bWVudFN0YXR1czogdHJ1ZSwKICAgICAgICAgIHBhaWRBdDogdHJ1ZSwKICAgICAgICAgIHRyYW5zYWN0aW9uUmVmOiB0cnVlLAogICAgICAgICAgdmlydHVhbEFjY291bnROdW1iZXI6IHRydWUsCiAgICAgICAgICB2aXJ0dWFsQmFua05hbWU6IHRydWUsCiAgICAgICAgICBwYXltZW50czogewogICAgICAgICAgICBzZWxlY3Q6IHsKICAgICAgICAgICAgICBtZXRob2Q6IHRydWUsCiAgICAgICAgICAgIH0sCiAgICAgICAgICB9LAogICAgICAgIH0sCiAgICAgIH0sCiAgICAgIGNlcnRpZmljYXRlOiB7CiAgICAgICAgc2VsZWN0OiB7CiAgICAgICAgICBpZDogdHJ1ZSwKICAgICAgICAgIGNlcnRpZmljYXRlTnVtYmVyOiB0cnVlLAogICAgICAgICAgdmVyaWZpY2F0aW9uQ29kZTogdHJ1ZSwKICAgICAgICAgIGlzc3VlZEF0OiB0cnVlLAogICAgICAgICAgZXhwaXJlc0F0OiB0cnVlLAogICAgICAgICAgcGRmVXJsOiB0cnVlLAogICAgICAgICAgaXNzdWVkQnk6IHRydWUsCiAgICAgICAgfSwKICAgICAgfSwKICAgICAgYXBwbGljYXRpb25Eb2N1bWVudHM6IHsKICAgICAgICBzZWxlY3Q6IHsKICAgICAgICAgIGlkOiB0cnVlLAogICAgICAgICAgZG9jdW1lbnRUeXBlOiB0cnVlLAogICAgICAgICAgb3JpZ2luYWxOYW1lOiB0cnVlLAogICAgICAgICAgZmlsZU5hbWU6IHRydWUsCiAgICAgICAgICB1cmw6IHRydWUsCiAgICAgICAgICBtaW1lVHlwZTogdHJ1ZSwKICAgICAgICAgIGZpbGVTaXplOiB0cnVlLAogICAgICAgICAgdXBsb2FkZWRBdDogdHJ1ZSwKICAgICAgICB9LAogICAgICAgIG9yZGVyQnk6IHsKICAgICAgICAgIHVwbG9hZGVkQXQ6ICJkZXNjIiwKICAgICAgICB9LAogICAgICAgIHRha2U6IDEwLCAvLyBMaW1pdCB0byBtb3N0IHJlY2VudCAxMCBkb2N1bWVudHMKICAgICAgfSwKICAgICAgYXBwbGljYW50OiB7CiAgICAgICAgc2VsZWN0OiB7CiAgICAgICAgICBpZDogdHJ1ZSwKICAgICAgICAgIGVtYWlsOiB0cnVlLAogICAgICAgICAgcGhvbmU6IHRydWUsCiAgICAgICAgICBmaXJzdE5hbWU6IHRydWUsCiAgICAgICAgICBsYXN0TmFtZTogdHJ1ZSwKICAgICAgICAgIHJvbGU6IHRydWUsCiAgICAgICAgICBhZGRyZXNzOiB0cnVlLAogICAgICAgICAgdG93bjogdHJ1ZSwKICAgICAgICB9LAogICAgICB9LAogICAgICBjcmVhdGVkQnk6IHsKICAgICAgICBzZWxlY3Q6IHsKICAgICAgICAgIGlkOiB0cnVlLAogICAgICAgICAgZW1haWw6IHRydWUsCiAgICAgICAgICBmaXJzdE5hbWU6IHRydWUsCiAgICAgICAgICBsYXN0TmFtZTogdHJ1ZSwKICAgICAgICAgIHJvbGU6IHRydWUsCiAgICAgICAgfSwKICAgICAgfSwKICAgICAgcmV2aWV3ZWRCeTogewogICAgICAgIHNlbGVjdDogewogICAgICAgICAgaWQ6IHRydWUsCiAgICAgICAgICBlbWFpbDogdHJ1ZSwKICAgICAgICAgIGZpcnN0TmFtZTogdHJ1ZSwKICAgICAgICAgIGxhc3ROYW1lOiB0cnVlLAogICAgICAgICAgcm9sZTogdHJ1ZSwKICAgICAgICB9LAogICAgICB9LAogICAgfSwKICAgIG9yZGVyQnk6IHsgY3JlYXRlZEF0OiAiZGVzYyIgfSwKICAgIHNraXAsCiAgICB0YWtlOiBsaW1pdCwKICB9KTsKCiAgY29uc3QgdG90YWwgPSBhd2FpdCBwcmlzbWEuYXBwbGljYXRpb24uY291bnQoeyB3aGVyZSB9KTsKCiAgcmV0dXJuIHsKICAgIGl0ZW1zLAogICAgbWV0YTogewogICAgICB0b3RhbCwKICAgICAgcGFnZSwKICAgICAgbGltaXQsCiAgICAgIHRvdGFsUGFnZXM6IE1hdGguY2VpbCh0b3RhbCAvIGxpbWl0KSwKICAgICAgaGFzTmV4dFBhZ2U6IHBhZ2UgKiBsaW1pdCA8IHRvdGFsLAogICAgICBoYXNQcmV2aW91c1BhZ2U6IHBhZ2UgPiAxLAogICAgfSwKICB9Owp9Owo=
+
+export function extractMarriageData(fdRaw: any) {
+  const fd = (fdRaw && typeof fdRaw === 'object') ? fdRaw : {};
+  const rawDate = fd.weddingDate || fd.marriageDate;
+  const weddingDate = rawDate ? new Date(rawDate) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  return {
+    groomFullName: String(fd.groomFullName || fd.groomName || fd.fullName || "Groom").trim(),
+    groomCondition: String(fd.groomCondition || "Bachelor").trim(),
+    groomOccupation: String(fd.groomOccupation || "Private Sector").trim(),
+    groomAge: Number(fd.groomAge) || 25,
+    groomDateOfBirth: fd.groomDateOfBirth ? String(fd.groomDateOfBirth) : null,
+    groomAddress: String(fd.groomAddress || fd.groomDwelling || fd.address || "").trim(),
+    groomPhone: String(fd.groomPhone || fd.phone || "").trim(),
+    groomNin: fd.groomNin ? String(fd.groomNin) : null,
+    groomFatherName: String(fd.groomFatherName || "Father of Groom").trim(),
+    groomFatherOccupation: String(fd.groomFatherOccupation || "Self Employed").trim(),
+    brideFullName: String(fd.brideFullName || fd.brideName || "Bride").trim(),
+    brideCondition: String(fd.brideCondition || "Spinster").trim(),
+    brideOccupation: String(fd.brideOccupation || "Private Sector").trim(),
+    brideAge: Number(fd.brideAge) || 23,
+    brideDateOfBirth: fd.brideDateOfBirth ? String(fd.brideDateOfBirth) : null,
+    brideAddress: String(fd.brideAddress || fd.brideDwelling || "").trim(),
+    bridePhone: String(fd.bridePhone || "").trim(),
+    brideNin: fd.brideNin ? String(fd.brideNin) : null,
+    brideFatherName: String(fd.brideFatherName || "Father of Bride").trim(),
+    brideFatherOccupation: String(fd.brideFatherOccupation || "Self Employed").trim(),
+    weddingDate: isNaN(weddingDate.getTime()) ? new Date() : weddingDate,
+    registryLocation: String(fd.registryLocation || fd.marriagePlace || "Ifo Local Government Marriage Registry, Secretariat, Ifo").trim(),
+    marriageType: String(fd.marriageType || "Ordinance Marriage (Act)").trim(),
+    noticeNumber: fd.noticeNumber ? String(fd.noticeNumber) : null,
+    witness1Name: String(fd.witness1Name || "Witness 1").trim(),
+    witness1Address: String(fd.witness1Address || "").trim(),
+    witness1Phone: String(fd.witness1Phone || "").trim(),
+    witness2Name: String(fd.witness2Name || "Witness 2").trim(),
+    witness2Address: String(fd.witness2Address || "").trim(),
+    witness2Phone: String(fd.witness2Phone || "").trim(),
+    consentGivenBy: fd.consentGivenBy ? String(fd.consentGivenBy) : null,
+    holgaApprovalStatus: "pending",
+    lgRegCodeNo: "IFLG-MRG",
+    certificateSerialNo: generateReceiptNumber("MRG"),
+    imcBarcode: `IMC-${Math.floor(100000000000 + Math.random() * 900000000000)}`,
+  };
+}
+
+import { prisma } from "../../utils/prisma";
+import { generateReceiptNumber } from "../../utils/generators";
+import fs from "fs";
+import { notify } from "../notification/notification.service";
+import { Prisma } from "@prisma/client";
+
+type UploadedFileMeta = {
+  originalName: string;
+  fileName: string;
+  relativePath: string; // path on disk, normalized with forward slashes
+  url: string;
+  documentType?: string | null;
+  absolutePath?: string;
+};
+
+interface CreateOrUpdateAppParams {
+  mode: "create" | "complete";
+  applicationId?: string;
+  applicantId?: string | null;
+  createdById?: string | null;
+  serviceId: string;
+  formData: Prisma.InputJsonValue;
+  files?: UploadedFileMeta[];
+  createInvoice?: boolean;
+}
+
+export const createOrUpdateApplication = async (
+  params: CreateOrUpdateAppParams,
+) => {
+  const {
+    mode,
+    applicationId,
+    applicantId,
+    createdById,
+    serviceId,
+    formData,
+    files,
+    createInvoice = true,
+  } = params;
+
+  const result = await prisma.$transaction(async (tx) => {
+    // ============================================================
+    // COMPLETE EXISTING APPLICATION
+    // ============================================================
+    if (mode === "complete") {
+      if (!applicationId) {
+        const err: any = new Error("Application ID is required");
+        err.statusCode = 400;
+        err.code = "APPLICATION_ID_REQUIRED";
+        throw err;
+      }
+
+      console.log("COMPLETE files:", files?.length);
+      console.log(
+        "COMPLETE file fields:✅",
+        files
+      );
+      const application = await tx.application.findUnique({
+        where: { id: applicationId },
+        include: {
+          service: true,
+          applicant: true,
+          applicationDocuments: true,
+      marriageRecord: { include: { holgaApprovedBy: { select: { id: true, firstName: true, lastName: true, role: true } } } },
+        },
+      });
+
+      if (!application) {
+        const err: any = new Error("Application not found");
+        err.statusCode = 404;
+        err.code = "APPLICATION_NOT_FOUND";
+        throw err;
+      }
+
+      // Do not allow the completion request to switch services.
+      if (application.serviceId !== serviceId) {
+        const err: any = new Error(
+          "The service cannot be changed when completing an application",
+        );
+        err.statusCode = 400;
+        err.code = "SERVICE_CHANGE_NOT_ALLOWED";
+        throw err;
+      }
+
+      // If an applicant was supplied, make sure it matches.
+      if (
+        applicantId &&
+        application.applicantId &&
+        applicantId !== application.applicantId
+      ) {
+        const err: any = new Error(
+          "You cannot complete an application for another applicant",
+        );
+        err.statusCode = 403;
+        err.code = "APPLICANT_MISMATCH";
+        throw err;
+      }
+
+      // Check if invoice payment has been confirmed
+      const inv = await tx.invoice.findFirst({
+        where: { applicationId: application.id },
+        orderBy: { createdAt: "desc" },
+      });
+      const isPaid = inv?.paymentStatus === "confirmed";
+      // If payment is already confirmed, advance to "submitted" for Sub-Admin first-level review.
+      // If payment is still awaiting verification, retain "awaiting_payment_confirmation"
+      // so unconfirmed claims do not bypass the Treasury confirmation gateway!
+      const nextStatus = isPaid ? "submitted" : "awaiting_payment_confirmation";
+
+      const existingFormData =
+        application.formData && typeof application.formData === "object"
+          ? (application.formData as Record<string, any>)
+          : {};
+      const newFormData =
+        formData && typeof formData === "object"
+          ? (formData as Record<string, any>)
+          : {};
+      const mergedFormData = {
+        ...existingFormData,
+        ...newFormData,
+        _formCompleted: true,
+        _formCompletedAt: new Date().toISOString(),
+      };
+
+      // Update the actual application.
+      await tx.application.update({
+        where: { id: applicationId },
+        data: {
+          formData: mergedFormData,
+          status: nextStatus,
+        },
+        include: {
+          service: true,
+          applicant: true,
+          applicationDocuments: true,
+          invoice: true,
+        },
+      });
+
+      // Replace uploaded documents by documentType.
+      if (files && files.length > 0) {
+        for (const file of files) {
+          const existingDocument = await tx.applicationDocument.findFirst({
+            where: {
+              applicationId,
+              documentType: file.documentType ?? "supporting_document",
+            },
+          });
+
+          if (existingDocument) {
+            await tx.applicationDocument.update({
+              where: {
+                id: existingDocument.id,
+              },
+              data: {
+                originalName: file.originalName,
+                fileName: file.fileName,
+                url: file.url,
+              },
+            });
+          } else {
+            await tx.applicationDocument.create({
+              data: {
+                applicationId,
+                documentType: file.documentType ?? "supporting_document",
+                originalName: file.originalName,
+                fileName: file.fileName,
+                url: file.url,
+              },
+            });
+          }
+        }
+      }
+
+      if (application.service?.code === "marriage_certificate" || (formData && (formData as any).groomFullName)) {
+        const mrgData = extractMarriageData(formData);
+        await (tx as any).marriageRecord.upsert({
+          where: { applicationId },
+          create: {
+            applicationId,
+            ...mrgData,
+          },
+          update: {
+            ...mrgData,
+          },
+        });
+      }
+
+      return {
+        application: await tx.application.findUnique({
+          where: { id: applicationId },
+          include: {
+            service: true,
+            applicant: true,
+            applicationDocuments: true,
+            invoice: true,
+          },
+        }),
+        invoice: await tx.invoice.findUnique({
+          where: { applicationId },
+        }),
+      };
+    }
+
+    // ============================================================
+    // CREATE NEW APPLICATION
+    // ============================================================
+
+    const service = await tx.service.findUnique({
+      where: { id: serviceId },
+      include: { feeConfig: true },
+    });
+
+    if (!service) {
+      const err: any = new Error("Service not found");
+      err.statusCode = 404;
+      err.code = "SERVICE_NOT_FOUND";
+      throw err;
+    }
+
+    if (!service.isActive) {
+      const err: any = new Error("Service is not active");
+      err.statusCode = 400;
+      err.code = "SERVICE_INACTIVE";
+      throw err;
+    }
+
+    const feeConfig = await tx.serviceFeeConfig.findUnique({
+      where: { serviceId },
+    });
+
+    const fdObj: any = (formData && typeof formData === "object") ? formData : {};
+    const isCustomUnclassifiedProperty =
+      fdObj.classification === "other" || fdObj.requiresOfficerClassification === true;
+    const dynamicCalculatedFee = Number(fdObj.totalAssessment ?? fdObj.assessedFee ?? 0);
+
+    let feeAmount: Prisma.Decimal;
+    if (isCustomUnclassifiedProperty) {
+      // Do NOT invent an automatic fee for custom property descriptions — route to officer for classification
+      feeAmount = new Prisma.Decimal(0);
+    } else if (dynamicCalculatedFee > 0) {
+      feeAmount = new Prisma.Decimal(dynamicCalculatedFee);
+    } else if (feeConfig && feeConfig.status === "ACTIVE") {
+      feeAmount = feeConfig.amount;
+    } else {
+      feeAmount = new Prisma.Decimal(0);
+    }
+
+    const appNumber = generateReceiptNumber("APP");
+    const enrichedFormData: any = {
+      ...fdObj,
+      termsAccepted: true,
+      termsAcceptedAt: fdObj.termsAcceptedAt || new Date().toISOString(),
+      termsVersion: fdObj.termsVersion || "v1.0-2026-IFO-LGA",
+      termsAcceptedByApplicantId: applicantId || createdById || null,
+      termsApplicationNumber: appNumber,
+    };
+
+    const createData: any = {
+      applicationNumber: appNumber,
+      service: {
+        connect: { id: serviceId },
+      },
+      feeAmount,
+      formData: enrichedFormData,
+      status: "submitted",
+    };
+
+    if (applicantId) {
+      createData.applicant = {
+        connect: { id: applicantId },
+      };
+    }
+
+    if (createdById) {
+      createData.createdBy = {
+        connect: { id: createdById },
+      };
+    } else if (applicantId) {
+      createData.createdBy = {
+        connect: { id: applicantId },
+      };
+    }
+
+    // Create Marriage Record if service is marriage_certificate
+    const application = await tx.application.create({
+      data: createData,
+      include: {
+        service: true,
+        applicant: true,
+      },
+    });
+
+    if (service.code === "marriage_certificate" || (formData && (formData as any).groomFullName)) {
+      const mrgData = extractMarriageData(formData);
+      await (tx as any).marriageRecord.create({
+        data: {
+          applicationId: application.id,
+          ...mrgData,
+        },
+      });
+    }
+
+    let invoice = null;
+
+    if (createInvoice) {
+      const invoiceCreatorId = createdById || applicantId;
+
+      invoice = await tx.invoice.create({
+        data: {
+          invoiceNumber: generateReceiptNumber("INV"),
+          application: {
+            connect: { id: application.id },
+          },
+          service: {
+            connect: { id: serviceId },
+          },
+          amount: feeAmount,
+          paymentStatus: "pending",
+          ...(invoiceCreatorId
+            ? {
+                createdBy: {
+                  connect: { id: invoiceCreatorId },
+                },
+              }
+            : {}),
+        },
+      });
+    }
+
+    // Record Terms & Conditions acceptance in AuditLog
+    try {
+      await tx.auditLog.create({
+        data: {
+          action: "declaration_accepted",
+          entity: "Application",
+          entityId: application.id,
+          userId: applicantId || createdById || undefined,
+          details: {
+            applicationNumber: application.applicationNumber,
+            applicantId: applicantId || createdById || null,
+            acceptedAt: enrichedFormData.termsAcceptedAt,
+            version: enrichedFormData.termsVersion,
+          },
+        },
+      });
+    } catch {}
+
+    if (files && files.length > 0) {
+      for (const file of files) {
+        await tx.applicationDocument.create({
+          data: {
+            applicationId: application.id,
+            documentType: file.documentType ?? "supporting_document",
+            originalName: file.originalName,
+            fileName: file.fileName,
+            url: file.url,
+          },
+        });
+      }
+    }
+
+    return {
+      application,
+      invoice,
+    };
+  });
+
+  return result;
+};
+
+export const getApplicationByIdOrNumber = async (idOrNumber: string) => {
+  const app = await prisma.application.findFirst({
+    where: { OR: [{ id: idOrNumber }, { applicationNumber: idOrNumber }] },
+    include: {
+      service: true,
+      invoice: true,
+      certificate: true,
+      applicationDocuments: true,
+      applicant: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+        },
+      },
+      createdBy: {
+        select: { id: true, firstName: true, lastName: true, role: true },
+      },
+    },
+  });
+  return app;
+};
+
+export const listApplicationsForUser = async (
+  user: any,
+  page = 1,
+  limit = 25,
+  filters: Record<string, unknown> = {},
+) => {
+  const skip = (page - 1) * limit;
+  const where: any = {};
+
+  if (user.role === "citizen" || user.role === "business_owner") {
+    where.applicantId = user.id;
+  } else if (user.role === "field_officer") {
+    where.createdById = user.id;
+  }
+    if (typeof filters.status === "string" && filters.status) where.status = filters.status;
+    if (typeof filters.serviceId === "string" && filters.serviceId) where.serviceId = filters.serviceId;
+    if (typeof filters.search === "string" && filters.search.trim()) {
+      const contains = filters.search.trim();
+      where.OR = [
+        { applicationNumber: { contains, mode: "insensitive" } },
+        { applicant: { is: { OR: ["firstName", "lastName", "email", "phone"].map((key) => ({ [key]: { contains, mode: "insensitive" } })) } } },
+        ...["fullName", "email", "phone"].map((key) => ({ formData: { path: [key], string_contains: contains, mode: "insensitive" } })),
+      ];
+    }
+    if (typeof filters.wardId === "string" && filters.wardId) {
+      where.AND = [{ OR: [
+        { formData: { path: ["ward"], equals: filters.wardId } },
+        { applicant: { is: { ward: { is: { name: filters.wardId } } } } },
+      ] }];
+    }
+  // For privileged roles (super_admin, lga_admin, etc.) - no restrictions
+
+  const items = await prisma.application.findMany({
+    where,
+    select: {
+      id: true,
+      applicationNumber: true,
+      status: true,
+      feeAmount: true,
+      formData: true,
+      paymentFirst: true,
+      createdAt: true,
+      updatedAt: true,
+      reviewedAt: true,
+      declineReason: true,
+      serviceId: true,
+      applicantId: true,
+      createdById: true,
+      reviewedById: true,
+      service: {
+        select: {
+          id: true,
+          code: true,
+          name: true,
+          category: true,
+          revenueHead: true,
+          description: true,
+          estimatedDays: true,
+          certificateType: true,
+          isActive: true,
+        },
+      },
+      invoice: {
+        select: {
+          id: true,
+          invoiceNumber: true,
+          amount: true,
+          paymentStatus: true,
+          paidAt: true,
+          transactionRef: true,
+          virtualAccountNumber: true,
+          virtualBankName: true,
+          payments: {
+            select: {
+              method: true,
+            },
+          },
+        },
+      },
+      certificate: {
+        select: {
+          id: true,
+          certificateNumber: true,
+          verificationCode: true,
+          issuedAt: true,
+          expiresAt: true,
+          pdfUrl: true,
+          issuedBy: true,
+        },
+      },
+      applicationDocuments: {
+        select: {
+          id: true,
+          documentType: true,
+          originalName: true,
+          fileName: true,
+          url: true,
+          mimeType: true,
+          fileSize: true,
+          uploadedAt: true,
+        },
+        orderBy: {
+          uploadedAt: "desc",
+        },
+        take: 10, // Limit to most recent 10 documents
+      },
+      applicant: {
+        select: {
+          id: true,
+          email: true,
+          phone: true,
+          firstName: true,
+          lastName: true,
+          role: true,
+          address: true,
+          town: true,
+        },
+      },
+      createdBy: {
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          role: true,
+        },
+      },
+      reviewedBy: {
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          role: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    skip,
+    take: limit,
+  });
+
+  const total = await prisma.application.count({ where });
+
+  return {
+    items,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPreviousPage: page > 1,
+    },
+  };
+};

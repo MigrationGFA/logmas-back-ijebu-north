@@ -1,1 +1,227 @@
-Ly8gc3JjL21vZHVsZXMvbGdhQWRtaW4vbGdhQWRtaW4ucm91dGVzLnRzCmltcG9ydCB7IFJvdXRlciB9IGZyb20gJ2V4cHJlc3MnOwppbXBvcnQgeyByZXF1aXJlQXV0aCB9IGZyb20gJy4uLy4uL21pZGRsZXdhcmUvYXV0aC5taWRkbGV3YXJlJzsKaW1wb3J0IHsgcmVxdWlyZVJvbGUgfSBmcm9tICcuLi8uLi9taWRkbGV3YXJlL2F1dGhvcml6ZS5taWRkbGV3YXJlJzsKaW1wb3J0IHsgdmFsaWRhdGVCb2R5LCB2YWxpZGF0ZVF1ZXJ5IH0gZnJvbSAnLi4vLi4vbWlkZGxld2FyZS92YWxpZGF0ZS5taWRkbGV3YXJlJzsKaW1wb3J0IHsKICBjcmVhdGVXYXJkLCBsaXN0V2FyZHMsIGdldFdhcmRCeUlkLCB1cGRhdGVXYXJkLAogIGFzc2lnbkNvdW5jaWxsb3IsIGRlbGV0ZVdhcmQsCiAgY3JlYXRlU3RhZmYsCiAgcmVzZW5kU3RhZmZDcmVkZW50aWFscywgbGlzdFN0YWZmLCBnZXRTdGFmZkJ5SWQsIHVwZGF0ZVN0YWZmLCB0b2dnbGVTdGFmZlN0YXR1cywKICBnZXRBZG1pbk92ZXJ2aWV3LAogIGdldEFjY291bnRzT3ZlcnZpZXcsCiAgcmVzZXRBY2NvdW50UGFzc3dvcmQsCgp9IGZyb20gJy4vbGdhQWRtaW4uY29udHJvbGxlcic7CmltcG9ydCB7CiAgY3JlYXRlV2FyZFNjaGVtYSwgdXBkYXRlV2FyZFNjaGVtYSwgYXNzaWduQ291bmNpbGxvclNjaGVtYSwKICBjcmVhdGVTdGFmZlNjaGVtYSwgdXBkYXRlU3RhZmZTY2hlbWEsCiAgbGlzdFN0YWZmU2NoZW1hLCBsaXN0V2FyZHNTY2hlbWEsCn0gZnJvbSAnLi9sZ2FBZG1pbi52YWxpZGF0aW9uJzsKCmNvbnN0IHJvdXRlciA9IFJvdXRlcigpOwoKLy8gQm90aCBsZ2FfYWRtaW4gYW5kIHN1cGVyX2FkbWluIGNhbiBhY2Nlc3MgYWxsIHRoZXNlIHJvdXRlcwpjb25zdCBndWFyZCA9IFtyZXF1aXJlQXV0aCwgcmVxdWlyZVJvbGUoJ2xnYV9hZG1pbicsICdzdXBlcl9hZG1pbicsICdzdWJfYWRtaW4nKV07CgovLyDilIDilIAgT1ZFUlZJRVcg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgovKioKICogQG9wZW5hcGkKICogL2xnYS9vdmVydmlldzoKICogICBnZXQ6CiAqICAgICB0YWdzOiBbTEdBIEFkbWluXQogKiAgICAgc3VtbWFyeTogRGFzaGJvYXJkIG92ZXJ2aWV3IOKAlCB3YXJkLCBzdGFmZiwgYXBwbGljYXRpb24gYW5kIGNvbXBsYWludCBzdGF0cwogKiAgICAgc2VjdXJpdHk6CiAqICAgICAgIC0gQmVhcmVyQXV0aDogW10KICovCnJvdXRlci5nZXQoJy9vdmVydmlldycsIC4uLmd1YXJkLCBnZXRBZG1pbk92ZXJ2aWV3KTsKCi8vIOKUgOKUgCBXQVJEUyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCi8qKgogKiBAb3BlbmFwaQogKiAvbGdhL3dhcmRzOgogKiAgIHBvc3Q6CiAqICAgICB0YWdzOiBbTEdBIEFkbWluXQogKiAgICAgc3VtbWFyeTogQ3JlYXRlIGEgbmV3IHdhcmQKICogICAgIHNlY3VyaXR5OgogKiAgICAgICAtIEJlYXJlckF1dGg6IFtdCiAqLwpyb3V0ZXIucG9zdCgnL3dhcmRzJywgLi4uZ3VhcmQsIHZhbGlkYXRlQm9keShjcmVhdGVXYXJkU2NoZW1hKSwgY3JlYXRlV2FyZCk7CgovKioKICogQG9wZW5hcGkKICogL2xnYS93YXJkczoKICogICBnZXQ6CiAqICAgICB0YWdzOiBbTEdBIEFkbWluXQogKiAgICAgc3VtbWFyeTogTGlzdCBhbGwgd2FyZHMgd2l0aCBjb3VuY2lsbG9yIGluZm8gYW5kIGNvdW50cwogKiAgICAgc2VjdXJpdHk6CiAqICAgICAgIC0gQmVhcmVyQXV0aDogW10KICovCnJvdXRlci5nZXQoJy93YXJkcycsIC4uLmd1YXJkLCBsaXN0V2FyZHMpOwoKLyoqCiAqIEBvcGVuYXBpCiAqIC9sZ2Evd2FyZHMve2lkfToKICogICBnZXQ6CiAqICAgICB0YWdzOiBbTEdBIEFkbWluXQogKiAgICAgc3VtbWFyeTogR2V0IGEgc2luZ2xlIHdhcmQgd2l0aCBmdWxsIGRldGFpbAogKiAgICAgc2VjdXJpdHk6CiAqICAgICAgIC0gQmVhcmVyQXV0aDogW10KICovCnJvdXRlci5nZXQoJy93YXJkcy86aWQnLCAuLi5ndWFyZCwgZ2V0V2FyZEJ5SWQpOwoKLyoqCiAqIEBvcGVuYXBpCiAqIC9sZ2Evd2FyZHMve2lkfToKICogICBwYXRjaDoKICogICAgIHRhZ3M6IFtMR0EgQWRtaW5dCiAqICAgICBzdW1tYXJ5OiBVcGRhdGUgd2FyZCBkZXRhaWxzCiAqICAgICBzZWN1cml0eToKICogICAgICAgLSBCZWFyZXJBdXRoOiBbXQogKi8Kcm91dGVyLnBhdGNoKCcvd2FyZHMvOmlkJywgLi4uZ3VhcmQsIHZhbGlkYXRlQm9keSh1cGRhdGVXYXJkU2NoZW1hKSwgdXBkYXRlV2FyZCk7CgovKioKICogQG9wZW5hcGkKICogL2xnYS93YXJkcy97aWR9L2Fzc2lnbi1jb3VuY2lsbG9yOgogKiAgIHBhdGNoOgogKiAgICAgdGFnczogW0xHQSBBZG1pbl0KICogICAgIHN1bW1hcnk6IEFzc2lnbiBhIHdhcmQgY291bmNpbGxvciB0byB0aGlzIHdhcmQKICogICAgIHNlY3VyaXR5OgogKiAgICAgICAtIEJlYXJlckF1dGg6IFtdCiAqLwpyb3V0ZXIucGF0Y2goCiAgJy93YXJkcy86aWQvYXNzaWduLWNvdW5jaWxsb3InLAogIC4uLmd1YXJkLAogIHZhbGlkYXRlQm9keShhc3NpZ25Db3VuY2lsbG9yU2NoZW1hKSwKICBhc3NpZ25Db3VuY2lsbG9yCik7CgovKioKICogQG9wZW5hcGkKICogL2xnYS93YXJkcy97aWR9OgogKiAgIGRlbGV0ZToKICogICAgIHRhZ3M6IFtMR0EgQWRtaW5dCiAqICAgICBzdW1tYXJ5OiBTb2Z0IGRlbGV0ZSBhIHdhcmQKICogICAgIHNlY3VyaXR5OgogKiAgICAgICAtIEJlYXJlckF1dGg6IFtdCiAqLwpyb3V0ZXIuZGVsZXRlKCcvd2FyZHMvOmlkJywgLi4uZ3VhcmQsIGRlbGV0ZVdhcmQpOwoKLy8g4pSA4pSAIFNUQUZGIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKLyoqCiAqIEBvcGVuYXBpCiAqIC9sZ2Evc3RhZmY6CiAqICAgcG9zdDoKICogICAgIHRhZ3M6IFtMR0EgQWRtaW5dCiAqICAgICBzdW1tYXJ5OiBDcmVhdGUgYSBuZXcgc3RhZmYgYWNjb3VudCB3aXRoIGEgZ2VuZXJhdGVkIHRlbXBvcmFyeSBwYXNzd29yZAogKiAgICAgc2VjdXJpdHk6CiAqICAgICAgIC0gQmVhcmVyQXV0aDogW10KICovCnJvdXRlci5wb3N0KCcvc3RhZmYnLCAuLi5ndWFyZCwgdmFsaWRhdGVCb2R5KGNyZWF0ZVN0YWZmU2NoZW1hKSwgY3JlYXRlU3RhZmYpOwpyb3V0ZXIucG9zdCgnL3N0YWZmLzppZC9yZXNlbmQtY3JlZGVudGlhbHMnLCAuLi5ndWFyZCwgcmVzZW5kU3RhZmZDcmVkZW50aWFscyk7Ci8qKgogKiBAb3BlbmFwaQogKiAvbGdhL2NvbnRyYWN0b3JzOgogKiAgIHBvc3Q6CiAqICAgICB0YWdzOiBbTEdBIEFkbWluXQogKiAgICAgc3VtbWFyeTogQ3JlYXRlIGEgbmV3IENvbnRyYWN0b3IgYWNjb3VudCB3aXRoIGEgZ2VuZXJhdGVkIHRlbXBvcmFyeSBwYXNzd29yZAogKiAgICAgc2VjdXJpdHk6CiAqICAgICAgIC0gQmVhcmVyQXV0aDogW10KICovCi8vIHJvdXRlci5wb3N0KCcvY29udHJhY3RvcnMnLCAuLi5ndWFyZCwgIGNyZWF0ZUNvbnRyYWN0b3IpOwovKioKICogQG9wZW5hcGkKICogL2xnYS9jb250cmFjdG9ycy86Y29udHJhY3RvcklkL2FnZW50czoKICogICBwb3N0OgogKiAgICAgdGFnczogW0xHQSBBZG1pbl0KICogICAgIHN1bW1hcnk6IENyZWF0ZSBhIG5ldyBDb250cmFjdG9yIGFjY291bnQgd2l0aCBhIGdlbmVyYXRlZCB0ZW1wb3JhcnkgcGFzc3dvcmQKICogICAgIHNlY3VyaXR5OgogKiAgICAgICAtIEJlYXJlckF1dGg6IFtdCiAqLwovLyByb3V0ZXIucG9zdCgnL2NvbnRyYWN0b3JzLzpjb250cmFjdG9ySWQvYWdlbnRzJywgLi4uZ3VhcmQsICBhZGRBZ2VudFRvQ29udHJhY3Rvcik7CgovKioKICogQG9wZW5hcGkKICogL2xnYS9zdGFmZjoKICogICBnZXQ6CiAqICAgICB0YWdzOiBbTEdBIEFkbWluXQogKiAgICAgc3VtbWFyeTogTGlzdCBhbGwgc3RhZmYg4oCUIGZpbHRlcmFibGUgYnkgcm9sZSwgd2FyZCwgYW5kIGFjdGl2ZSBzdGF0dXMKICogICAgIHNlY3VyaXR5OgogKiAgICAgICAtIEJlYXJlckF1dGg6IFtdCiAqLwpyb3V0ZXIuZ2V0KCcvc3RhZmYnLCAuLi5ndWFyZCwgbGlzdFN0YWZmKTsKCi8qKgogKiBAb3BlbmFwaQogKiAvbGdhL3N0YWZmL3tpZH06CiAqICAgZ2V0OgogKiAgICAgdGFnczogW0xHQSBBZG1pbl0KICogICAgIHN1bW1hcnk6IEdldCBhIHNpbmdsZSBzdGFmZiBtZW1iZXIgd2l0aCBmdWxsIHByb2ZpbGUKICogICAgIHNlY3VyaXR5OgogKiAgICAgICAtIEJlYXJlckF1dGg6IFtdCiAqLwpyb3V0ZXIuZ2V0KCcvc3RhZmYvOmlkJywgLi4uZ3VhcmQsIGdldFN0YWZmQnlJZCk7CgovKioKICogQG9wZW5hcGkKICogL2xnYS9zdGFmZi97aWR9OgogKiAgIHBhdGNoOgogKiAgICAgdGFnczogW0xHQSBBZG1pbl0KICogICAgIHN1bW1hcnk6IFVwZGF0ZSBzdGFmZiBwcm9maWxlIG9yIHJlYXNzaWduIHdhcmQvY29udHJhY3RvcgogKiAgICAgc2VjdXJpdHk6CiAqICAgICAgIC0gQmVhcmVyQXV0aDogW10KICovCnJvdXRlci5wYXRjaCgnL3N0YWZmLzppZCcsIC4uLmd1YXJkLCB2YWxpZGF0ZUJvZHkodXBkYXRlU3RhZmZTY2hlbWEpLCB1cGRhdGVTdGFmZik7CgovKioKICogQG9wZW5hcGkKICogL2xnYS9zdGFmZi97aWR9L3RvZ2dsZS1zdGF0dXM6CiAqICAgcGF0Y2g6CiAqICAgICB0YWdzOiBbTEdBIEFkbWluXQogKiAgICAgc3VtbWFyeTogQWN0aXZhdGUgb3Igc3VzcGVuZCBhIHN0YWZmIGFjY291bnQKICogICAgIHNlY3VyaXR5OgogKiAgICAgICAtIEJlYXJlckF1dGg6IFtdCiAqLwpyb3V0ZXIucGF0Y2goJy9zdGFmZi86aWQvdG9nZ2xlLXN0YXR1cycsIC4uLmd1YXJkLCB0b2dnbGVTdGFmZlN0YXR1cyk7CgovKioKICogQG9wZW5hcGkKICogL2xnYS9hY2NvdW50cy9vdmVydmlldzoKICogICBwYXRjaDoKICogICAgIHRhZ3M6IFtMR0EgQWRtaW5dCiAqICAgICBzdW1tYXJ5OiBHZXQgQWxsIEFjY291bnRzIE92ZXJ2aWV3CiAqICAgICBzZWN1cml0eToKICogICAgICAgLSBCZWFyZXJBdXRoOiBbXQogKi8Kcm91dGVyLmdldCgnL2FjY291bnRzL292ZXJ2aWV3JywgLi4uZ3VhcmQsIGdldEFjY291bnRzT3ZlcnZpZXcpOwovKioKICogQG9wZW5hcGkKICogL2xnYS9jb250cmFjdG9ycy9vdmVydmlldzoKICogICBwYXRjaDoKICogICAgIHRhZ3M6IFtMR0EgQWRtaW5dCiAqICAgICBzdW1tYXJ5OiBHZXQgQWxsIENvbnRyYWN0b3JzIE92ZXJ2aWV3CiAqICAgICBzZWN1cml0eToKICogICAgICAgLSBCZWFyZXJBdXRoOiBbXQogKi8KLy8gcm91dGVyLmdldCgnL2NvbnRyYWN0b3JzL292ZXJ2aWV3JywgLi4uZ3VhcmQsIGdldENvbnRyYWN0b3JzT3ZlcnZpZXcpOwoKLyoqCiAqIEBvcGVuYXBpCiAqIC9sZ2EvYWNjb3VudHMvOmlkL3Jlc2V0LXBhc3N3b3JkOgogKiAgIHBhdGNoOgogKiAgICAgdGFnczogW0xHQSBBZG1pbl0KICogICAgIHN1bW1hcnk6IFJlc2V0IGEgVXNlcnMgcGFzc3dvcmQKICogICAgIHNlY3VyaXR5OgogKiAgICAgICAtIEJlYXJlckF1dGg6IFtdCiAqLwpyb3V0ZXIucGF0Y2goJy9hY2NvdW50cy86aWQvcmVzZXQtcGFzc3dvcmQnLCAuLi5ndWFyZCwgcmVzZXRBY2NvdW50UGFzc3dvcmQpOwoKLy8gcm91dGVyLmdldCgnL3Blcm1pdHMnLCAuLi5ndWFyZCwgZ2V0QWxsUGVybWl0cyk7CgovLyByb3V0ZXIucGF0Y2goJy9wZXJtaXRzLzppZC9yZXZva2UnLCAuLi5ndWFyZCwgcmV2b2tlUGVybWl0KTsKCmV4cG9ydCBkZWZhdWx0IHJvdXRlcjs=
+// src/modules/lgaAdmin/lgaAdmin.routes.ts
+import { Router } from 'express';
+import { requireAuth } from '../../middleware/auth.middleware';
+import { requireRole } from '../../middleware/authorize.middleware';
+import { validateBody, validateQuery } from '../../middleware/validate.middleware';
+import {
+  createWard, listWards, getWardById, updateWard,
+  assignCouncillor, deleteWard,
+  createStaff,
+  resendStaffCredentials, listStaff, getStaffById, updateStaff, toggleStaffStatus,
+  getAdminOverview,
+  getAccountsOverview,
+  resetAccountPassword,
+
+} from './lgaAdmin.controller';
+import {
+  createWardSchema, updateWardSchema, assignCouncillorSchema,
+  createStaffSchema, updateStaffSchema,
+  listStaffSchema, listWardsSchema,
+} from './lgaAdmin.validation';
+
+const router = Router();
+
+// Both lga_admin and super_admin can access all these routes
+const guard = [requireAuth, requireRole('lga_admin', 'super_admin', 'sub_admin')];
+
+// ── OVERVIEW ──────────────────────────────────────────────────
+
+/**
+ * @openapi
+ * /lga/overview:
+ *   get:
+ *     tags: [LGA Admin]
+ *     summary: Dashboard overview — ward, staff, application and complaint stats
+ *     security:
+ *       - BearerAuth: []
+ */
+router.get('/overview', ...guard, getAdminOverview);
+
+// ── WARDS ─────────────────────────────────────────────────────
+
+/**
+ * @openapi
+ * /lga/wards:
+ *   post:
+ *     tags: [LGA Admin]
+ *     summary: Create a new ward
+ *     security:
+ *       - BearerAuth: []
+ */
+router.post('/wards', ...guard, validateBody(createWardSchema), createWard);
+
+/**
+ * @openapi
+ * /lga/wards:
+ *   get:
+ *     tags: [LGA Admin]
+ *     summary: List all wards with councillor info and counts
+ *     security:
+ *       - BearerAuth: []
+ */
+router.get('/wards', ...guard, listWards);
+
+/**
+ * @openapi
+ * /lga/wards/{id}:
+ *   get:
+ *     tags: [LGA Admin]
+ *     summary: Get a single ward with full detail
+ *     security:
+ *       - BearerAuth: []
+ */
+router.get('/wards/:id', ...guard, getWardById);
+
+/**
+ * @openapi
+ * /lga/wards/{id}:
+ *   patch:
+ *     tags: [LGA Admin]
+ *     summary: Update ward details
+ *     security:
+ *       - BearerAuth: []
+ */
+router.patch('/wards/:id', ...guard, validateBody(updateWardSchema), updateWard);
+
+/**
+ * @openapi
+ * /lga/wards/{id}/assign-councillor:
+ *   patch:
+ *     tags: [LGA Admin]
+ *     summary: Assign a ward councillor to this ward
+ *     security:
+ *       - BearerAuth: []
+ */
+router.patch(
+  '/wards/:id/assign-councillor',
+  ...guard,
+  validateBody(assignCouncillorSchema),
+  assignCouncillor
+);
+
+/**
+ * @openapi
+ * /lga/wards/{id}:
+ *   delete:
+ *     tags: [LGA Admin]
+ *     summary: Soft delete a ward
+ *     security:
+ *       - BearerAuth: []
+ */
+router.delete('/wards/:id', ...guard, deleteWard);
+
+// ── STAFF ─────────────────────────────────────────────────────
+
+/**
+ * @openapi
+ * /lga/staff:
+ *   post:
+ *     tags: [LGA Admin]
+ *     summary: Create a new staff account with a generated temporary password
+ *     security:
+ *       - BearerAuth: []
+ */
+router.post('/staff', ...guard, validateBody(createStaffSchema), createStaff);
+router.post('/staff/:id/resend-credentials', ...guard, resendStaffCredentials);
+/**
+ * @openapi
+ * /lga/contractors:
+ *   post:
+ *     tags: [LGA Admin]
+ *     summary: Create a new Contractor account with a generated temporary password
+ *     security:
+ *       - BearerAuth: []
+ */
+// router.post('/contractors', ...guard,  createContractor);
+/**
+ * @openapi
+ * /lga/contractors/:contractorId/agents:
+ *   post:
+ *     tags: [LGA Admin]
+ *     summary: Create a new Contractor account with a generated temporary password
+ *     security:
+ *       - BearerAuth: []
+ */
+// router.post('/contractors/:contractorId/agents', ...guard,  addAgentToContractor);
+
+/**
+ * @openapi
+ * /lga/staff:
+ *   get:
+ *     tags: [LGA Admin]
+ *     summary: List all staff — filterable by role, ward, and active status
+ *     security:
+ *       - BearerAuth: []
+ */
+router.get('/staff', ...guard, listStaff);
+
+/**
+ * @openapi
+ * /lga/staff/{id}:
+ *   get:
+ *     tags: [LGA Admin]
+ *     summary: Get a single staff member with full profile
+ *     security:
+ *       - BearerAuth: []
+ */
+router.get('/staff/:id', ...guard, getStaffById);
+
+/**
+ * @openapi
+ * /lga/staff/{id}:
+ *   patch:
+ *     tags: [LGA Admin]
+ *     summary: Update staff profile or reassign ward/contractor
+ *     security:
+ *       - BearerAuth: []
+ */
+router.patch('/staff/:id', ...guard, validateBody(updateStaffSchema), updateStaff);
+
+/**
+ * @openapi
+ * /lga/staff/{id}/toggle-status:
+ *   patch:
+ *     tags: [LGA Admin]
+ *     summary: Activate or suspend a staff account
+ *     security:
+ *       - BearerAuth: []
+ */
+router.patch('/staff/:id/toggle-status', ...guard, toggleStaffStatus);
+
+/**
+ * @openapi
+ * /lga/accounts/overview:
+ *   patch:
+ *     tags: [LGA Admin]
+ *     summary: Get All Accounts Overview
+ *     security:
+ *       - BearerAuth: []
+ */
+router.get('/accounts/overview', ...guard, getAccountsOverview);
+/**
+ * @openapi
+ * /lga/contractors/overview:
+ *   patch:
+ *     tags: [LGA Admin]
+ *     summary: Get All Contractors Overview
+ *     security:
+ *       - BearerAuth: []
+ */
+// router.get('/contractors/overview', ...guard, getContractorsOverview);
+
+/**
+ * @openapi
+ * /lga/accounts/:id/reset-password:
+ *   patch:
+ *     tags: [LGA Admin]
+ *     summary: Reset a Users password
+ *     security:
+ *       - BearerAuth: []
+ */
+router.patch('/accounts/:id/reset-password', ...guard, resetAccountPassword);
+
+// router.get('/permits', ...guard, getAllPermits);
+
+// router.patch('/permits/:id/revoke', ...guard, revokePermit);
+
+export default router;

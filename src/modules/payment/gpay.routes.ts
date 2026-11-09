@@ -1,1 +1,121 @@
-Ly8gc3JjL21vZHVsZXMvcGF5bWVudC9ncGF5LnJvdXRlcy50cwppbXBvcnQgeyBSb3V0ZXIgfSBmcm9tICJleHByZXNzIjsKaW1wb3J0IGV4cHJlc3MgZnJvbSAiZXhwcmVzcyI7CmltcG9ydCByYXRlTGltaXQgZnJvbSAiZXhwcmVzcy1yYXRlLWxpbWl0IjsKaW1wb3J0IG11bHRlciBmcm9tICJtdWx0ZXIiOwppbXBvcnQgcGF0aCBmcm9tICJwYXRoIjsKaW1wb3J0IGNyeXB0byBmcm9tICJjcnlwdG8iOwppbXBvcnQgeyB6IH0gZnJvbSAiem9kIjsKCmltcG9ydCB7IHJlcXVpcmVBdXRoIH0gZnJvbSAiLi4vLi4vbWlkZGxld2FyZS9hdXRoLm1pZGRsZXdhcmUiOwppbXBvcnQgeyB2YWxpZGF0ZUJvZHksIHZhbGlkYXRlUXVlcnkgfSBmcm9tICIuLi8uLi9taWRkbGV3YXJlL3ZhbGlkYXRlLm1pZGRsZXdhcmUiOwppbXBvcnQgeyBVUExPQURfRk9MREVSX01BUCwgZW5zdXJlRGlyZWN0b3J5RXhpc3RzIH0gZnJvbSAiLi4vLi4vdXRpbHMvZmlsZVN0b3JhZ2UiOwppbXBvcnQgewogIGdldEludm9pY2VWaXJ0dWFsQWNjb3VudCwKICBnZXRWaXJ0dWFsQWNjb3VudEZvclNlcnZpY2UsCiAgZ3BheVdlYmhvb2ssCiAgaW5pdGlhbGl6ZUdwYXlJbnZvaWNlUGF5bWVudCwKICBpbml0aWFsaXplR3BheVB1YmxpY1BheW1lbnQsCiAgc3VibWl0UHVibGljU3RhdGljVHJhbnNmZXJOb3RpY2UsCiAgdmVyaWZ5R3BheVBheW1lbnQsCn0gZnJvbSAiLi9ncGF5LmNvbnRyb2xsZXIiOwoKY29uc3Qgcm91dGVyID0gUm91dGVyKCk7Cgpjb25zdCBqc29uQm9keSA9IGV4cHJlc3MuanNvbigpOwoKY29uc3QgcHJvb2ZTdG9yYWdlID0gbXVsdGVyLmRpc2tTdG9yYWdlKHsKICBkZXN0aW5hdGlvbjogKF9yZXEsIF9maWxlLCBjYikgPT4gewogICAgY29uc3QgdGFyZ2V0Rm9sZGVyID0gVVBMT0FEX0ZPTERFUl9NQVAucGF5bWVudFByb29mczsKICAgIGVuc3VyZURpcmVjdG9yeUV4aXN0cyh0YXJnZXRGb2xkZXIpOwogICAgY2IobnVsbCwgdGFyZ2V0Rm9sZGVyKTsKICB9LAogIGZpbGVuYW1lOiAoX3JlcSwgZmlsZSwgY2IpID0+IHsKICAgIGNvbnN0IHVuaXF1ZVN1ZmZpeCA9IGAke0RhdGUubm93KCl9LSR7Y3J5cHRvLnJhbmRvbUJ5dGVzKDQpLnRvU3RyaW5nKCJoZXgiKX1gOwogICAgY29uc3QgZXh0ID0gcGF0aC5leHRuYW1lKGZpbGUub3JpZ2luYWxuYW1lKTsKICAgIGNiKG51bGwsIGBwcm9vZi0ke3VuaXF1ZVN1ZmZpeH0ke2V4dH1gKTsKICB9LAp9KTsKY29uc3QgcHJvb2ZVcGxvYWQgPSBtdWx0ZXIoeyBzdG9yYWdlOiBwcm9vZlN0b3JhZ2UsIGxpbWl0czogeyBmaWxlU2l6ZTogNSAqIDEwMjQgKiAxMDI0IH0gfSk7CgpleHBvcnQgY29uc3QgZ3BheVB1YmxpY0luaXRpYWxpemVTY2hlbWEgPSB6Lm9iamVjdCh7CiAgc2VydmljZUlkOiB6LnN0cmluZygpLm1pbigxKSwKICBmdWxsTmFtZTogei5zdHJpbmcoKS5taW4oMiksCiAgZW1haWw6IHouc3RyaW5nKCkuZW1haWwoKSwKICBwaG9uZTogei5zdHJpbmcoKS5taW4oNyksCn0pOwoKY29uc3QgdmlydHVhbEFjY291bnRMaW1pdGVyID0gcmF0ZUxpbWl0KHsKICB3aW5kb3dNczogMTUgKiA2MCAqIDEwMDAsCiAgbWF4OiA2MCwKICBzdGFuZGFyZEhlYWRlcnM6IHRydWUsCiAgbGVnYWN5SGVhZGVyczogZmFsc2UsCiAgbWVzc2FnZTogewogICAgc3RhdHVzOiAiZXJyb3IiLAogICAgZXJyb3I6IHsKICAgICAgY29kZTogIlRPT19NQU5ZX1JFUVVFU1RTIiwKICAgICAgbWVzc2FnZToKICAgICAgICAiVG9vIG1hbnkgcmVxdWVzdHMgZm9yIGJhbmsgdHJhbnNmZXIgZGV0YWlscy4gUGxlYXNlIHRyeSBhZ2FpbiBpbiAxNSBtaW51dGVzLiIsCiAgICAgIGRldGFpbHM6IG51bGwsCiAgICB9LAogIH0sCn0pOwoKZXhwb3J0IGNvbnN0IGdwYXlWaXJ0dWFsQWNjb3VudFF1ZXJ5U2NoZW1hID0gei5vYmplY3QoewogIHNlcnZpY2VJZDogei5zdHJpbmcoKS5taW4oMSksCn0pOwoKLy8gR0VUIC9hcGkvdjEvcGF5bWVudHMvZ3BheS92aXJ0dWFsLWFjY291bnQ/c2VydmljZUlkPQovLyBQVUJMSUMuIERlZGljYXRlZCBQcm92aWR1cyBCYW5rIFN0YXRpYyBWaXJ0dWFsIEFjY291bnQgZm9yIHRoZSBzZXJ2aWNlIChDaGFubmVsIDEpLgpyb3V0ZXIuZ2V0KAogICIvdmlydHVhbC1hY2NvdW50IiwKICB2aXJ0dWFsQWNjb3VudExpbWl0ZXIsCiAgdmFsaWRhdGVRdWVyeShncGF5VmlydHVhbEFjY291bnRRdWVyeVNjaGVtYSksCiAgZ2V0VmlydHVhbEFjY291bnRGb3JTZXJ2aWNlLAopOwoKLy8gUE9TVCAvYXBpL3YxL3BheW1lbnRzL2dwYXkvc3RhdGljLXRyYW5zZmVyL3B1YmxpYwovLyBQVUJMSUMgQ2hhbm5lbCAxICgiSSBIYXZlIFBhaWQiICsgT3B0aW9uYWwgUHJvb2YgVXBsb2FkKToKLy8gUmVjb3JkcyB0aGUgY2l0aXplbidzIGFwcGxpY2F0aW9uICsgaW52b2ljZSBpbiAiUGF5bWVudCBWZXJpZmljYXRpb24gaW4gUHJvZ3Jlc3MiCi8vIChgYXdhaXRpbmdfcGF5bWVudF9jb25maXJtYXRpb25gKSwgYXR0YWNoZXMgb3B0aW9uYWwgcHJvb2YsIGFuZCBhdXRvLWNvbmZpcm1zIGlmCi8vIHRoZSBQcm92aWR1cyB3ZWJob29rIGFscmVhZHkgc2V0dGxlZC4Kcm91dGVyLnBvc3QoCiAgIi9zdGF0aWMtdHJhbnNmZXIvcHVibGljIiwKICB2aXJ0dWFsQWNjb3VudExpbWl0ZXIsCiAgcHJvb2ZVcGxvYWQuc2luZ2xlKCJwcm9vZiIpLAogIHN1Ym1pdFB1YmxpY1N0YXRpY1RyYW5zZmVyTm90aWNlLAopOwoKLy8gR0VUIC9hcGkvdjEvcGF5bWVudHMvZ3BheS9pbnZvaWNlcy86aW52b2ljZU51bWJlci92aXJ0dWFsLWFjY291bnQKcm91dGVyLmdldCgKICAiL2ludm9pY2VzLzppbnZvaWNlTnVtYmVyL3ZpcnR1YWwtYWNjb3VudCIsCiAgcmVxdWlyZUF1dGgsCiAgZ2V0SW52b2ljZVZpcnR1YWxBY2NvdW50LAopOwoKLy8gUE9TVCAvYXBpL3YxL3BheW1lbnRzL2dwYXkvd2ViaG9vayDigJQgR1BheSAvIFByb3ZpZHVzIHdlYmhvb2sKcm91dGVyLnBvc3QoIi93ZWJob29rIiwgZXhwcmVzcy5yYXcoeyB0eXBlOiAiYXBwbGljYXRpb24vanNvbiIgfSksIGdwYXlXZWJob29rKTsKCi8vIEdFVCAvYXBpL3YxL3BheW1lbnRzL2dwYXkvdmVyaWZ5LzpyZWZlcmVuY2UKLy8gUHVibGljOiBDaGFubmVsIDIgR1BheSBIb3N0ZWQgQ2hlY2tvdXQgdmVyaWZpY2F0aW9uCnJvdXRlci5nZXQoIi92ZXJpZnkvOnJlZmVyZW5jZSIsIHZlcmlmeUdwYXlQYXltZW50KTsKCi8vIFBPU1QgL2FwaS92MS9wYXltZW50cy9ncGF5L3B1YmxpYy9pbml0aWFsaXplCi8vIFB1YmxpYyBDaGFubmVsIDI6IEdQYXkgSG9zdGVkIENoZWNrb3V0IGZvciBJbnN0YW50IENhcmQgLyBPbmxpbmUgUGF5bWVudHMKcm91dGVyLnBvc3QoCiAgIi9wdWJsaWMvaW5pdGlhbGl6ZSIsCiAganNvbkJvZHksCiAgdmFsaWRhdGVCb2R5KGdwYXlQdWJsaWNJbml0aWFsaXplU2NoZW1hKSwKICBpbml0aWFsaXplR3BheVB1YmxpY1BheW1lbnQsCik7CgovLyBQT1NUIC9hcGkvdjEvcGF5bWVudHMvZ3BheS9pbml0aWFsaXplLzppbnZvaWNlTnVtYmVyCi8vIEF1dGhlbnRpY2F0ZWQgQ2hhbm5lbCAyOiBHUGF5IEhvc3RlZCBDaGVja291dCBmb3IgYW4gZXhpc3RpbmcgaW52b2ljZQpyb3V0ZXIucG9zdCgKICAiL2luaXRpYWxpemUvOmludm9pY2VOdW1iZXIiLAogIGpzb25Cb2R5LAogIHJlcXVpcmVBdXRoLAogIGluaXRpYWxpemVHcGF5SW52b2ljZVBheW1lbnQsCik7CgpleHBvcnQgZGVmYXVsdCByb3V0ZXI7Cg==
+// src/modules/payment/gpay.routes.ts
+import { Router } from "express";
+import express from "express";
+import rateLimit from "express-rate-limit";
+import multer from "multer";
+import path from "path";
+import crypto from "crypto";
+import { z } from "zod";
+
+import { requireAuth } from "../../middleware/auth.middleware";
+import { validateBody, validateQuery } from "../../middleware/validate.middleware";
+import { UPLOAD_FOLDER_MAP, ensureDirectoryExists } from "../../utils/fileStorage";
+import {
+  getInvoiceVirtualAccount,
+  getVirtualAccountForService,
+  gpayWebhook,
+  initializeGpayInvoicePayment,
+  initializeGpayPublicPayment,
+  submitPublicStaticTransferNotice,
+  verifyGpayPayment,
+} from "./gpay.controller";
+
+const router = Router();
+
+const jsonBody = express.json();
+
+const proofStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    const targetFolder = UPLOAD_FOLDER_MAP.paymentProofs;
+    ensureDirectoryExists(targetFolder);
+    cb(null, targetFolder);
+  },
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
+    const ext = path.extname(file.originalname);
+    cb(null, `proof-${uniqueSuffix}${ext}`);
+  },
+});
+const proofUpload = multer({ storage: proofStorage, limits: { fileSize: 5 * 1024 * 1024 } });
+
+export const gpayPublicInitializeSchema = z.object({
+  serviceId: z.string().min(1),
+  fullName: z.string().min(2),
+  email: z.string().email(),
+  phone: z.string().min(7),
+});
+
+const virtualAccountLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    status: "error",
+    error: {
+      code: "TOO_MANY_REQUESTS",
+      message:
+        "Too many requests for bank transfer details. Please try again in 15 minutes.",
+      details: null,
+    },
+  },
+});
+
+export const gpayVirtualAccountQuerySchema = z.object({
+  serviceId: z.string().min(1),
+});
+
+// GET /api/v1/payments/gpay/virtual-account?serviceId=
+// PUBLIC. Dedicated Providus Bank Static Virtual Account for the service (Channel 1).
+router.get(
+  "/virtual-account",
+  virtualAccountLimiter,
+  validateQuery(gpayVirtualAccountQuerySchema),
+  getVirtualAccountForService,
+);
+
+// POST /api/v1/payments/gpay/static-transfer/public
+// PUBLIC Channel 1 ("I Have Paid" + Optional Proof Upload):
+// Records the citizen's application + invoice in "Payment Verification in Progress"
+// (`awaiting_payment_confirmation`), attaches optional proof, and auto-confirms if
+// the Providus webhook already settled.
+router.post(
+  "/static-transfer/public",
+  virtualAccountLimiter,
+  proofUpload.single("proof"),
+  submitPublicStaticTransferNotice,
+);
+
+// GET /api/v1/payments/gpay/invoices/:invoiceNumber/virtual-account
+router.get(
+  "/invoices/:invoiceNumber/virtual-account",
+  requireAuth,
+  getInvoiceVirtualAccount,
+);
+
+// POST /api/v1/payments/gpay/webhook — GPay / Providus webhook
+router.post("/webhook", express.raw({ type: "application/json" }), gpayWebhook);
+
+// GET /api/v1/payments/gpay/verify/:reference
+// Public: Channel 2 GPay Hosted Checkout verification
+router.get("/verify/:reference", verifyGpayPayment);
+
+// POST /api/v1/payments/gpay/public/initialize
+// Public Channel 2: GPay Hosted Checkout for Instant Card / Online Payments
+router.post(
+  "/public/initialize",
+  jsonBody,
+  validateBody(gpayPublicInitializeSchema),
+  initializeGpayPublicPayment,
+);
+
+// POST /api/v1/payments/gpay/initialize/:invoiceNumber
+// Authenticated Channel 2: GPay Hosted Checkout for an existing invoice
+router.post(
+  "/initialize/:invoiceNumber",
+  jsonBody,
+  requireAuth,
+  initializeGpayInvoicePayment,
+);
+
+export default router;

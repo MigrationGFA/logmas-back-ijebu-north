@@ -1,1 +1,193 @@
-Ly8gc3JjL21vZHVsZXMvdHJlYXN1cmVyL3RyZWFzdXJlci52YWxpZGF0aW9uLnRzCmltcG9ydCB7IHogfSBmcm9tICJ6b2QiOwoKLy8g4pSA4pSAIExldnkgQ29uZmlnIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKZXhwb3J0IGNvbnN0IGNyZWF0ZUxldnlDb25maWdTY2hlbWEgPSB6Lm9iamVjdCh7CiAgbmFtZTogei5zdHJpbmcoKS5taW4oMiwgIkNvbmZpZyBuYW1lIGlzIHJlcXVpcmVkIiksCiAgY2F0ZWdvcnlJZDogei5zdHJpbmcoKS51dWlkKCJJbnZhbGlkIENhdGVnb3J5IElEIGZvcm1hdC4gTXVzdCBiZSBhIHZhbGlkIFVVSUQgcmVmZXJlbmNlLiIpLAogIGRlc2NyaXB0aW9uOiB6LnN0cmluZygpLm9wdGlvbmFsKCksCiAgYW1vdW50OiB6Lm51bWJlcigpLnBvc2l0aXZlKCJBbW91bnQgbXVzdCBiZSBwb3NpdGl2ZSIpLAogIGJpbGxpbmdDeWNsZTogegogICAgLmVudW0oWyJvbmVfdGltZSIsICJkYWlseSIsICJ3ZWVrbHkiLCAibW9udGhseSIsICJ5ZWFybHkiXSkKICAgIC5kZWZhdWx0KCJ5ZWFybHkiKSwKICBtb2RlOiB6CiAgICAuZW51bShbImZpeGVkIiwgInZhcmlhYmxlIixdKQogICAgLmRlZmF1bHQoImZpeGVkIiksCiAgcGVuYWx0eVJhdGU6IHoubnVtYmVyKCkubWluKDApLm1heCgxMDApLm9wdGlvbmFsKCksIC8vIHBlcmNlbnRhZ2UKICBlZmZlY3RpdmVGcm9tOiB6CiAgICAuc3RyaW5nKCkKICAgIC5vcih6LmxpdGVyYWwoIiIpKQogICAgLnRyYW5zZm9ybSgodikgPT4gKHYgPT09ICIiID8gdW5kZWZpbmVkIDogdikpCiAgICAucmVmaW5lKCh2KSA9PiAhdiB8fCAhaXNOYU4oRGF0ZS5wYXJzZSh2KSksIHsKICAgICAgbWVzc2FnZTogIkludmFsaWQgZWZmZWN0aXZlRnJvbSBkYXRlIiwKICAgIH0pCiAgICAub3B0aW9uYWwoKSwKCiAgZWZmZWN0aXZlVG86IHoKICAgIC5zdHJpbmcoKQogICAgLm9yKHoubGl0ZXJhbCgiIikpCiAgICAudHJhbnNmb3JtKCh2KSA9PiAodiA9PT0gIiIgPyB1bmRlZmluZWQgOiB2KSkKICAgIC5yZWZpbmUoKHYpID0+ICF2IHx8ICFpc05hTihEYXRlLnBhcnNlKHYpKSwgewogICAgICBtZXNzYWdlOiAiSW52YWxpZCBlZmZlY3RpdmVUbyBkYXRlIiwKICAgIH0pCiAgICAub3B0aW9uYWwoKSwKfSk7CgpleHBvcnQgY29uc3QgdXBkYXRlTGV2eUNvbmZpZ1NjaGVtYSA9IHoub2JqZWN0KHsKICBuYW1lOiB6LnN0cmluZygpLm1pbigyKS5vcHRpb25hbCgpLAogIGRlc2NyaXB0aW9uOiB6LnN0cmluZygpLm9wdGlvbmFsKCksCiAgYW1vdW50OiB6Lm51bWJlcigpLnBvc2l0aXZlKCkub3B0aW9uYWwoKSwKICBiaWxsaW5nQ3ljbGU6IHoKICAgIC5lbnVtKFsib25lX3RpbWUiLCAiZGFpbHkiLCAid2Vla2x5IiwgIm1vbnRobHkiLCAieWVhcmx5Il0pCiAgICAub3B0aW9uYWwoKSwKICBwZW5hbHR5UmF0ZTogei5udW1iZXIoKS5taW4oMCkubWF4KDEwMCkub3B0aW9uYWwoKSwKICBlZmZlY3RpdmVUbzogegogICAgLnN0cmluZygpCiAgICAub3Ioei5saXRlcmFsKCIiKSkKICAgIC50cmFuc2Zvcm0oKHYpID0+ICh2ID09PSAiIiA/IHVuZGVmaW5lZCA6IHYpKQogICAgLnJlZmluZSgodikgPT4gIXYgfHwgIWlzTmFOKERhdGUucGFyc2UodikpLCB7CiAgICAgIG1lc3NhZ2U6ICJJbnZhbGlkIGVmZmVjdGl2ZVRvIGRhdGUiLAogICAgfSkKICAgIC5vcHRpb25hbCgpLAp9KTsKCmV4cG9ydCBjb25zdCBsaXN0TGV2eUNvbmZpZ3NTY2hlbWEgPSB6Lm9iamVjdCh7CiAgcGFnZTogegogICAgLnN0cmluZygpCiAgICAub3B0aW9uYWwoKQogICAgLnRyYW5zZm9ybSgodikgPT4gcGFyc2VJbnQodiB8fCAiMSIpKSwKICBsaW1pdDogegogICAgLnN0cmluZygpCiAgICAub3B0aW9uYWwoKQogICAgLnRyYW5zZm9ybSgodikgPT4gcGFyc2VJbnQodiB8fCAiMTAiKSksCiAgY2F0ZWdvcnk6IHoKICAgIC5lbnVtKFsKICAgICAgInRyYWRlX3Blcm1pdCIsCiAgICAgICJtYXJrZXRfbGV2eSIsCiAgICAgICJlbnZpcm9ubWVudGFsX2xldnkiLAogICAgICAic2lnbmFnZSIsCiAgICAgICJwYXJraW5nX2xldnkiLAogICAgICAiaGF1bGFnZV9sZXZ5IiwKICAgICAgImxvY2t1cF9zdG9yZV9sZXZ5IiwKICAgICAgImJ1c2luZXNzX2xldnkiLAogICAgICAiZXZlbnRfcGVybWl0IiwKICAgICAgInN0YXRlX29mX29yaWdpbl9mZWUiLAogICAgICAib3RoZXIiLAogICAgXSkKICAgIC5vcHRpb25hbCgpLAogIGlzQWN0aXZlOiB6CiAgICAuc3RyaW5nKCkKICAgIC5vcHRpb25hbCgpCiAgICAudHJhbnNmb3JtKCh2KSA9PiB2ID09PSAidHJ1ZSIpLAp9KTsKCi8vIOKUgOKUgCBSZXZlbnVlICYgUmVwb3J0aW5nIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKZXhwb3J0IGNvbnN0IGRhdGVSYW5nZVNjaGVtYSA9IHoub2JqZWN0KHsKICBmcm9tOiB6CiAgICAuc3RyaW5nKCkKICAgIC5yZWZpbmUoKHYpID0+ICFpc05hTihEYXRlLnBhcnNlKHYpKSwgeyBtZXNzYWdlOiAiSW52YWxpZCBmcm9tIGRhdGUiIH0pCiAgICAub3B0aW9uYWwoKSwKICB0bzogegogICAgLnN0cmluZygpCiAgICAucmVmaW5lKCh2KSA9PiAhaXNOYU4oRGF0ZS5wYXJzZSh2KSksIHsgbWVzc2FnZTogIkludmFsaWQgdG8gZGF0ZSIgfSkKICAgIC5vcHRpb25hbCgpLAogIHBhZ2U6IHoKICAgIC5zdHJpbmcoKQogICAgLm9wdGlvbmFsKCkKICAgIC50cmFuc2Zvcm0oKHYpID0+IHBhcnNlSW50KHYgfHwgIjEiKSksCiAgbGltaXQ6IHoKICAgIC5zdHJpbmcoKQogICAgLm9wdGlvbmFsKCkKICAgIC50cmFuc2Zvcm0oKHYpID0+IHBhcnNlSW50KHYgfHwgIjEwIikpLAp9KTsKCmV4cG9ydCBjb25zdCBpbnZvaWNlRmlsdGVyU2NoZW1hID0gei5vYmplY3QoewogIGZyb206IHouc3RyaW5nKCkub3B0aW9uYWwoKSwKICB0bzogei5zdHJpbmcoKS5vcHRpb25hbCgpLAogIHN0YXR1czogegogICAgLmVudW0oWyJkcmFmdCIsICJzZW50IiwgInBhaWQiLCAib3ZlcmR1ZSIsICJjYW5jZWxsZWQiLCAicGFydGlhbGx5X3BhaWQiXSkKICAgIC5vcHRpb25hbCgpLAogIGNhdGVnb3J5OiB6CiAgICAuZW51bShbCiAgICAgICJ0cmFkZV9wZXJtaXQiLAogICAgICAibWFya2V0X2xldnkiLAogICAgICAiZW52aXJvbm1lbnRhbF9sZXZ5IiwKICAgICAgInNpZ25hZ2UiLAogICAgICAicGFya2luZ19sZXZ5IiwKICAgICAgImhhdWxhZ2VfbGV2eSIsCiAgICAgICJsb2NrdXBfc3RvcmVfbGV2eSIsCiAgICAgICJidXNpbmVzc19sZXZ5IiwKICAgICAgImV2ZW50X3Blcm1pdCIsCiAgICAgICJzdGF0ZV9vZl9vcmlnaW5fZmVlIiwKICAgICAgIm90aGVyIiwKICAgIF0pCiAgICAub3B0aW9uYWwoKSwKICBvZmZpY2VySWQ6IHouc3RyaW5nKCkudXVpZCgpLm9wdGlvbmFsKCksCiAgYnVzaW5lc3NJZDogei5zdHJpbmcoKS51dWlkKCkub3B0aW9uYWwoKSwKICBwYWdlOiB6CiAgICAuc3RyaW5nKCkKICAgIC5vcHRpb25hbCgpCiAgICAudHJhbnNmb3JtKCh2KSA9PiBwYXJzZUludCh2IHx8ICIxIikpLAogIGxpbWl0OiB6CiAgICAuc3RyaW5nKCkKICAgIC5vcHRpb25hbCgpCiAgICAudHJhbnNmb3JtKCh2KSA9PiBwYXJzZUludCh2IHx8ICIxMCIpKSwKfSk7CgpleHBvcnQgY29uc3QgbGlzdFBlcm1pdENvbmZpZ3NTY2hlbWEgPSB6Lm9iamVjdCh7CiAgcXVlcnk6IHoub2JqZWN0KHsKICAgIGNhdGVnb3J5SWQ6IHouc3RyaW5nKCksCiAgICBpc0FjdGl2ZTogegogICAgICAuc3RyaW5nKCkKICAgICAgLnRyYW5zZm9ybSgodmFsKSA9PiB2YWwgPT09ICJ0cnVlIikKICAgICAgLm9wdGlvbmFsKCksCiAgICBwYWdlOiB6CiAgICAgIC5zdHJpbmcoKQogICAgICAub3B0aW9uYWwoKQogICAgICAudHJhbnNmb3JtKCh2YWwpID0+ICh2YWwgPyBwYXJzZUludCh2YWwsIDEwKSA6IDEpKSwKICAgIGxpbWl0OiB6CiAgICAgIC5zdHJpbmcoKQogICAgICAub3B0aW9uYWwoKQogICAgICAudHJhbnNmb3JtKCh2YWwpID0+ICh2YWwgPyBwYXJzZUludCh2YWwsIDEwKSA6IDIwKSksCiAgfSksCn0pOwoKZXhwb3J0IGNvbnN0IGNyZWF0ZVBlcm1pdENvbmZpZ1NjaGVtYSA9IHoub2JqZWN0KHsKICBib2R5OiB6Lm9iamVjdCh7CiAgICBuYW1lOiB6LnN0cmluZygpLm1pbigzLCAiTmFtZSBtdXN0IGJlIGF0IGxlYXN0IDMgY2hhcmFjdGVycyBsb25nIiksCiAgICBjb2RlOiB6CiAgICAgIC5zdHJpbmcoKQogICAgICAubWluKDMsICJTeXN0ZW0gaWRlbnRpZmllciBjb2RlIG11c3QgYmUgYXQgbGVhc3QgMyBjaGFyYWN0ZXJzIikKICAgICAgLm1heCgyMCksCiAgICBjYXRlZ29yeUlkOiB6LnN0cmluZygpLAogICAgYmFzZUFtb3VudDogegogICAgICAubnVtYmVyKCkKICAgICAgLm5vbm5lZ2F0aXZlKCJCYXNlIHByaWNpbmcgY29uZmlndXJhdGlvbiByYXRlIGNhbm5vdCBiZSBuZWdhdGl2ZSIpLAogIH0pLAp9KTsKCmV4cG9ydCBjb25zdCB1cGRhdGVQZXJtaXRDb25maWdTY2hlbWEgPSB6Lm9iamVjdCh7CiAgYm9keTogei5vYmplY3QoewogICAgbmFtZTogei5zdHJpbmcoKS5taW4oMykub3B0aW9uYWwoKSwKICAgIGJhc2VBbW91bnQ6IHoubnVtYmVyKCkubm9ubmVnYXRpdmUoKS5vcHRpb25hbCgpLAogICAgaXNBY3RpdmU6IHouYm9vbGVhbigpLm9wdGlvbmFsKCksCiAgfSksCn0pOwoKLy8g4pSA4pSAIFRyZWFzdXJlciBGZWVzIChMR0Egc2ltcGxpZmllZCBmbG93KQpleHBvcnQgY29uc3QgdXBzZXJ0U2VydmljZUZlZVNjaGVtYSA9IHoub2JqZWN0KHsKICBhbW91bnQ6IHoubnVtYmVyKCkubm9ubmVnYXRpdmUoJ0Ftb3VudCBtdXN0IGJlIGEgbm9uLW5lZ2F0aXZlIG1vbmV0YXJ5IHZhbHVlJyksCiAgc3RhdHVzOiB6LmJvb2xlYW4oKS5vcHRpb25hbCgpLmRlZmF1bHQodHJ1ZSksCiAgbGF5ZXJEZXB0aDogei5udW1iZXIoKS5pbnQoKS5taW4oMSkubWF4KDMpLm9wdGlvbmFsKCksCiAgYmlsbGluZ1VuaXQ6IHouc3RyaW5nKCkub3B0aW9uYWwoKS5udWxsYWJsZSgpLAogIGVmZmVjdGl2ZURhdGU6IHouc3RyaW5nKCkub3B0aW9uYWwoKS5udWxsYWJsZSgpLAogIGV4cGlyeURhdGU6IHouc3RyaW5nKCkub3B0aW9uYWwoKS5udWxsYWJsZSgpLAogIHByaWNpbmdUaWVyczogei5hcnJheSh6LmFueSgpKS5vcHRpb25hbCgpLm51bGxhYmxlKCksCn0pOwoKLy8g4pSA4pSAIFN0YXRpYy1hY2NvdW50IHBheW1lbnQgY29uZmlybWF0aW9uIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgApleHBvcnQgY29uc3QgZGVjbGluZVBheW1lbnRTY2hlbWEgPSB6Lm9iamVjdCh7CiAgcmVhc29uOiB6LnN0cmluZygpLm1pbigzLCAnQSBkZWNsaW5lIHJlYXNvbiBpcyByZXF1aXJlZCcpLAp9KTsK
+// src/modules/treasurer/treasurer.validation.ts
+import { z } from "zod";
+
+// ── Levy Config ───────────────────────────────────────────────
+
+export const createLevyConfigSchema = z.object({
+  name: z.string().min(2, "Config name is required"),
+  categoryId: z.string().uuid("Invalid Category ID format. Must be a valid UUID reference."),
+  description: z.string().optional(),
+  amount: z.number().positive("Amount must be positive"),
+  billingCycle: z
+    .enum(["one_time", "daily", "weekly", "monthly", "yearly"])
+    .default("yearly"),
+  mode: z
+    .enum(["fixed", "variable",])
+    .default("fixed"),
+  penaltyRate: z.number().min(0).max(100).optional(), // percentage
+  effectiveFrom: z
+    .string()
+    .or(z.literal(""))
+    .transform((v) => (v === "" ? undefined : v))
+    .refine((v) => !v || !isNaN(Date.parse(v)), {
+      message: "Invalid effectiveFrom date",
+    })
+    .optional(),
+
+  effectiveTo: z
+    .string()
+    .or(z.literal(""))
+    .transform((v) => (v === "" ? undefined : v))
+    .refine((v) => !v || !isNaN(Date.parse(v)), {
+      message: "Invalid effectiveTo date",
+    })
+    .optional(),
+});
+
+export const updateLevyConfigSchema = z.object({
+  name: z.string().min(2).optional(),
+  description: z.string().optional(),
+  amount: z.number().positive().optional(),
+  billingCycle: z
+    .enum(["one_time", "daily", "weekly", "monthly", "yearly"])
+    .optional(),
+  penaltyRate: z.number().min(0).max(100).optional(),
+  effectiveTo: z
+    .string()
+    .or(z.literal(""))
+    .transform((v) => (v === "" ? undefined : v))
+    .refine((v) => !v || !isNaN(Date.parse(v)), {
+      message: "Invalid effectiveTo date",
+    })
+    .optional(),
+});
+
+export const listLevyConfigsSchema = z.object({
+  page: z
+    .string()
+    .optional()
+    .transform((v) => parseInt(v || "1")),
+  limit: z
+    .string()
+    .optional()
+    .transform((v) => parseInt(v || "10")),
+  category: z
+    .enum([
+      "trade_permit",
+      "market_levy",
+      "environmental_levy",
+      "signage",
+      "parking_levy",
+      "haulage_levy",
+      "lockup_store_levy",
+      "business_levy",
+      "event_permit",
+      "state_of_origin_fee",
+      "other",
+    ])
+    .optional(),
+  isActive: z
+    .string()
+    .optional()
+    .transform((v) => v === "true"),
+});
+
+// ── Revenue & Reporting ───────────────────────────────────────
+
+export const dateRangeSchema = z.object({
+  from: z
+    .string()
+    .refine((v) => !isNaN(Date.parse(v)), { message: "Invalid from date" })
+    .optional(),
+  to: z
+    .string()
+    .refine((v) => !isNaN(Date.parse(v)), { message: "Invalid to date" })
+    .optional(),
+  page: z
+    .string()
+    .optional()
+    .transform((v) => parseInt(v || "1")),
+  limit: z
+    .string()
+    .optional()
+    .transform((v) => parseInt(v || "10")),
+});
+
+export const invoiceFilterSchema = z.object({
+  from: z.string().optional(),
+  to: z.string().optional(),
+  status: z
+    .enum(["draft", "sent", "paid", "overdue", "cancelled", "partially_paid"])
+    .optional(),
+  category: z
+    .enum([
+      "trade_permit",
+      "market_levy",
+      "environmental_levy",
+      "signage",
+      "parking_levy",
+      "haulage_levy",
+      "lockup_store_levy",
+      "business_levy",
+      "event_permit",
+      "state_of_origin_fee",
+      "other",
+    ])
+    .optional(),
+  officerId: z.string().uuid().optional(),
+  businessId: z.string().uuid().optional(),
+  page: z
+    .string()
+    .optional()
+    .transform((v) => parseInt(v || "1")),
+  limit: z
+    .string()
+    .optional()
+    .transform((v) => parseInt(v || "10")),
+});
+
+export const listPermitConfigsSchema = z.object({
+  query: z.object({
+    categoryId: z.string(),
+    isActive: z
+      .string()
+      .transform((val) => val === "true")
+      .optional(),
+    page: z
+      .string()
+      .optional()
+      .transform((val) => (val ? parseInt(val, 10) : 1)),
+    limit: z
+      .string()
+      .optional()
+      .transform((val) => (val ? parseInt(val, 10) : 20)),
+  }),
+});
+
+export const createPermitConfigSchema = z.object({
+  body: z.object({
+    name: z.string().min(3, "Name must be at least 3 characters long"),
+    code: z
+      .string()
+      .min(3, "System identifier code must be at least 3 characters")
+      .max(20),
+    categoryId: z.string(),
+    baseAmount: z
+      .number()
+      .nonnegative("Base pricing configuration rate cannot be negative"),
+  }),
+});
+
+export const updatePermitConfigSchema = z.object({
+  body: z.object({
+    name: z.string().min(3).optional(),
+    baseAmount: z.number().nonnegative().optional(),
+    isActive: z.boolean().optional(),
+  }),
+});
+
+// ── Treasurer Fees (LGA simplified flow)
+export const upsertServiceFeeSchema = z.object({
+  amount: z.number().nonnegative('Amount must be a non-negative monetary value'),
+  status: z.boolean().optional().default(true),
+  layerDepth: z.number().int().min(1).max(3).optional(),
+  billingUnit: z.string().optional().nullable(),
+  effectiveDate: z.string().optional().nullable(),
+  expiryDate: z.string().optional().nullable(),
+  pricingTiers: z.array(z.any()).optional().nullable(),
+});
+
+// ── Static-account payment confirmation ───────────────────────
+export const declinePaymentSchema = z.object({
+  reason: z.string().min(3, 'A decline reason is required'),
+});
