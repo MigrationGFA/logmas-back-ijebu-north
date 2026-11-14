@@ -1,10 +1,12 @@
 import { CertificateType, ServiceCategory } from "@prisma/client";
 import { prisma } from "../../utils/prisma";
 
-export const listActiveServices = async (category?: string) => {
+export const listActiveServices = async (category?: string, includeFoOnly = false) => {
   return prisma.service.findMany({
     where: {
       isActive: true,
+      // FO-only services are hidden unless the caller is staff.
+      ...(includeFoOnly ? {} : { foOnly: false }),
       ...(category ? { category: category as any } : {}),
     },
     include: {
@@ -29,10 +31,11 @@ export const listActiveServices = async (category?: string) => {
   });
 };
 
-export const getActiveServiceByCode = async (code: string) => {
+export const getActiveServiceByCode = async (code: string, includeFoOnly = false) => {
   return prisma.service.findFirst({
     where: {
       isActive: true,
+      ...(includeFoOnly ? {} : { foOnly: false }),
       OR: [
         { id: code },
         {
@@ -80,7 +83,10 @@ export const createService = async (
     certificateType: CertificateType;
     supportsRenewal: boolean;
     isActive: boolean;
-    feeConfig: {
+    foOnly?: boolean;
+    // Optional: FO-only services have no fixed fee, the officer records
+    // the amount actually paid on each collection.
+    feeConfig?: {
       amount: number;
       expiryDate?: Date;
       notes?: string;
@@ -109,13 +115,13 @@ export const createService = async (
       throw new Error(`Service with code "${data.code}" already exists`);
     }
 
-    // Validate fee amount
-    if (data.feeConfig.amount <= 0) {
+    // Validate fee amount (only when a fee config is supplied)
+    if (data.feeConfig && data.feeConfig.amount <= 0) {
       throw new Error("Fee amount must be greater than 0");
     }
 
     // Check expiry date if provided
-    if (data.feeConfig.expiryDate) {
+    if (data.feeConfig?.expiryDate) {
       const expiryDate = new Date(data.feeConfig.expiryDate);
       if (isNaN(expiryDate.getTime())) {
         throw new Error("Invalid expiry date");
@@ -139,6 +145,7 @@ export const createService = async (
         certificateType: data.certificateType,
         supportsRenewal: data.supportsRenewal || false,
         isActive: data.isActive !== undefined ? data.isActive : true,
+        foOnly: data.foOnly || false,
       },
       select: {
         id: true,
@@ -152,6 +159,7 @@ export const createService = async (
         certificateType: true,
         supportsRenewal: true,
         isActive: true,
+        foOnly: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -173,7 +181,7 @@ export const createService = async (
       },
     });
 
-    const feeConfig = await tx.serviceFeeConfig.create({
+    const feeConfig = !data.feeConfig ? null : await tx.serviceFeeConfig.create({
       data: {
         serviceId: service.id,
         amount: data.feeConfig.amount,
@@ -238,6 +246,7 @@ export const updateService = async (
     certificateType?: CertificateType;
     supportsRenewal?: boolean;
     isActive?: boolean;
+    foOnly?: boolean;
     feeConfig?: {
       amount?: number;
       expiryDate?: Date | null;
@@ -314,6 +323,7 @@ export const updateService = async (
     if (data.certificateType !== undefined) serviceUpdateData.certificateType = data.certificateType;
     if (data.supportsRenewal !== undefined) serviceUpdateData.supportsRenewal = data.supportsRenewal;
     if (data.isActive !== undefined) serviceUpdateData.isActive = data.isActive;
+    if (data.foOnly !== undefined) serviceUpdateData.foOnly = data.foOnly;
 
     const service = await tx.service.update({
       where: {
@@ -332,6 +342,7 @@ export const updateService = async (
         certificateType: true,
         supportsRenewal: true,
         isActive: true,
+        foOnly: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -485,4 +496,43 @@ export const updateService = async (
       },
     };
   });
+};
+/**
+ * Delete a service (treasurer catalogue management).
+ *
+ * A service that already has applications or invoices is never hard
+ * deleted: its records are revenue history. It is deactivated instead,
+ * which removes it from every catalogue while preserving the trail.
+ * A service with no history is removed outright, fee config first.
+ */
+export const deleteService = async (serviceId: string) => {
+  const existing = await prisma.service.findUnique({
+    where: { id: serviceId },
+    select: { id: true, code: true, name: true, foOnly: true, isActive: true },
+  });
+
+  if (!existing) {
+    throw new Error(`Service with ID "${serviceId}" not found`);
+  }
+
+  const [applicationCount, invoiceCount] = await Promise.all([
+    prisma.application.count({ where: { serviceId } }),
+    prisma.invoice.count({ where: { serviceId } }),
+  ]);
+
+  if (applicationCount > 0 || invoiceCount > 0) {
+    const service = await prisma.service.update({
+      where: { id: serviceId },
+      data: { isActive: false },
+      select: { id: true, code: true, name: true, foOnly: true, isActive: true },
+    });
+    return { mode: "deactivated" as const, service };
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.serviceFeeConfig.deleteMany({ where: { serviceId } });
+    await tx.service.delete({ where: { id: serviceId } });
+  });
+
+  return { mode: "deleted" as const, service: existing };
 };

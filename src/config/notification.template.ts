@@ -259,6 +259,29 @@ export const applicationTemplates = {
 </html>`,
   },
 
+  // FO Payment Confirmed (treasurer confirmed an officer-recorded collection)
+  foPaymentConfirmed: {
+    sms: `{{lga_name}}: The treasurer has confirmed the {{service_name}} payment of NGN {{amount}} that you recorded (Application {{application_number}}). Receipt: {{receipt_number}}.`,
+    emailSubject: `Payment Confirmed by Treasurer: {{service_name}}`,
+    emailHtml: `
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; color: #1a1a1a; padding: 32px; background: #f5f5f5;">
+  <div style="max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 32px; border-top: 4px solid #10b981;">
+    <h2 style="color: #065f46;">Payment Confirmed</h2>
+    <p>Dear {{officer_name}},</p>
+    <p>The treasurer has confirmed the <strong>{{service_name}}</strong> payment of <strong>NGN {{amount}}</strong> that you recorded.</p>
+    <div style="background: #f0fdf4; border-radius: 8px; padding: 16px; margin: 20px 0; font-size: 14px;">
+      <div style="margin-bottom: 8px;"><span style="color: #6b7280;">Application Number:</span> {{application_number}}</div>
+      <div style="margin-bottom: 8px;"><span style="color: #6b7280;">Invoice Number:</span> {{invoice_number}}</div>
+      <div><span style="color: #6b7280;">Receipt Number:</span> {{receipt_number}}</div>
+    </div>
+    <p style="font-size: 13px; color: #6b7280;">This collection is now officially recorded as confirmed.</p>
+  </div>
+</body>
+</html>`,
+  },
+
   completeApplication: {
     sms: `Hello {{applicant_name}}, your payment for {{service_name}} was successful, but your application is not yet complete. Please log in at: ${BASE_URL}/login to complete your form and upload the required documents. Application #{{application_number}}.`,
 

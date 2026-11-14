@@ -784,7 +784,13 @@ export const confirmStaticAccountPayment = async (
       );
     }
 
-    if (!["bank_transfer", "virtual_account"].includes(payment.method)) {
+    // FO-only collections may also be cash: the officer collected out of
+    // band and the treasurer's confirmation is the control point.
+    const isFoOnlyService = application.service?.foOnly === true;
+    if (
+      !["bank_transfer", "virtual_account"].includes(payment.method) &&
+      !(isFoOnlyService && payment.method === "cash")
+    ) {
       return sendError(res, "Upload payment proof before confirmation", "BAD_REQUEST", null, 400);
     }
 
@@ -880,6 +886,44 @@ export const confirmStaticAccountPayment = async (
       }
     } catch (notifyErr) {
       console.error("[confirmStaticAccountPayment] notify() failed, continuing:", notifyErr);
+    }
+
+    // Alert the field officer who started this record (FO-only
+    // collections and FO-assisted flows): the treasurer's confirmation
+    // is the moment they are waiting on.
+    try {
+      const creatorId = application.createdById;
+      if (creatorId && creatorId !== application.applicantId) {
+        const creator = await prisma.user.findUnique({
+          where: { id: creatorId },
+          select: {
+            id: true,
+            role: true,
+            email: true,
+            phone: true,
+            firstName: true,
+            lastName: true,
+          },
+        });
+        if (creator && creator.role === "field_officer") {
+          await notify({
+            userId: creator.id,
+            to: { email: creator.email, phone: creator.phone ?? "" },
+            templateKey: "application.foPaymentConfirmed",
+            vars: {
+              officer_name: `${creator.firstName} ${creator.lastName}`,
+              service_name: application.service.name,
+              amount: Number(payment.amount).toLocaleString("en-NG"),
+              application_number: application.applicationNumber,
+              invoice_number: payment.invoice?.invoiceNumber ?? "",
+              receipt_number: result.receipt.receiptNumber,
+            },
+            channels: [],
+          });
+        }
+      }
+    } catch (foNotifyErr) {
+      console.error("[confirmStaticAccountPayment] FO notify() failed, continuing:", foNotifyErr);
     }
 
     return sendSuccess(res, result, "Payment confirmed — application released for review");

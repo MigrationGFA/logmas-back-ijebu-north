@@ -32,6 +32,7 @@ enum ServiceCategory {
   RATES_AND_LEVIES
   LICENCES_AND_PERMITS
   URBAN_DEVELOPMENT
+  OTHERS
 }
 
 enum FeeType {
@@ -140,6 +141,9 @@ enum AuditAction {
   complaint_logged
   complaint_assigned
   complaint_resolved
+  service_created
+  service_updated
+  service_deleted
 }
 
 enum ViolationSeverity {
@@ -169,6 +173,7 @@ enum CertificateType {
   STREET_NAMING_CERTIFICATE
   KIOSK_LICENCE
   MARRIAGE_CERTIFICATE
+  NONE
 }
 
 enum FeeStatus {
@@ -296,6 +301,9 @@ model Service {
   certificateType CertificateType // Target certificate/licence generated upon approval
   supportsRenewal Boolean         @default(false)
   isActive        Boolean         @default(true)
+  // Field-officer-only services: never listed publicly; the collecting
+  // officer enters the amount paid (no fixed fee config is required).
+  foOnly          Boolean         @default(false)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 

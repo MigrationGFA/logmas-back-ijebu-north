@@ -11,6 +11,7 @@ import {
   getInvoiceById,
   getInvoicesHubOverview,
   recordInvoicePayment,
+  recordFoInvoicePayment,
   uploadInvoicePaymentProof,
 } from './invoice.controller';
 import { validateBody } from '../../middleware/validate.middleware';
@@ -71,6 +72,7 @@ router.post(
 
 router.get('/:id',              requireAuth, getInvoiceById);
 router.post('/:id/pay',         requireAuth, validateBody(recordPaymentSchema), recordInvoicePayment);
+router.post('/:id/fo-payment',  requireAuth, recordFoInvoicePayment);
 router.post("/:id/pay-online", requireAuth, initializePaystackPayment);
 router.post("/public/initialize",  initializePaystackPaymentNewFlow);
 // router.post('/:id/send-payment-link', requireAuth, sendPaymentLinkToBusiness);

@@ -329,6 +329,7 @@ export const getInvoiceById = async (
                 id: true,
                 code: true,
                 name: true,
+                foOnly: true,
               },
             },
           },
@@ -384,6 +385,7 @@ export const getInvoiceById = async (
             code: true,
             name: true,
             description: true,
+            foOnly: true,
           },
         },
       },
@@ -729,6 +731,134 @@ export const uploadInvoicePaymentProof = async (
       proofUrl
         ? "Payment Verification in Progress — proof uploaded"
         : "Payment Verification in Progress — transfer notification recorded",
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
+// POST /api/v1/invoices/:invoiceNumber/fo-payment
+//
+// FO-only services: after a collection is recorded, the officer states
+// how the payer paid (cash or bank transfer). Unlike recordInvoicePayment
+// this does NOT confirm anything: it parks the payment as pending and the
+// application at `awaiting_payment_confirmation`, so the treasurer's
+// confirmation remains the moment the collection becomes official (and
+// the moment the initiating officer is notified). No bank details are
+// involved for this service type; the officer settles with the LGA out
+// of band.
+export const recordFoInvoicePayment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user!.id;
+    const role = req.user!.role;
+    const { method } = req.body || {};
+
+    if (!["cash", "bank_transfer"].includes(method)) {
+      return sendError(
+        res,
+        "Payment method must be cash or bank_transfer",
+        "VALIDATION_ERROR",
+        null,
+        400,
+      );
+    }
+
+    if (!["field_officer", "sub_admin", "lga_admin", "super_admin"].includes(role)) {
+      return sendError(
+        res,
+        "Only field officers can record FO-only service payments",
+        "FORBIDDEN",
+        null,
+        403,
+      );
+    }
+
+    const invoice = await prisma.invoice.findUnique({
+      where: { invoiceNumber: String(id) },
+      include: { service: true, application: true },
+    });
+    if (!invoice)
+      return sendError(res, "Invoice not found", "NOT_FOUND", null, 404);
+
+    if (!invoice.service.foOnly) {
+      return sendError(
+        res,
+        "This endpoint is only for FO-only service invoices",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    // The officer who recorded the collection is the one who states how
+    // it was paid; admins may act on their behalf.
+    if (role === "field_officer" && invoice.createdById !== userId) {
+      return sendError(
+        res,
+        "Only the officer who recorded this collection can state how it was paid",
+        "FORBIDDEN",
+        null,
+        403,
+      );
+    }
+
+    if (invoice.paymentStatus !== "pending") {
+      return sendError(
+        res,
+        "Invoice is not awaiting a payment record",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    const existingPending = await prisma.payment.findFirst({
+      where: { invoiceId: invoice.id, status: "pending" },
+      select: { id: true },
+    });
+    if (existingPending) {
+      return sendError(
+        res,
+        "A payment is already recorded for this invoice and awaiting treasurer confirmation",
+        "CONFLICT",
+        null,
+        409,
+      );
+    }
+
+    const payment = await prisma.$transaction(async (tx) => {
+      const created = await tx.payment.create({
+        data: {
+          reference: generateReference("PAY"),
+          amount: invoice.amount,
+          method: method as PaymentMethod,
+          status: "pending",
+          paidById: invoice.createdById,
+          invoiceId: invoice.id,
+          serviceCode: invoice.service.code,
+          matchStatus: "awaiting_verification",
+        },
+      });
+
+      if (invoice.applicationId) {
+        await tx.application.update({
+          where: { id: invoice.applicationId },
+          data: { status: "awaiting_payment_confirmation" },
+        });
+      }
+
+      return created;
+    });
+
+    return sendSuccess(
+      res,
+      { payment },
+      "Payment recorded. Awaiting treasurer confirmation.",
     );
   } catch (err) {
     next(err);
