@@ -26,7 +26,13 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false, // Prevents timeouts on internal local-routing handshakes
   },
-//   connectionTimeout: 10000, // 10 seconds fail-fast threshold instead of infinite hanging
+  // The shared Exim server delays its SMTP greeting by roughly 28 seconds
+  // (measured Nov 2026) as an anti-spam measure. Nodemailer's default
+  // greeting timeout is 30 seconds, which made sends fail intermittently
+  // with "Greeting never received". These timeouts give the server room.
+  greetingTimeout: 90000,
+  connectionTimeout: 90000,
+  socketTimeout: 90000,
 });
 
 // Verify SMTP connection on startup
@@ -75,8 +81,6 @@ export async function sendEmail({
   }
 
   try {
-
-    verifyConnection()
     const info = await transporter.sendMail({
       from: `"${SMTP_FROM_NAME}" <${SMTP_USER}>`,
       to,
