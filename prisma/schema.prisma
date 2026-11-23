@@ -144,6 +144,7 @@ enum AuditAction {
   service_created
   service_updated
   service_deleted
+  bank_account_updated
 }
 
 enum ViolationSeverity {
@@ -802,4 +803,24 @@ model OfflineSync {
 
   @@index([officerId])
   @@index([status])
+}
+
+// ============================================================
+// LGA COLLECTION BANK ACCOUNT
+// ============================================================
+// The single account FO-only service payments are made into. Managed
+// from the dashboard Settings by treasurer / lga_admin / super_admin
+// only, and read by the FO invoice page and the collection SMS. Kept
+// in the database on purpose: no account number ever lives in code.
+// One row by design (the first row is the account); saving updates it.
+model LgaBankAccount {
+  id            String   @id @default(uuid())
+  bankName      String
+  accountName   String
+  accountNumber String
+  updatedById   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("lga_bank_accounts")
 }

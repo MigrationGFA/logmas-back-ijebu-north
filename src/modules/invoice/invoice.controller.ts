@@ -758,15 +758,33 @@ export const recordFoInvoicePayment = async (
     const role = req.user!.role;
     const { method } = req.body || {};
 
-    if (!["cash", "bank_transfer"].includes(method)) {
+    // FO collections are transfer only (cash was removed Nov 23, 2026):
+    // the payer transfers to the LGA collection account and the officer
+    // records it here with the payer's proof attached.
+    if (method !== "bank_transfer") {
       return sendError(
         res,
-        "Payment method must be cash or bank_transfer",
+        "FO-only service payments are by bank transfer only",
         "VALIDATION_ERROR",
         null,
         400,
       );
     }
+
+    const file = (req as any).file as
+      | { originalname?: string; path: string }
+      | undefined;
+    if (!file) {
+      return sendError(
+        res,
+        "Payment proof is required: upload the payer's transfer receipt",
+        "VALIDATION_ERROR",
+        null,
+        400,
+      );
+    }
+    const serverUrl = `${req.protocol}://${req.get("host")}`;
+    const proofUrl = `${serverUrl}/${file.path.replace(/\\/g, "/")}`;
 
     if (!["field_officer", "sub_admin", "lga_admin", "super_admin"].includes(role)) {
       return sendError(
@@ -842,6 +860,9 @@ export const recordFoInvoicePayment = async (
           invoiceId: invoice.id,
           serviceCode: invoice.service.code,
           matchStatus: "awaiting_verification",
+          proofUrl,
+          proofUploadedById: userId,
+          proofUploadedAt: new Date(),
         },
       });
 
@@ -858,7 +879,7 @@ export const recordFoInvoicePayment = async (
     return sendSuccess(
       res,
       { payment },
-      "Payment recorded. Awaiting treasurer confirmation.",
+      "Transfer recorded with proof. Awaiting treasurer confirmation.",
     );
   } catch (err) {
     next(err);

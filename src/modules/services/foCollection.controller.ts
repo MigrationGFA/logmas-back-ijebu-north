@@ -3,6 +3,17 @@ import { sendSuccess, sendError } from "../../utils/response";
 import { prisma } from "../../utils/prisma";
 import { generateReference } from "../../utils/generators";
 import { Role } from "@prisma/client";
+import { sendSms } from "../notification/sms.service";
+
+/** Termii wants international format; payers give local Nigerian numbers. */
+const normalizeNgPhone = (raw: string): string | null => {
+  const digits = raw.replace(/\D/g, "");
+  if (digits.startsWith("234") && digits.length >= 12) return digits;
+  if (digits.startsWith("0") && digits.length === 11)
+    return `234${digits.slice(1)}`;
+  if (digits.length === 10) return `234${digits}`;
+  return null;
+};
 
 /**
  * POST /api/v1/services/fo-collections
@@ -12,14 +23,16 @@ import { Role } from "@prisma/client";
  * The officer selects the service first (the catalogue carries only
  * FO-only services for staff), then records who paid, how much was
  * actually paid after bargaining, and the merchant where there is one.
- * There is no fixed fee for these services and no bank details are
- * shown or stored: the platform's job is the record (how much, which
- * officer initiated it, which merchant), while settlement happens
- * out of band and the treasurer confirms afterwards.
+ * There is no fixed fee for these services. The account the payer
+ * transfers to is the LGA collection account kept in the database
+ * (lga_bank_accounts, managed by treasurer/admin in Settings): the
+ * invoice page shows it, and on creation the payer is sent it by SMS
+ * together with the service, the amount and the officer's phone
+ * number, so they can send the officer their transfer receipt.
  *
  * Submitting creates BOTH the application and its invoice in one
- * transaction. The officer is then sent to the invoice page to record
- * how the payer paid (cash or bank transfer), which parks the pair at
+ * transaction. The officer then records the transfer on the invoice
+ * page with the payer's proof, which parks the pair at
  * `awaiting_payment_confirmation` for the treasurer.
  */
 export const createFoCollection = async (
@@ -117,8 +130,9 @@ export const createFoCollection = async (
           serviceId: service.id,
           amount: paidAmount,
           paymentStatus: "pending",
-          // No virtual account fields on purpose: no bank details are
-          // displayed for FO-only services.
+          // No virtual account fields: FO collections are paid into the
+          // LGA collection account from lga_bank_accounts, resolved at
+          // display and SMS time, never stored per invoice.
           createdById: officerId,
         },
       });
@@ -143,10 +157,37 @@ export const createFoCollection = async (
       return { application, invoice };
     });
 
+    // Text the payer the payment details. Best effort by design: an SMS
+    // failure (or no account saved yet) never fails the collection.
+    let smsSent = false;
+    try {
+      const bankAccount = await prisma.lgaBankAccount.findFirst({
+        orderBy: { createdAt: "asc" },
+      });
+      const to = normalizeNgPhone(String(phone));
+      if (bankAccount && to) {
+        const officer = await prisma.user.findUnique({
+          where: { id: officerId },
+          select: { phone: true },
+        });
+        const message =
+          `Ijebu North East Local Government. ${service.name}: ` +
+          `NGN ${paidAmount.toLocaleString("en-NG")} for invoice ${result.invoice.invoiceNumber}. ` +
+          `Pay to ${bankAccount.bankName}: ${bankAccount.accountNumber} (${bankAccount.accountName}). ` +
+          `After payment, send your receipt to your field officer${officer?.phone ? ` on ${officer.phone}` : ""}.`;
+        const sms = await sendSms({ to, message });
+        smsSent = sms.success;
+      }
+    } catch (smsErr) {
+      console.error("[foCollection] payment-details SMS failed:", smsErr);
+    }
+
     return sendSuccess(
       res,
-      result,
-      "Collection recorded. Choose how the payer paid on the invoice page.",
+      { ...result, smsSent },
+      smsSent
+        ? "Collection recorded. Payment details sent to the payer by SMS."
+        : "Collection recorded. Continue to the invoice page for the bank details.",
     );
   } catch (err) {
     next(err);
