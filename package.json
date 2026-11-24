@@ -11,6 +11,8 @@
     "prisma:migrate": "npx prisma migrate dev",
     "prisma:deploy": "npx prisma migrate deploy",
     "prisma:generate": "npx prisma generate",
+    "seed:wards": "ts-node prisma/seed.wards.ts",
+    "seed:services": "ts-node prisma/seed.services.ts",
     "test:awaiting-form": "ts-node src/scripts/create-awaiting-form-test.ts"
   },
   "prisma": {
