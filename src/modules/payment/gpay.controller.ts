@@ -69,6 +69,25 @@ function phoneOf(phone: string | null | undefined, context: string): string {
   return PHONE_PLACEHOLDER;
 }
 
+/**
+ * Card processing fee: public card payments carry 1.5% on top of the official
+ * amount. The charge and the payment intent use the total; the invoice and
+ * application amounts always stay at the official fee. Settlement compares
+ * the gateway amount against the intent amount, so the breakdown stays
+ * consistent end to end. Bank transfer flows never pass through here.
+ */
+const CARD_PROCESSING_FEE_RATE = 0.015;
+
+function withCardProcessingFee(baseAmount: number): {
+  baseAmount: number;
+  processingFee: number;
+  total: number;
+} {
+  const processingFee = Math.round(baseAmount * CARD_PROCESSING_FEE_RATE * 100) / 100;
+  const total = Math.round((baseAmount + processingFee) * 100) / 100;
+  return { baseAmount, processingFee, total };
+}
+
 /** Persists the raw gateway envelope on the intent so outcomes stay auditable. */
 async function recordLastResponse(intentId: string, raw: any, status?: string) {
   try {
@@ -121,7 +140,12 @@ export const initializeGpayInvoicePayment = async (
     });
 
     // GPay takes Naira decimals — NOT kobo. No *100 here.
-    const amount = Number(invoice.amount);
+    // The card charge is the invoice amount plus the 1.5% processing fee; the
+    // invoice itself keeps the official amount.
+    const { baseAmount, processingFee, total } = withCardProcessingFee(
+      Number(invoice.amount),
+    );
+    const amount = total;
     const reference = generateReference("PAY");
     const customerName = fullNameOf(user ?? { email: userEmail });
     const customerPhone = phoneOf(user?.phone, `user ${userId}`);
@@ -143,6 +167,8 @@ export const initializeGpayInvoicePayment = async (
           fullName: customerName,
           email: userEmail,
           phone: customerPhone,
+          baseAmount,
+          processingFee,
         },
       },
     });
@@ -210,6 +236,8 @@ export const initializeGpayInvoicePayment = async (
       paymentUrl: checkoutUrl,
       reference,
       amount,
+      baseAmount,
+      processingFee,
       invoiceNumber: invoice.invoiceNumber,
       gateway: "gpay",
       message: "Redirect user to paymentUrl to complete payment",
@@ -301,7 +329,13 @@ export const initializeGpayPublicPayment = async (
     }
 
     // GPay takes Naira decimals — NOT kobo.
-    const amount = resolveServiceFeeAmount(service.feeConfig, (req.body as any)?.amount);
+    // The card charge is the service fee plus the 1.5% processing fee; the
+    // application and invoice created after payment keep the official fee
+    // (the completion service reads it from the fee config, not from here).
+    const { baseAmount, processingFee, total } = withCardProcessingFee(
+      resolveServiceFeeAmount(service.feeConfig, (req.body as any)?.amount),
+    );
+    const amount = total;
     const reference = generateReference("PAY");
 
     // If this person already has an account we remember it, but nothing is
@@ -323,6 +357,8 @@ export const initializeGpayPublicPayment = async (
       email: cleanEmail,
       phone: cleanPhone,
       userId: existingUser?.id ?? null,
+      baseAmount,
+      processingFee,
     };
 
     const intent = await prisma.paymentIntent.create({
@@ -387,6 +423,8 @@ export const initializeGpayPublicPayment = async (
       paymentUrl: checkoutUrl,
       reference,
       amount,
+      baseAmount,
+      processingFee,
       serviceId: service.id,
       flow: "new_application",
       gateway: "gpay",
