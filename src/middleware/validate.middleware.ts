@@ -7,7 +7,7 @@ export const validateBody = (schema: ZodSchema) => {
     const result = schema.safeParse(req.body);
 
     if (!result.success) {
-      return sendError(res, 'Data validation validation processing failed', 'VALIDATION_ERROR', result.error.format(), 400);
+      return sendError(res, 'Please check the submitted details and try again', 'VALIDATION_ERROR', result.error.format(), 400);
     }
     req.body = result.data;
     next();
