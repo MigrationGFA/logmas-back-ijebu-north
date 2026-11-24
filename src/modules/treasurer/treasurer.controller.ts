@@ -704,7 +704,30 @@ export const listAwaitingConfirmation = async (
       method: "bank_transfer",
       ...(status === "confirmed" ? { status: "confirmed" } :
           status === "rejected" ? { matchStatus: "rejected" } :
-          status === "pending" ? { status: "pending", NOT: { matchStatus: "rejected" } } : {}),
+          status === "pending" ? {
+            status: "pending",
+            NOT: { matchStatus: "rejected" },
+            // A page view mints a placeholder transfer record (the
+            // reference a payer quotes in their narration) long before
+            // any money moves. The queue is for CLAIMS, and a claim
+            // always carries at least one of these signals: the
+            // awaiting-verification flag, a submitted proof, or the
+            // application parked at awaiting payment confirmation.
+            // Placeholders carry none of the three and stay out.
+            OR: [
+              { matchStatus: "awaiting_verification" },
+              { proofUrl: { not: null } },
+              {
+                invoice: {
+                  is: {
+                    application: {
+                      is: { status: "awaiting_payment_confirmation" },
+                    },
+                  },
+                },
+              },
+            ],
+          } : {}),
     };
     const where: Prisma.ApplicationWhereInput = {
       invoice: { is: { payments: { some: paymentWhere } } },
