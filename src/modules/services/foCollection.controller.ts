@@ -170,11 +170,19 @@ export const createFoCollection = async (
           where: { id: officerId },
           select: { phone: true },
         });
-        const message =
-          `Ijebu North East Local Government. ${service.name}: ` +
-          `NGN ${paidAmount.toLocaleString("en-NG")} for invoice ${result.invoice.invoiceNumber}. ` +
-          `Pay to ${bankAccount.bankName}: ${bankAccount.accountNumber} (${bankAccount.accountName}). ` +
-          `After payment, send your receipt to your field officer${officer?.phone ? ` on ${officer.phone}` : ""}.`;
+        const message = [
+          "Ijebu North East Local Government",
+          `Invoice: ${result.invoice.invoiceNumber}`,
+          `Service: ${service.name}`,
+          `Amount: NGN ${paidAmount.toLocaleString("en-NG")}`,
+          "",
+          "Pay to:",
+          bankAccount.bankName,
+          `Acct No: ${bankAccount.accountNumber}`,
+          `Acct Name: ${bankAccount.accountName}`,
+          "",
+          `After payment, please send your receipt to your field officer${officer?.phone ? ` on ${officer.phone}` : ""}.`,
+        ].join("\n");
         const sms = await sendSms({ to, message });
         smsSent = sms.success;
       }

@@ -42,6 +42,18 @@ export const createStaffSchema = z
     // wardId: z.string().optional(), // required when role = ward_councillor
     // contractorId: z.string().uuid().optional(), // required when role = field_officer or agent
   })
+  .superRefine((data, ctx) => {
+    // A field officer's phone is required: the payment-details SMS tells
+    // payers to send their transfer receipt to the officer's number, so
+    // an officer account without one silently breaks that flow.
+    if (data.role === "field_officer" && !data.phone?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Phone number is required for field officers",
+        path: ["phone"],
+      });
+    }
+  });
   // .refine(
   //   (data) => {
   //     if ((data.role === "ward_councillor" || data.role === "field_officer") && !data.wardId) return false;
