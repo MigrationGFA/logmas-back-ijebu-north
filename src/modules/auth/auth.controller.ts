@@ -574,7 +574,20 @@ export const updateUserProfile = async (
     addStringField("address", address);
     addStringField("town", town);
     addStringField("dateOfBirth", dateOfBirth);
-    // addStringField("ward", ward);
+    // Ward arrives as a ward NAME from the profile forms, but the account
+    // stores the ward relation, so resolve the name to the ward record.
+    // An unknown name is ignored rather than failing the whole save, and
+    // an empty value clears the ward.
+    if (ward !== undefined) {
+      if (ward) {
+        const wardRecord = await prisma.ward.findFirst({
+          where: { name: ward },
+        });
+        if (wardRecord) updateData.wardId = wardRecord.id;
+      } else {
+        updateData.wardId = null;
+      }
+    }
     addStringField("gender", gender);
     addStringField("emergencyContact", emergencyContact);
     // addStringField("avatarUrl", avatarUrl);

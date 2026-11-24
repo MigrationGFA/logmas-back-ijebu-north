@@ -68,7 +68,48 @@ function loadServices(): SeedService[] {
   return parsed.map((s) => ({ ...s, description: interpolate(s.description) }));
 }
 
+interface SeedWard {
+  name: string;
+  code: string;
+  description?: string;
+}
+
+function loadWards(): SeedWard[] {
+  const filePath = join(__dirname, "data", `${lgaId}.wards.json`);
+  let raw: string;
+  try {
+    raw = readFileSync(filePath, "utf-8");
+  } catch {
+    // Wards are optional per LGA: a clone without a wards file simply
+    // skips ward seeding instead of failing the whole seed run.
+    console.log(`[seed] No wards file for LGA "${lgaId}", skipping wards.`);
+    return [];
+  }
+  return JSON.parse(raw) as SeedWard[];
+}
+
+async function seedWards() {
+  const wards = loadWards();
+  if (wards.length === 0) return;
+
+  console.log(` Seeding ${wards.length} wards for ${lgaName} (${lgaId})...`);
+  for (const w of wards) {
+    await prisma.ward.upsert({
+      where: { code: w.code },
+      update: { name: w.name, description: w.description ?? null },
+      create: {
+        name: w.name,
+        code: w.code,
+        description: w.description ?? null,
+      },
+    });
+    console.log(`✅ Ward ${w.code} → ${w.name}`);
+  }
+}
+
 async function main() {
+  await seedWards();
+
   const services = loadServices();
 
   console.log(` Seeding services for ${lgaName} (${lgaId})...`);
