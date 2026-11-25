@@ -508,9 +508,20 @@ export const getReconciliation = async (
             select: {
               id: true,
               applicationNumber: true,
-              fullName: true,
-              phone: true,
-              email: true,
+              // Application has no fullName/phone/email columns: the
+              // applicant's details live in the form payload and on the
+              // applicant's account. Selecting them as columns threw on
+              // every call, which is why this report never loaded. The
+              // mapper below flattens them from these two sources.
+              formData: true,
+              applicant: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                  email: true,
+                  phone: true,
+                },
+              },
 
               service: {
                 select: {
@@ -582,11 +593,28 @@ export const getReconciliation = async (
 
       const outstanding = Math.max(invoiceAmount - totalCollected, 0);
 
+      const app = invoice.application as any;
+      const formData = (app?.formData ?? {}) as Record<string, any>;
+      const applicantName = app?.applicant
+        ? `${app.applicant.firstName ?? ""} ${app.applicant.lastName ?? ""}`.trim()
+        : "";
+
       return {
         id: invoice.id,
         invoiceNumber: invoice.invoiceNumber,
 
-        application: invoice.application,
+        application: {
+          id: app?.id,
+          applicationNumber: app?.applicationNumber,
+          fullName:
+            formData.fullName ||
+            formData.payerName ||
+            applicantName ||
+            "Unknown applicant",
+          phone: formData.phone || app?.applicant?.phone || null,
+          email: formData.email || app?.applicant?.email || null,
+          service: app?.service,
+        },
 
         invoiceAmount,
 

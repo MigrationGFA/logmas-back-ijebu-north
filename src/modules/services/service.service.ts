@@ -1,12 +1,23 @@
 import { CertificateType, ServiceCategory } from "@prisma/client";
 import { prisma } from "../../utils/prisma";
 
-export const listActiveServices = async (category?: string, includeFoOnly = false) => {
+// Catalogue visibility by caller scope: the public sees public
+// services only, staff see everything, and a field officer sees
+// FO-only services only (Nov 25, 2026 ruling).
+export type ServiceVisibility = "public" | "staff" | "field_officer";
+
+const foOnlyFilter = (scope: ServiceVisibility) =>
+  scope === "field_officer"
+    ? { foOnly: true }
+    : scope === "staff"
+      ? {}
+      : { foOnly: false };
+
+export const listActiveServices = async (category?: string, scope: ServiceVisibility = "public") => {
   return prisma.service.findMany({
     where: {
       isActive: true,
-      // FO-only services are hidden unless the caller is staff.
-      ...(includeFoOnly ? {} : { foOnly: false }),
+      ...foOnlyFilter(scope),
       ...(category ? { category: category as any } : {}),
     },
     include: {
@@ -31,11 +42,11 @@ export const listActiveServices = async (category?: string, includeFoOnly = fals
   });
 };
 
-export const getActiveServiceByCode = async (code: string, includeFoOnly = false) => {
+export const getActiveServiceByCode = async (code: string, scope: ServiceVisibility = "public") => {
   return prisma.service.findFirst({
     where: {
       isActive: true,
-      ...(includeFoOnly ? {} : { foOnly: false }),
+      ...foOnlyFilter(scope),
       OR: [
         { id: code },
         {

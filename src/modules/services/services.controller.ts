@@ -6,12 +6,10 @@ import { Role, ServiceCategory, CertificateType } from "@prisma/client";
 import { verifyAccessToken } from "../../utils/jwt";
 import { prisma } from "../../utils/prisma";
 
-// Roles that may see FO-only services. The catalogue routes are public
-// (no requireAuth), so the caller's role is read from the bearer token
-// when one is present; anonymous and citizen callers never see FO-only
-// services.
+// Staff roles other than field officer. The catalogue routes are
+// public (no requireAuth), so the caller's role is read from the bearer
+// token when one is present.
 const STAFF_ROLES: Role[] = [
-  "field_officer",
   "treasurer",
   "lga_admin",
   "super_admin",
@@ -20,14 +18,21 @@ const STAFF_ROLES: Role[] = [
   "chairman",
 ];
 
-function callerIsStaff(req: Request): boolean {
+// How much of the catalogue a caller may see. A field officer sees
+// FO-only services and nothing else (Nov 25, 2026 ruling); other staff
+// see the whole catalogue; anonymous and citizen callers see public
+// services only.
+type CatalogueScope = "public" | "staff" | "field_officer";
+
+function callerScope(req: Request): CatalogueScope {
   const header = req.headers.authorization;
-  if (!header || !header.startsWith("Bearer ")) return false;
+  if (!header || !header.startsWith("Bearer ")) return "public";
   try {
     const decoded = verifyAccessToken(header.split(" ")[1]);
-    return STAFF_ROLES.includes(decoded.role as Role);
+    if (decoded.role === "field_officer") return "field_officer";
+    return STAFF_ROLES.includes(decoded.role as Role) ? "staff" : "public";
   } catch {
-    return false;
+    return "public";
   }
 }
 
@@ -61,7 +66,7 @@ export const listServices = async (
   try {
     const category = queryString(req.query.category);
 
-    const services = await ServiceService.listActiveServices(category, callerIsStaff(req));
+    const services = await ServiceService.listActiveServices(category, callerScope(req));
 
     return sendSuccess(res, services);
   } catch (err) {
@@ -77,7 +82,7 @@ export const getServiceByCode = async (
   try {
     const { code } = req.params;
 
-    const service = await ServiceService.getActiveServiceByCode(String(code), callerIsStaff(req));
+    const service = await ServiceService.getActiveServiceByCode(String(code), callerScope(req));
 
     if (!service) {
       return sendError(

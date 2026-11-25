@@ -178,7 +178,10 @@ export const updatePermitConfigSchema = z.object({
 
 // ── Treasurer Fees (LGA simplified flow)
 export const upsertServiceFeeSchema = z.object({
-  amount: z.number().nonnegative('Amount must be a non-negative monetary value'),
+  // Coerced: the API serializes money as a string, and a client echoing
+  // that string back (the pricing table's activate/deactivate toggle did
+  // exactly this) must not fail validation for carrying a number as text.
+  amount: z.coerce.number().nonnegative('Amount must be a non-negative monetary value'),
   status: z.boolean().optional().default(true),
   layerDepth: z.number().int().min(1).max(3).optional(),
   billingUnit: z.string().optional().nullable(),
