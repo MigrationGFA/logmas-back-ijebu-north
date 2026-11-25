@@ -16,6 +16,18 @@ const normalizeNgPhone = (raw: string): string | null => {
 };
 
 /**
+ * Public portal origin for payment links sent by SMS. APP_URL is the
+ * canonical setting; PAYSTACK_CALLBACK_URL already holds the same origin
+ * in production (the gateway returns payers to it), so it serves as the
+ * fallback when APP_URL was never set.
+ */
+const portalBaseUrl = (): string =>
+  (process.env.APP_URL || process.env.PAYSTACK_CALLBACK_URL || "").replace(
+    /\/$/,
+    "",
+  );
+
+/**
  * POST /api/v1/services/fo-collections
  *
  * Field-officer collection for an FO-only service.
@@ -60,7 +72,7 @@ export const createFoCollection = async (
       );
     }
 
-    const { serviceCode, payerName, phone, email, merchantName, location, amount } =
+    const { serviceCode, payerName, phone, email, merchantName, location, amount, channel } =
       req.body || {};
 
     const paidAmount = Number(amount);
@@ -73,6 +85,19 @@ export const createFoCollection = async (
         400,
       );
     }
+    if (!normalizeNgPhone(String(phone))) {
+      return sendError(
+        res,
+        "Enter a valid Nigerian phone number for the payer",
+        "VALIDATION_ERROR",
+        null,
+        400,
+      );
+    }
+    // How the payer will pay, chosen by the officer before recording:
+    // "card" texts the payer the online payment link; "transfer" texts
+    // the LGA collection account details.
+    const paymentChannel = channel === "card" ? "card" : "transfer";
     if (!paidAmount || paidAmount <= 0) {
       return sendError(
         res,
@@ -108,6 +133,7 @@ export const createFoCollection = async (
       location: String(location),
       amountPaid: paidAmount,
       serviceName: service.name,
+      paymentChannel,
     };
 
     const result = await prisma.$transaction(async (tx) => {
@@ -157,34 +183,55 @@ export const createFoCollection = async (
       return { application, invoice };
     });
 
-    // Text the payer the payment details. Best effort by design: an SMS
-    // failure (or no account saved yet) never fails the collection.
+    // Text the payer how to pay, in the channel the officer chose. Best
+    // effort by design: an SMS failure (or no account saved yet, for
+    // transfers) never fails the collection; the invoice page carries a
+    // resend action for exactly that case.
     let smsSent = false;
     try {
-      const bankAccount = await prisma.lgaBankAccount.findFirst({
-        orderBy: { createdAt: "asc" },
-      });
       const to = normalizeNgPhone(String(phone));
-      if (bankAccount && to) {
+      if (to) {
         const officer = await prisma.user.findUnique({
           where: { id: officerId },
           select: { phone: true },
         });
-        const message = [
+        const officerLine = `After payment, please send your receipt to your field officer${officer?.phone ? ` on ${officer.phone}` : ""}.`;
+        const head = [
           "Ijebu North East Local Government",
           `Invoice: ${result.invoice.invoiceNumber}`,
           `Service: ${service.name}`,
           `Amount: NGN ${paidAmount.toLocaleString("en-NG")}`,
           "",
-          "Pay to:",
-          bankAccount.bankName,
-          `Acct No: ${bankAccount.accountNumber}`,
-          `Acct Name: ${bankAccount.accountName}`,
-          "",
-          `After payment, please send your receipt to your field officer${officer?.phone ? ` on ${officer.phone}` : ""}.`,
-        ].join("\n");
-        const sms = await sendSms({ to, message });
-        smsSent = sms.success;
+        ];
+        let message: string | null = null;
+        if (paymentChannel === "card") {
+          message = [
+            ...head,
+            "Pay by card:",
+            `${portalBaseUrl()}/pay/${result.invoice.invoiceNumber}`,
+            "",
+            officerLine,
+          ].join("\n");
+        } else {
+          const bankAccount = await prisma.lgaBankAccount.findFirst({
+            orderBy: { createdAt: "asc" },
+          });
+          if (bankAccount) {
+            message = [
+              ...head,
+              "Pay to:",
+              bankAccount.bankName,
+              `Acct No: ${bankAccount.accountNumber}`,
+              `Acct Name: ${bankAccount.accountName}`,
+              "",
+              officerLine,
+            ].join("\n");
+          }
+        }
+        if (message) {
+          const sms = await sendSms({ to, message });
+          smsSent = sms.success;
+        }
       }
     } catch (smsErr) {
       console.error("[foCollection] payment-details SMS failed:", smsErr);
@@ -194,8 +241,10 @@ export const createFoCollection = async (
       res,
       { ...result, smsSent },
       smsSent
-        ? "Collection recorded. Payment details sent to the payer by SMS."
-        : "Collection recorded. Continue to the invoice page for the bank details.",
+        ? paymentChannel === "card"
+          ? "Collection recorded. The payment link was sent to the payer by SMS."
+          : "Collection recorded. Payment details sent to the payer by SMS."
+        : "Collection recorded. Continue to the invoice page to resend the payment instructions.",
     );
   } catch (err) {
     next(err);
@@ -343,7 +392,7 @@ export const resendPaymentInstructions = async (
           400,
         );
       }
-      const portal = (process.env.APP_URL || "").replace(/\/$/, "");
+      const portal = portalBaseUrl();
       message = [
         "Ijebu North East Local Government",
         `Invoice: ${invoice.invoiceNumber}`,
