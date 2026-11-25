@@ -287,8 +287,11 @@ export const listServiceFees = async (
   next: NextFunction,
 ) => {
   try {
+    // All services, active or not: the pricing screen is where a
+    // deactivated service's price gets managed and where it is switched
+    // back on, so filtering to active only made inactive services
+    // unpriceable and invisible here.
     const services = await prisma.service.findMany({
-      where: { isActive: true },
       include: { feeConfig: true },
       orderBy: { name: "asc" },
     });
@@ -324,8 +327,6 @@ export const getServiceFee = async (
 
     if (!service)
       return sendError(res, "Service not found", "NOT_FOUND", null, 404);
-    if (!service.isActive)
-      return sendError(res, "Service is not active", "BAD_REQUEST", null, 400);
 
     return sendSuccess(res, service);
   } catch (err) {
@@ -374,8 +375,10 @@ export const upsertServiceFee = async (
     });
     if (!service)
       return sendError(res, "Service not found", "NOT_FOUND", null, 404);
-    if (!service.isActive)
-      return sendError(res, "Service is not active", "BAD_REQUEST", null, 400);
+    // No active check here on purpose: this save sets the service's
+    // active state from the fee status being saved, so it is also how a
+    // deactivated service gets priced and switched back on. Refusing
+    // inactive services here dead-ended the pricing screen.
 
     // Upsert fee config
     const result = await prisma.$transaction(async (tx) => {

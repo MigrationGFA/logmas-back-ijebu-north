@@ -24,6 +24,26 @@ import { sendEmail } from "../notification/email.service";
       ? `${process.env.PAYSTACK_CALLBACK_URL}/payment/result`
       : "http://localhost:3002/payment/result";
 
+/**
+ * Card processing fee for online payments: 1.5% on top of the official
+ * amount, rounded to the kobo, charged to the payer at the gateway. The
+ * official invoice, application and receipt amounts never change; this
+ * mirrors the fee the GPay doors carried before they were parked
+ * (Nov 25, 2026), so the breakdown the payer sees in the payment dialog
+ * matches what Paystack charges.
+ */
+const CARD_PROCESSING_FEE_RATE = 0.015;
+
+function withCardProcessingFee(baseAmount: number): {
+  baseAmount: number;
+  processingFee: number;
+  total: number;
+} {
+  const processingFee = Math.round(baseAmount * CARD_PROCESSING_FEE_RATE * 100) / 100;
+  const total = Math.round((baseAmount + processingFee) * 100) / 100;
+  return { baseAmount, processingFee, total };
+}
+
 export const initializePaystackPayment = async (
   req: Request,
   res: Response,
@@ -51,7 +71,10 @@ export const initializePaystackPayment = async (
     }
     
     const reference = generateReference("PAY");
-    const amountKobo = Math.round(Number(invoice.amount) * 100);
+    const { baseAmount, processingFee, total } = withCardProcessingFee(
+      Number(invoice.amount),
+    );
+    const amountKobo = Math.round(total * 100);
     
     const gatewayResult = await initializeTransaction({
       email: userEmail,
@@ -92,6 +115,8 @@ export const initializePaystackPayment = async (
     return sendSuccess(res, {
       paymentUrl: gatewayResult.data!.authorization_url,
       reference: gatewayResult.data!.reference,
+      baseAmount,
+      processingFee,
       message: "Redirect user to paymentUrl to complete payment",
     });
   } catch (err) {
@@ -165,7 +190,8 @@ export const initializePaystackPaymentNewFlow = async (
     }
 
     const amount = Number(service.feeConfig.amount);
-    const amountKobo = Math.round(amount * 100);
+    const { processingFee, total } = withCardProcessingFee(amount);
+    const amountKobo = Math.round(total * 100);
 
     // 2. Check whether the person already has an account.
     // We DON'T create anything yet.
@@ -218,6 +244,8 @@ export const initializePaystackPaymentNewFlow = async (
       paymentUrl: gatewayResult.data!.authorization_url,
       reference: gatewayResult.data!.reference,
       amount,
+      baseAmount: amount,
+      processingFee,
       serviceId: service.id,
       flow: "new_application",
     });

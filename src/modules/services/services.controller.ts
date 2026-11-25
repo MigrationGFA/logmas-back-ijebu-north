@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { sendSuccess, sendError } from "../../utils/response";
 import * as ServiceService from "./service.service";
 import { queryString } from "../complaints/complaints.controller";
-import { Role } from "@prisma/client";
+import { Role, ServiceCategory, CertificateType } from "@prisma/client";
 import { verifyAccessToken } from "../../utils/jwt";
 import { prisma } from "../../utils/prisma";
 
@@ -244,6 +244,35 @@ export const updateServiceController = async (
       foOnly,
       feeConfig,
     } = req.body;
+
+    // Category and certificate type are database enums. Reject anything
+    // outside them here with a clean message, instead of letting the
+    // value reach the database and come back as a raw technical error
+    // (which is what used to kill Edit Service saves from the modal).
+    if (
+      category !== undefined &&
+      !Object.values(ServiceCategory).includes(category)
+    ) {
+      return sendError(
+        res,
+        "Invalid service category",
+        "VALIDATION_ERROR",
+        null,
+        400,
+      );
+    }
+    if (
+      certificateType !== undefined &&
+      !Object.values(CertificateType).includes(certificateType)
+    ) {
+      return sendError(
+        res,
+        "Invalid certificate type",
+        "VALIDATION_ERROR",
+        null,
+        400,
+      );
+    }
 
     // Prepare update data - only include fields that are provided
     const updateData: any = {};
