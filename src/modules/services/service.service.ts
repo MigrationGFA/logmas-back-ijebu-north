@@ -100,7 +100,6 @@ export const createService = async (
     feeConfig?: {
       amount: number;
       expiryDate?: Date;
-      notes?: string;
     };
   },
   createdById: string,
@@ -197,27 +196,16 @@ export const createService = async (
         serviceId: service.id,
         amount: data.feeConfig.amount,
         expiryDate: data.feeConfig.expiryDate ? new Date(data.feeConfig.expiryDate) : null,
-        notes: data.feeConfig.notes || null,
         status: "ACTIVE",
-        createdById: createdById,
         updatedById: createdById,
       },
       select: {
         id: true,
         amount: true,
         expiryDate: true,
-        notes: true,
         status: true,
         createdAt: true,
         updatedAt: true,
-        createdBy: {
-          select: {
-            id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
-          },
-        },
         updatedBy: {
           select: {
             id: true,
@@ -401,14 +389,6 @@ export const updateService = async (
             status: true, layerDepth: true, billingUnit: true, effectiveDate: true, pricingTiers: true,
             createdAt: true,
             updatedAt: true,
-            createdBy: {
-              select: {
-                id: true,
-                email: true,
-                firstName: true,
-                lastName: true,
-              },
-            },
             updatedBy: {
               select: {
                 id: true,
@@ -432,7 +412,6 @@ export const updateService = async (
             amount: data.feeConfig.amount,
             expiryDate: data.feeConfig.expiryDate ? new Date(data.feeConfig.expiryDate) : null,
             status: data.feeConfig.status || "ACTIVE",
-            createdById: updatedById,
             updatedById: updatedById,
           },
           select: {
@@ -442,14 +421,6 @@ export const updateService = async (
             status: true, layerDepth: true, billingUnit: true, effectiveDate: true, pricingTiers: true,
             createdAt: true,
             updatedAt: true,
-            createdBy: {
-              select: {
-                id: true,
-                email: true,
-                firstName: true,
-                lastName: true,
-              },
-            },
             updatedBy: {
               select: {
                 id: true,
@@ -474,14 +445,6 @@ export const updateService = async (
           status: true, layerDepth: true, billingUnit: true, effectiveDate: true, pricingTiers: true,
           createdAt: true,
           updatedAt: true,
-          createdBy: {
-            select: {
-              id: true,
-              email: true,
-              firstName: true,
-              lastName: true,
-            },
-          },
           updatedBy: {
             select: {
               id: true,
