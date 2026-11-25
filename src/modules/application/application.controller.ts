@@ -647,7 +647,9 @@ export const adminApproveApplication = async (
 
       // Statutory requirement: Marriage Registration does NOT issue an online certificate.
       // Physical statutory certificate must be celebrated and collected at the LGA Marriage Registry Secretariat.
-      if (!isMarriageRegistration) {
+      // FO-only services never issue a certificate either (Nov 25, 2026
+      // ruling): the treasurer-confirmed receipt is their only document.
+      if (!isMarriageRegistration && !app.service.foOnly) {
         const certPrefix = "CERT";
         certificate = await tx.certificate.create({
           data: {
