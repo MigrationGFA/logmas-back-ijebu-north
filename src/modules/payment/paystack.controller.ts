@@ -124,6 +124,131 @@ export const initializePaystackPayment = async (
   }
 };
 
+// POST /api/v1/invoices/public/:id/initialize
+// Public card payment for an EXISTING invoice: the door behind the
+// /pay/:invoiceNumber link sent to payers by SMS. Unlike the authenticated
+// pay-online door, the payer here has no account (field-officer collections
+// are walk-up payers), so the email comes from the collection record or
+// from the pay page itself. The amount is the invoice amount plus the card
+// processing fee, exactly like the authenticated door, and settlement runs
+// through the same verify/webhook confirmPayment path.
+export const initializePublicInvoicePayment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const invoice = await prisma.invoice.findUnique({
+      where: { invoiceNumber: String(req.params.id) },
+      include: { application: true, service: true },
+    });
+    if (!invoice)
+      return sendError(res, "Invoice not found", "NOT_FOUND", null, 404);
+
+    if (["paid", "cancelled", "confirmed"].includes(invoice.paymentStatus)) {
+      return sendError(
+        res,
+        "This invoice has already been paid or cancelled",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    // Duplicate-settlement guard: a recorded bank transfer awaiting
+    // confirmation must resolve before a card payment can start.
+    const pendingClaim = await prisma.payment.findFirst({
+      where: {
+        invoiceId: invoice.id,
+        method: "bank_transfer",
+        status: "pending",
+        OR: [
+          { matchStatus: "awaiting_verification" },
+          { proofUrl: { not: null } },
+        ],
+      },
+    });
+    if (pendingClaim) {
+      return sendError(
+        res,
+        "A bank transfer for this invoice is awaiting confirmation. Card payment is unavailable until that is resolved.",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    const formData =
+      invoice.application?.formData &&
+      typeof invoice.application.formData === "object"
+        ? (invoice.application.formData as Record<string, any>)
+        : {};
+    const email =
+      (typeof req.body?.email === "string" && req.body.email) ||
+      (typeof formData.email === "string" && formData.email) ||
+      null;
+    if (!email) {
+      return sendError(
+        res,
+        "An email address is required to pay by card.",
+        "EMAIL_REQUIRED",
+        null,
+        400,
+      );
+    }
+
+    const reference = generateReference("PAY");
+    const { baseAmount, processingFee, total } = withCardProcessingFee(
+      Number(invoice.amount),
+    );
+    const amountKobo = Math.round(total * 100);
+
+    const gatewayResult = await initializeTransaction({
+      email,
+      amountKobo,
+      reference,
+      callbackUrl,
+      metadata: {
+        invoiceId: invoice.id,
+        invoiceNumber: invoice.invoiceNumber,
+        publicInvoicePayment: true,
+      },
+    });
+
+    if (!gatewayResult.success) {
+      return sendError(
+        res,
+        gatewayResult.error ?? "Failed to initialize payment",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    // Create a pending Payment row now so verify/webhook have something to
+    // match against by reference. No paidBy: the payer has no account.
+    await prisma.payment.create({
+      data: {
+        invoice: { connect: { id: invoice.id } },
+        amount: Number(invoice.amount),
+        method: "online_gateway",
+        status: "pending",
+        reference,
+      },
+    });
+
+    return sendSuccess(res, {
+      paymentUrl: gatewayResult.data!.authorization_url,
+      reference: gatewayResult.data!.reference,
+      baseAmount,
+      processingFee,
+      message: "Redirect user to paymentUrl to complete payment",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 interface NewFlowPaymentBody {
   serviceId: string;
   fullName: string;

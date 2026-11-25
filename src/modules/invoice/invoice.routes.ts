@@ -16,7 +16,8 @@ import {
 } from './invoice.controller';
 import { validateBody } from '../../middleware/validate.middleware';
 import z from 'zod';
-import { initializePaystackPayment, initializePaystackPaymentNewFlow } from '../payment/paystack.controller';
+import { initializePaystackPayment, initializePaystackPaymentNewFlow, initializePublicInvoicePayment } from '../payment/paystack.controller';
+import { resendPaymentInstructions } from '../services/foCollection.controller';
 import { getInvoiceVirtualAccount } from '../payment/gpay.controller';
 import { UPLOAD_FOLDER_MAP, ensureDirectoryExists } from '../../utils/fileStorage';
 
@@ -75,5 +76,7 @@ router.post('/:id/pay',         requireAuth, validateBody(recordPaymentSchema), 
 router.post('/:id/fo-payment',  requireAuth, proofUpload.single('proof'), recordFoInvoicePayment);
 router.post("/:id/pay-online", requireAuth, initializePaystackPayment);
 router.post("/public/initialize",  initializePaystackPaymentNewFlow);
+router.post("/public/:id/initialize", initializePublicInvoicePayment);
+router.post('/:id/resend-payment-link', requireAuth, resendPaymentInstructions);
 // router.post('/:id/send-payment-link', requireAuth, sendPaymentLinkToBusiness);
 // router.post('/:id/simulate-payment', requireAuth, simulatePayment); // dev only — remove in prod

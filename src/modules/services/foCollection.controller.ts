@@ -201,3 +201,197 @@ export const createFoCollection = async (
     next(err);
   }
 };
+
+/**
+ * POST /api/v1/invoices/:id/resend-payment-link
+ *
+ * Re-sends an FO collection's payment instructions to the payer by SMS.
+ * channel "transfer" re-sends the saved LGA collection account details
+ * (the same message the payer got when the collection was created);
+ * channel "card" sends the public /pay/:invoiceNumber link, which starts
+ * a Paystack payment for this invoice when opened. The collecting officer
+ * can resend for their own collections; treasurer and admin roles can
+ * resend for any. Refused while the invoice is settled or a recorded
+ * transfer is awaiting confirmation, so a payer can never be pushed to
+ * pay twice.
+ */
+export const resendPaymentInstructions = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user!.id;
+    const role = req.user!.role as Role;
+
+    const allowedRoles: Role[] = [
+      "field_officer",
+      "treasurer",
+      "lga_admin",
+      "super_admin",
+    ];
+    if (!allowedRoles.includes(role)) {
+      return sendError(
+        res,
+        "You cannot resend payment instructions",
+        "FORBIDDEN",
+        null,
+        403,
+      );
+    }
+
+    const invoice = await prisma.invoice.findUnique({
+      where: { invoiceNumber: String(req.params.id) },
+      include: { application: true, service: true },
+    });
+    if (!invoice)
+      return sendError(res, "Invoice not found", "NOT_FOUND", null, 404);
+
+    const formData =
+      invoice.application?.formData &&
+      typeof invoice.application.formData === "object"
+        ? (invoice.application.formData as Record<string, any>)
+        : {};
+    const isFoInvoice = invoice.service?.foOnly ?? formData._foCollection === true;
+    if (!isFoInvoice) {
+      return sendError(
+        res,
+        "This invoice is not a field officer collection",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    if (
+      role === "field_officer" &&
+      invoice.application?.createdById !== userId
+    ) {
+      return sendError(
+        res,
+        "You can only resend instructions for your own collections",
+        "FORBIDDEN",
+        null,
+        403,
+      );
+    }
+
+    if (["paid", "cancelled", "confirmed"].includes(invoice.paymentStatus)) {
+      return sendError(
+        res,
+        "This invoice has already been paid or cancelled",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    const pendingClaim = await prisma.payment.findFirst({
+      where: {
+        invoiceId: invoice.id,
+        method: "bank_transfer",
+        status: "pending",
+        OR: [
+          { matchStatus: "awaiting_verification" },
+          { proofUrl: { not: null } },
+        ],
+      },
+    });
+    if (pendingClaim) {
+      return sendError(
+        res,
+        "A bank transfer for this invoice is awaiting confirmation, so payment instructions cannot be resent yet.",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    const to = normalizeNgPhone(String(formData.phone ?? ""));
+    if (!to) {
+      return sendError(
+        res,
+        "This collection has no valid payer phone number",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    const officer = invoice.application?.createdById
+      ? await prisma.user.findUnique({
+          where: { id: invoice.application.createdById },
+          select: { phone: true },
+        })
+      : null;
+    const officerLine = `After payment, please send your receipt to your field officer${officer?.phone ? ` on ${officer.phone}` : ""}.`;
+    const amount = Number(invoice.amount).toLocaleString("en-NG");
+    const channel = req.body?.channel === "card" ? "card" : "transfer";
+
+    let message: string;
+    if (channel === "card") {
+      const email =
+        (typeof req.body?.email === "string" && req.body.email) ||
+        (typeof formData.email === "string" && formData.email) ||
+        null;
+      if (!email) {
+        return sendError(
+          res,
+          "Add the payer's email address to send a card payment link.",
+          "EMAIL_REQUIRED",
+          null,
+          400,
+        );
+      }
+      const portal = (process.env.APP_URL || "").replace(/\/$/, "");
+      message = [
+        "Ijebu North East Local Government",
+        `Invoice: ${invoice.invoiceNumber}`,
+        `Service: ${invoice.service?.name ?? formData.serviceName ?? "Service"}`,
+        `Amount: NGN ${amount}`,
+        "",
+        "Pay by card:",
+        `${portal}/pay/${invoice.invoiceNumber}`,
+        "",
+        officerLine,
+      ].join("\n");
+    } else {
+      const bankAccount = await prisma.lgaBankAccount.findFirst({
+        orderBy: { createdAt: "asc" },
+      });
+      if (!bankAccount) {
+        return sendError(
+          res,
+          "No collection account has been saved yet. Ask the treasurer or admin to save it in Settings.",
+          "BAD_REQUEST",
+          null,
+          400,
+        );
+      }
+      message = [
+        "Ijebu North East Local Government",
+        `Invoice: ${invoice.invoiceNumber}`,
+        `Service: ${invoice.service?.name ?? formData.serviceName ?? "Service"}`,
+        `Amount: NGN ${amount}`,
+        "",
+        "Pay to:",
+        bankAccount.bankName,
+        `Acct No: ${bankAccount.accountNumber}`,
+        `Acct Name: ${bankAccount.accountName}`,
+        "",
+        officerLine,
+      ].join("\n");
+    }
+
+    const sms = await sendSms({ to, message });
+    return sendSuccess(
+      res,
+      { smsSent: sms.success, channel },
+      sms.success
+        ? "Payment instructions sent to the payer by SMS."
+        : "The SMS could not be sent. Check the number and try again.",
+    );
+  } catch (err) {
+    next(err);
+  }
+};
