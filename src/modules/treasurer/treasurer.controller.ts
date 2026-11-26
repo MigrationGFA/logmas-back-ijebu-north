@@ -1277,12 +1277,13 @@ export const requestPaymentCorrection = async (
             email: application.applicant.email,
             phone: application.applicant.phone ?? "",
           },
-          templateKey: "application.subAdminCorrectionRequested",
+          templateKey: "application.correctionRequested",
           vars: {
             applicant_name: `${application.applicant.firstName} ${application.applicant.lastName}`,
             application_number: application.applicationNumber,
             service_name: application.service.name,
             application_id: application.id,
+            invoice_id: payment.invoice.id,
             correction_note: comment,
             reviewer_name: reviewerName,
             reviewed_at: new Date().toLocaleDateString("en-NG", {

@@ -46,6 +46,30 @@ export const applicationTemplates = {
 </body>
 </html>`,
   },
+  // Correction Requested - Treasurer sends a payment claim back
+  correctionRequested: {
+    sms: `Hello {{applicant_name}}, the Treasurer requested a correction on your {{service_name}} collection ({{application_number}}): {{correction_note}}. Open the invoice, fix the payer details and send the correction.`,
+    emailSubject: `Correction Requested: {{application_number}} - {{service_name}}`,
+    emailHtml: `
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; color: #1a1a1a; padding: 32px; background: #f5f5f5;">
+  <div style="max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 32px;">
+    <h2>Correction Requested</h2>
+    <p>Dear {{applicant_name}},</p>
+    <p>The Treasurer has requested a correction on the payment record for <strong>{{service_name}}</strong>. Please attend to it as soon as you can.</p>
+    <div style="background: #f9fafb; border-radius: 8px; padding: 16px; margin: 20px 0; font-size: 14px;">
+      <div style="margin-bottom: 8px;"><span style="color: #6b7280;">Application Number:</span> <strong style="font-family: monospace;">{{application_number}}</strong></div>
+      <div style="margin-bottom: 8px;"><span style="color: #6b7280;">Service:</span> {{service_name}}</div>
+      <div style="margin-bottom: 8px;"><span style="color: #6b7280;">Requested By:</span> {{reviewer_name}}</div>
+      <div><span style="color: #6b7280;">What to correct:</span> <strong>{{correction_note}}</strong></div>
+    </div>
+    <p style="font-size: 13px; color: #6b7280;">Open the invoice, fix the payer details and send the correction back. The amount cannot be changed.</p>
+    <a href="${BASE_URL}/dashboard/invoices/{{invoice_id}}" style="display: inline-block; background: #1a4731; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold;">Open Invoice →</a>
+  </div>
+</body>
+</html>`,
+  },
   applicationCompleteYourForm: {
     sms: `Hello {{applicant_name}}, your payment for {{service_name}} was successful. Your application (#{{application_number}}) is awaiting form completion. Please log in to ${BASE_URL}/login to complete your application and upload the required documents.`,
 
