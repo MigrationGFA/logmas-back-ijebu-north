@@ -10,6 +10,7 @@ import {
 } from "../../utils/generators";
 import { getIp } from "../complaints/complaints.controller";
 import { confirmPayment } from "../payment/payment.service";
+import { normalizeNgPhone } from "../services/foCollection.controller";
 import { sameAmount, serviceCodesForGpay, SERVICE_CODE_BY_SERVICE } from "../payment/gpay.service";
 
 interface GetInvoicesQuery {
@@ -1017,6 +1018,196 @@ export const replaceFoInvoicePaymentProof = async (
       res,
       { payment },
       "Receipt replaced. Awaiting treasurer confirmation.",
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * PATCH /api/v1/invoices/:invoiceNumber/fo-correction
+ * The collecting officer answers a treasurer correction request on an
+ * FO collection: the payer's details (name, phone, business, location)
+ * and optionally a fresh receipt can be fixed, and the claim goes back
+ * to the treasurer as a normal pending claim. The amount is never read
+ * from the request, so it cannot change here. Outside a correction the
+ * officer's only edit is replacing the receipt (fo-payment/proof).
+ */
+export const submitFoCorrection = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user!.id;
+    const role = req.user!.role;
+
+    if (!["field_officer", "lga_admin", "super_admin"].includes(role)) {
+      return sendError(
+        res,
+        "Only field officers can answer a correction on an FO collection",
+        "FORBIDDEN",
+        null,
+        403,
+      );
+    }
+
+    const invoice = await prisma.invoice.findUnique({
+      where: { invoiceNumber: String(id) },
+      include: { service: true, application: true },
+    });
+    if (!invoice)
+      return sendError(res, "Invoice not found", "NOT_FOUND", null, 404);
+
+    if (!invoice.service.foOnly) {
+      return sendError(
+        res,
+        "This endpoint is only for FO-only service invoices",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    if (role === "field_officer" && invoice.createdById !== userId) {
+      return sendError(
+        res,
+        "Only the officer who recorded this collection can answer its correction",
+        "FORBIDDEN",
+        null,
+        403,
+      );
+    }
+
+    const application = invoice.application;
+    if (!application) {
+      return sendError(
+        res,
+        "This invoice has no application record",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    const claim = await prisma.payment.findFirst({
+      where: {
+        invoiceId: invoice.id,
+        status: "pending",
+        method: "bank_transfer",
+        matchStatus: "correction_requested",
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    if (!claim) {
+      return sendError(
+        res,
+        "No correction is outstanding on this invoice",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    // Only payer details may change. Amount fields in the body are
+    // ignored entirely: the collected amount is part of the record.
+    const body = (req.body || {}) as Record<string, unknown>;
+    const provided = (key: string) =>
+      typeof body[key] === "string" ? (body[key] as string).trim() : undefined;
+
+    const payerName = provided("payerName");
+    if (payerName !== undefined && !payerName) {
+      return sendError(
+        res,
+        "The payer name cannot be empty",
+        "VALIDATION_ERROR",
+        null,
+        400,
+      );
+    }
+    const phone = provided("phone");
+    if (phone !== undefined && !normalizeNgPhone(phone)) {
+      return sendError(
+        res,
+        "Enter a valid Nigerian phone number for the payer",
+        "VALIDATION_ERROR",
+        null,
+        400,
+      );
+    }
+    const merchantName = provided("merchantName");
+    const location = provided("location");
+
+    const existingFormData =
+      application.formData && typeof application.formData === "object"
+        ? (application.formData as Record<string, any>)
+        : {};
+    const updatedFormData: Record<string, any> = { ...existingFormData };
+    if (payerName !== undefined) updatedFormData.payerName = payerName;
+    if (phone !== undefined) updatedFormData.phone = phone;
+    if (merchantName !== undefined) updatedFormData.merchantName = merchantName;
+    if (location !== undefined) updatedFormData.location = location;
+    if (existingFormData.treasurerCorrection) {
+      updatedFormData.treasurerCorrection = {
+        ...existingFormData.treasurerCorrection,
+        resolvedAt: new Date().toISOString(),
+        resolvedById: userId,
+      };
+    }
+
+    const file = (req as any).file as
+      | { originalname?: string; path: string }
+      | undefined;
+    const serverUrl = `${req.protocol}://${req.get("host")}`;
+    const proofUrl = file
+      ? `${serverUrl}/${file.path.replace(/\\/g, "/")}`
+      : undefined;
+
+    const result = await prisma.$transaction(async (tx) => {
+      const updatedApplication = await tx.application.update({
+        where: { id: application.id },
+        data: {
+          formData: updatedFormData,
+          status: "awaiting_payment_confirmation" as any,
+          declineReason: null,
+        },
+      });
+      const updatedPayment = await tx.payment.update({
+        where: { id: claim.id },
+        data: {
+          matchStatus: "awaiting_verification",
+          ...(proofUrl
+            ? {
+                proofUrl,
+                proofUploadedById: userId,
+                proofUploadedAt: new Date(),
+              }
+            : {}),
+        },
+      });
+      return { updatedApplication, updatedPayment };
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        action: "invoice_adjusted",
+        entity: "Payment",
+        entityId: claim.id,
+        userId,
+        details: {
+          stage: "fo_correction_resubmitted",
+          applicationId: application.id,
+          proofReplaced: !!proofUrl,
+        },
+        ipAddress: getIp(req),
+      },
+    });
+
+    return sendSuccess(
+      res,
+      { payment: result.updatedPayment },
+      "Correction sent. Awaiting treasurer confirmation.",
     );
   } catch (err) {
     next(err);

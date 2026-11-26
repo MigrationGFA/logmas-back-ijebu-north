@@ -6,7 +6,7 @@ import { Role } from "@prisma/client";
 import { sendSms } from "../notification/sms.service";
 
 /** Termii wants international format; payers give local Nigerian numbers. */
-const normalizeNgPhone = (raw: string): string | null => {
+export const normalizeNgPhone = (raw: string): string | null => {
   const digits = raw.replace(/\D/g, "");
   if (digits.startsWith("234") && digits.length >= 12) return digits;
   if (digits.startsWith("0") && digits.length === 11)

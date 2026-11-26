@@ -13,6 +13,7 @@ import {
   recordInvoicePayment,
   recordFoInvoicePayment,
   replaceFoInvoicePaymentProof,
+  submitFoCorrection,
   uploadInvoicePaymentProof,
 } from './invoice.controller';
 import { validateBody } from '../../middleware/validate.middleware';
@@ -91,6 +92,7 @@ router.get('/:id',              requireAuth, getInvoiceById);
 router.post('/:id/pay',         requireAuth, validateBody(recordPaymentSchema), recordInvoicePayment);
 router.post('/:id/fo-payment',  requireAuth, proofUpload.single('proof'), recordFoInvoicePayment);
 router.patch('/:id/fo-payment/proof', requireAuth, proofUpload.single('proof'), replaceFoInvoicePaymentProof);
+router.patch('/:id/fo-correction', requireAuth, proofUpload.single('proof'), submitFoCorrection);
 router.post("/:id/pay-online", requireAuth, initializePaystackPayment);
 router.post("/public/initialize",  initializePaystackPaymentNewFlow);
 router.post("/public/:id/initialize", initializePublicInvoicePayment);

@@ -1122,7 +1122,17 @@ export const declineStaticAccountPayment = async (
  * PATCH /api/v1/treasurer/payments/:paymentId/sub-admin-review
  * Sub-Admin performs first-level verification of manual payment evidence before Treasurer final approval.
  */
-export const subAdminReviewStaticAccountPayment = async (
+/**
+ * PATCH /api/v1/treasurer/payments/:paymentId/request-correction
+ * The treasurer sends a bank transfer claim back for correction: the
+ * claim stays alive, marked correction_requested, the application
+ * parks at correction_requested with the treasurer's comment as the
+ * reason, and the applicant is notified. For FO collections the
+ * officer answers through the invoice's fo-correction endpoint, which
+ * restores the claim to a normal pending claim. (This replaces the
+ * old sub-admin first-review step; the treasurer acts directly.)
+ */
+export const requestPaymentCorrection = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -1131,10 +1141,17 @@ export const subAdminReviewStaticAccountPayment = async (
     const reviewerId = req.user!.id;
     let { paymentId } = req.params;
     if (Array.isArray(paymentId)) paymentId = paymentId[0];
-    const { action, comment } = req.body || {};
 
-    if (!["approve", "request_correction", "decline"].includes(action)) {
-      return sendError(res, "action must be 'approve', 'request_correction', or 'decline'", "VALIDATION_ERROR", null, 400);
+    const comment =
+      typeof req.body?.comment === "string" ? req.body.comment.trim() : "";
+    if (!comment) {
+      return sendError(
+        res,
+        "Say what needs to be corrected",
+        "VALIDATION_ERROR",
+        null,
+        400,
+      );
     }
 
     const payment = await prisma.payment.findUnique({
@@ -1149,83 +1166,102 @@ export const subAdminReviewStaticAccountPayment = async (
     if (!payment) {
       return sendError(res, "Payment not found", "NOT_FOUND", null, 404);
     }
+    if (payment.method !== "bank_transfer") {
+      return sendError(
+        res,
+        "Corrections apply to bank transfer claims",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+    if (payment.status !== "pending") {
+      return sendError(
+        res,
+        "This payment has already been settled",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+    if (payment.matchStatus === "correction_requested") {
+      return sendError(
+        res,
+        "A correction is already outstanding on this claim",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+    if (payment.matchStatus === "rejected") {
+      return sendError(
+        res,
+        "This claim has been rejected",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
 
     const application = payment.invoice?.application;
     if (!application) {
       return sendError(res, "Associated application not found", "NOT_FOUND", null, 404);
+    }
+    if (application.status !== "awaiting_payment_confirmation") {
+      return sendError(
+        res,
+        "This claim is not awaiting confirmation",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
     }
 
     const reviewer = await prisma.user.findUnique({
       where: { id: reviewerId },
       select: { firstName: true, lastName: true, role: true },
     });
-    const reviewerName = reviewer ? `${reviewer.firstName} ${reviewer.lastName}` : "Sub-Admin";
+    const reviewerName = reviewer
+      ? `${reviewer.firstName} ${reviewer.lastName}`
+      : "Treasurer";
 
-    const existingFormData = (application.formData && typeof application.formData === "object")
-      ? (application.formData as Record<string, any>)
-      : {};
-
-    const updatedFormData = {
-      ...existingFormData,
-      subAdminPaymentReview: {
-        status: action === "approve"
-          ? "approved_for_treasurer"
-          : action === "decline"
-          ? "declined"
-          : "correction_requested",
-        reviewedById: reviewerId,
-        reviewerName,
-        reviewedAt: new Date().toISOString(),
-        comment: comment || (action === "approve"
-          ? "Payment evidence verified by Sub-Admin — forwarded to Treasurer for final confirmation."
-          : action === "decline"
-          ? "Payment evidence declined by Sub-Admin."
-          : "Please upload a clearer payment receipt or verify transfer details."),
-      },
-    };
+    const existingFormData =
+      application.formData && typeof application.formData === "object"
+        ? (application.formData as Record<string, any>)
+        : {};
 
     const result = await prisma.$transaction(async (tx) => {
       const updatedPayment = await tx.payment.update({
         where: { id: payment.id },
-        data: {
-          matchStatus: action === "approve"
-            ? "sub_admin_approved"
-            : action === "decline"
-            ? "rejected"
-            : "correction_requested",
-        },
+        data: { matchStatus: "correction_requested" },
       });
-
       const updatedApplication = await tx.application.update({
         where: { id: application.id },
         data: {
-          formData: updatedFormData,
-          ...(action === "request_correction"
-            ? {
-                status: "correction_requested" as any,
-                declineReason: comment || "Payment evidence requires correction",
-              }
-            : action === "decline"
-            ? {
-                status: "declined" as any,
-                declineReason: comment || "Payment evidence declined by Sub-Admin",
-              }
-            : {}),
+          status: "correction_requested" as any,
+          declineReason: comment,
+          formData: {
+            ...existingFormData,
+            treasurerCorrection: {
+              comment,
+              requestedById: reviewerId,
+              requestedByName: reviewerName,
+              requestedAt: new Date().toISOString(),
+            },
+          },
         },
       });
-
       return { updatedPayment, updatedApplication };
     });
 
     await prisma.auditLog.create({
       data: {
-        action: action === "approve" ? "approval_granted" : action === "decline" ? "application_rejected" : "correction_requested",
+        action: "correction_requested",
         entity: "Payment",
         entityId: payment.id,
         userId: reviewerId,
         details: {
-          stage: "sub_admin_payment_review",
-          action,
+          stage: "treasurer_payment_review",
           comment,
           applicationId: application.id,
         },
@@ -1235,68 +1271,34 @@ export const subAdminReviewStaticAccountPayment = async (
 
     try {
       if (application.applicant) {
-        if (action === "approve") {
-          await notify({
-            userId: application.applicant.id,
-            to: { email: application.applicant.email, phone: application.applicant.phone ?? "" },
-            templateKey: "application.subAdminApproved",
-            vars: {
-              applicant_name: `${application.applicant.firstName} ${application.applicant.lastName}`,
-              application_number: application.applicationNumber,
-              service_name: application.service.name,
-              application_id: application.id,
-              reviewer_name: reviewerName,
-              reviewed_at: new Date().toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" }),
-            },
-            channels: ["email", "sms"],
-          });
-        } else if (action === "request_correction") {
-          await notify({
-            userId: application.applicant.id,
-            to: { email: application.applicant.email, phone: application.applicant.phone ?? "" },
-            templateKey: "application.subAdminCorrectionRequested",
-            vars: {
-              applicant_name: `${application.applicant.firstName} ${application.applicant.lastName}`,
-              application_number: application.applicationNumber,
-              service_name: application.service.name,
-              application_id: application.id,
-              correction_note: comment || "Please upload a clear payment receipt or verify your transfer reference.",
-              reviewer_name: reviewerName,
-              reviewed_at: new Date().toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" }),
-            },
-            channels: ["email", "sms"],
-          });
-        } else if (action === "decline") {
-          await notify({
-            userId: application.applicant.id,
-            to: { email: application.applicant.email, phone: application.applicant.phone ?? "" },
-            templateKey: "application.subAdminDeclined",
-            vars: {
-              applicant_name: `${application.applicant.firstName} ${application.applicant.lastName}`,
-              application_number: application.applicationNumber,
-              service_name: application.service.name,
-              application_id: application.id,
-              decline_reason: comment || "Payment evidence could not be verified.",
-              reviewer_name: reviewerName,
-              reviewed_at: new Date().toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" }),
-            },
-            channels: ["email", "sms"],
-          });
-        }
+        await notify({
+          userId: application.applicant.id,
+          to: {
+            email: application.applicant.email,
+            phone: application.applicant.phone ?? "",
+          },
+          templateKey: "application.subAdminCorrectionRequested",
+          vars: {
+            applicant_name: `${application.applicant.firstName} ${application.applicant.lastName}`,
+            application_number: application.applicationNumber,
+            service_name: application.service.name,
+            application_id: application.id,
+            correction_note: comment,
+            reviewer_name: reviewerName,
+            reviewed_at: new Date().toLocaleDateString("en-NG", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            }),
+          },
+          channels: ["email", "sms"],
+        });
       }
     } catch (notifyErr) {
-      console.error("[subAdminReviewStaticAccountPayment] notify() failed, continuing:", notifyErr);
+      console.error("[requestPaymentCorrection] notify() failed, continuing:", notifyErr);
     }
 
-    return sendSuccess(
-      res,
-      result,
-      action === "approve"
-        ? "Payment evidence approved by Sub-Admin and forwarded to Treasurer for final confirmation"
-        : action === "decline"
-        ? "Payment evidence declined by Sub-Admin"
-        : "Correction requested on payment evidence"
-    );
+    return sendSuccess(res, result, "Correction requested on payment evidence");
   } catch (err) {
     next(err);
   }

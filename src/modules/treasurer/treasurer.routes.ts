@@ -17,7 +17,7 @@ import {
   listAwaitingConfirmation,
   confirmStaticAccountPayment,
   declineStaticAccountPayment,
-  subAdminReviewStaticAccountPayment,
+  requestPaymentCorrection,
   auditPaymentWithGPay,
   listGPayTransactions,
   settleGPayTransaction,
@@ -270,9 +270,9 @@ router.get(
 );
 
 router.patch(
-  "/payments/:paymentId/sub-admin-review",
-  requireRole("sub_admin", "treasurer", "super_admin", "lga_admin"),
-  subAdminReviewStaticAccountPayment,
+  "/payments/:paymentId/request-correction",
+  requireRole("treasurer", "super_admin", "lga_admin"),
+  requestPaymentCorrection,
 );
 
 /**
