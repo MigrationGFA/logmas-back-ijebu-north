@@ -1,36 +1,61 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../../utils/prisma";
 import { sendSuccess, sendError } from "../../utils/response";
-import { generateReference } from "../../utils/generators";
+import { generateReceiptNumber } from "../../utils/generators";
 import { LGA_CONFIG } from "../../config/lga.config";
-import {
-  DEDICATED_VIRTUAL_ACCOUNTS,
-  DEFAULT_STATUTORY_ACCOUNT,
-  SERVICE_CODE_BY_SERVICE,
-} from "../payment/gpay.service";
+import { DEFAULT_STATUTORY_ACCOUNT } from "../payment/gpay.service";
 import { sendEmail } from "../notification/email.service";
+import { sendSms } from "../notification/sms.service";
 
-const PORTAL_URL = process.env.APP_URL || process.env.GPAY_RETURN_URL;
+/** Public portal base for payer links (same resolution as the FO flows). */
+const portalBase = () =>
+  (
+    process.env.APP_URL ||
+    process.env.PAYSTACK_CALLBACK_URL ||
+    process.env.GPAY_RETURN_URL ||
+    ""
+  ).replace(/\/$/, "");
 
 /**
  * Generate a unique Demand Notice Reference Number
- * Format: IFO/DN/2026/XXXXXX
+ * Format: <LGA code>/DN/<year>/XXXXXX, e.g. INE/DN/2026/483920
  */
 function generateDemandNoticeNumber(): string {
   const year = new Date().getFullYear();
   const rand = Math.floor(100000 + Math.random() * 900000);
-  return `IFO/DN/${year}/${rand}`;
+  return `${LGA_CONFIG.shortCode}/DN/${year}/${rand}`;
 }
 
 /**
- * Resolve dedicated Providus Bank account for a service
+ * Resolve the account a demand notice tells the payer to pay into: the LGA
+ * collection account saved in Settings (the same account FO collections
+ * use), with the statutory account from the environment as fallback.
  */
-function resolveServiceProvidusAccount(serviceCode: string) {
-  const gpayCode = SERVICE_CODE_BY_SERVICE[serviceCode] || serviceCode.toUpperCase();
-  if (DEDICATED_VIRTUAL_ACCOUNTS[gpayCode]) {
-    return DEDICATED_VIRTUAL_ACCOUNTS[gpayCode];
+async function resolveNoticeAccount() {
+  const saved = await prisma.lgaBankAccount.findFirst();
+  if (saved?.accountNumber) {
+    return {
+      bankName: saved.bankName,
+      bankCode: "",
+      accountName: saved.accountName,
+      accountNumber: saved.accountNumber,
+      serviceCode: "demand_notice",
+    };
   }
-  return DEFAULT_STATUTORY_ACCOUNT;
+  return { ...DEFAULT_STATUTORY_ACCOUNT, serviceCode: "demand_notice" };
+}
+
+/** Sync fallback for notices issued before the account was stored on them. */
+function storedOrStatutoryAccount(stored: any) {
+  return stored || { ...DEFAULT_STATUTORY_ACCOUNT, serviceCode: "demand_notice" };
+}
+
+function normalizeNoticePhone(raw: string): string | null {
+  const digits = String(raw || "").replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("0")) return `234${digits.slice(1)}`;
+  if (digits.length === 10) return `234${digits}`;
+  if (digits.startsWith("234") && digits.length >= 12) return digits;
+  return null;
 }
 
 /**
@@ -83,25 +108,24 @@ export const createDemandNotice = async (
       );
     }
 
-    // 1. Resolve Target Service in DB
-    let targetService = await prisma.service.findFirst({
-      where: {
-        OR: [{ code: serviceCode }, { code: "demand_notice" }],
-      },
+    // 1. Resolve the Demand Notice service. A notice must hang on that
+    // service specifically, never on whatever active service comes first.
+    const targetService = await prisma.service.findFirst({
+      where: { code: "demand_notice" },
     });
 
     if (!targetService) {
-      targetService = await prisma.service.findFirst({
-        where: { isActive: true },
-      });
+      return sendError(
+        res,
+        "The Demand Notice service has not been set up yet. Run the services seed first.",
+        "SERVICE_NOT_FOUND",
+        null,
+        400
+      );
     }
 
-    if (!targetService) {
-      return sendError(res, "No valid municipal service found", "SERVICE_NOT_FOUND", null, 404);
-    }
-
-    // 2. Resolve dedicated Providus Virtual Account
-    const bankDetails = resolveServiceProvidusAccount(targetService.code);
+    // 2. Resolve the account the payer is told to pay into
+    const bankDetails = await resolveNoticeAccount();
 
     // 3. Generate unique Notice Reference Number
     let noticeRef = generateDemandNoticeNumber();
@@ -172,8 +196,8 @@ export const createDemandNotice = async (
 
     // 5. Create Application and linked Invoice in Transaction
     const result = await prisma.$transaction(async (tx) => {
-      const applicationNumber = generateReference("IFO-APP");
-      const invoiceNumber = generateReference("INV-IFO");
+      const applicationNumber = generateReceiptNumber("APP");
+      const invoiceNumber = generateReceiptNumber("INV");
 
       const app = await tx.application.create({
         data: {
@@ -228,12 +252,12 @@ export const createDemandNotice = async (
         const emailHtml = `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.5;">
             <div style="background-color: #0F4C2A; color: white; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
-              <h2 style="margin: 0; font-size: 20px; font-weight: 800; letter-spacing: 0.5px;">IFO LOCAL GOVERNMENT COUNCIL</h2>
+              <h2 style="margin: 0; font-size: 20px; font-weight: 800; letter-spacing: 0.5px;">${LGA_CONFIG.fullName.toUpperCase()}</h2>
               <p style="margin: 4px 0 0; font-size: 13px; opacity: 0.9;">INTERNAL REVENUE SERVICE · STATUTORY DEMAND NOTICE</p>
             </div>
             <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-top: none; padding: 24px; border-radius: 0 0 8px 8px;">
               <p>Dear <strong>${payerName}</strong>,</p>
-              <p>TAKE NOTICE that a statutory municipal demand notice has been issued to you by the Ifo Local Government Authority under applicable revenue edicts.</p>
+              <p>TAKE NOTICE that a statutory municipal demand notice has been issued to you by ${LGA_CONFIG.fullName} under applicable revenue edicts.</p>
               
               <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 16px; margin: 16px 0;">
                 <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
@@ -247,20 +271,20 @@ export const createDemandNotice = async (
               </div>
 
               <div style="background-color: #ecfdf5; border: 1px solid #6ee7b7; border-radius: 6px; padding: 16px; margin: 16px 0;">
-                <h4 style="margin: 0 0 8px; color: #065f46; font-size: 14px;">STATUTORY PAYMENT INSTRUCTIONS (PROVIDUS BANK)</h4>
-                <p style="margin: 0 0 8px; font-size: 12px; color: #047857;">Please transfer directly to your service's dedicated Providus Bank account below:</p>
+                <h4 style="margin: 0 0 8px; color: #065f46; font-size: 14px;">PAYMENT INSTRUCTIONS</h4>
+                <p style="margin: 0 0 8px; font-size: 12px; color: #047857;">Please transfer directly to the ${LGA_CONFIG.name} Local Government account below:</p>
                 <table style="width: 100%; font-size: 13px; font-family: monospace;">
                   <tr><td style="color: #065f46;">Bank Name:</td><td style="font-weight: bold;">${bankDetails.bankName}</td></tr>
                   <tr><td style="color: #065f46;">Account Name:</td><td style="font-weight: bold;">${bankDetails.accountName}</td></tr>
                   <tr><td style="color: #065f46;">Account Number:</td><td style="font-weight: 800; font-size: 16px; color: #0F4C2A;">${bankDetails.accountNumber}</td></tr>
                 </table>
-                <p style="margin: 8px 0 0; font-size: 11px; color: #065f46;"><em>Quote Notice Number <strong>${noticeRef}</strong> as transaction narration. Verification is automated upon transfer.</em></p>
+                <p style="margin: 8px 0 0; font-size: 11px; color: #065f46;"><em>Quote Notice Number <strong>${noticeRef}</strong> as the transfer narration so your payment can be matched to this notice.</em></p>
               </div>
 
               <p style="font-size: 12px; color: #64748b; margin-top: 20px;">
-                You may also inspect your demand notice and pay online at: <br/>
-                <a href="${PORTAL_URL}/demand-notice/${encodeURIComponent(noticeRef)}" style="color: #0F4C2A; font-weight: bold;">
-                  ${PORTAL_URL}/demand-notice/${encodeURIComponent(noticeRef)}
+                You may also pay this notice online by card at: <br/>
+                <a href="${portalBase()}/pay/${result.invoice.invoiceNumber}" style="color: #0F4C2A; font-weight: bold;">
+                  ${portalBase()}/pay/${result.invoice.invoiceNumber}
                 </a>
               </p>
             </div>
@@ -268,11 +292,29 @@ export const createDemandNotice = async (
         `;
         await sendEmail({
           to: email,
-          subject: `Statutory Demand Notice: ${noticeRef} — Ifo Local Government`,
+          subject: `Statutory Demand Notice: ${noticeRef} — ${LGA_CONFIG.fullName}`,
           html: emailHtml,
         });
       } catch (mailErr) {
         console.warn("[demandNotice] Failed to send notice email notification:", mailErr);
+      }
+    }
+
+    // 7. Send an SMS to the payer as well: notice number, amount, due
+    // date, the account to pay, and the online pay link.
+    const smsPhone = normalizeNoticePhone(String(phone));
+    if (smsPhone) {
+      try {
+        await sendSms({
+          to: smsPhone,
+          message:
+            `${LGA_CONFIG.fullName}: A statutory demand notice ${noticeRef} of \u20A6${finalAmount.toLocaleString()} has been issued to ${payerName}. ` +
+            `Due ${new Date(finalDueDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}. ` +
+            `Pay into ${bankDetails.bankName}, ${bankDetails.accountNumber} (${bankDetails.accountName}), quoting the notice number, ` +
+            `or pay online: ${portalBase()}/pay/${result.invoice.invoiceNumber}`,
+        });
+      } catch (smsErr) {
+        console.warn("[demandNotice] Failed to send notice SMS:", smsErr);
       }
     }
 
@@ -398,7 +440,7 @@ export const listDemandNotices = async (
         paymentStatus: inv?.paymentStatus || "pending",
         invoiceNumber: inv?.invoiceNumber || null,
         invoiceId: inv?.id || null,
-        statutoryAccount: data.statutoryAccount || resolveServiceProvidusAccount(app.service?.code || "demand_notice"),
+        statutoryAccount: storedOrStatutoryAccount(data.statutoryAccount),
         receiptNumber: inv?.receipts?.[0]?.receiptNumber || null,
         receiptId: inv?.receipts?.[0]?.id || null,
         paidAt: inv?.paidAt || null,
@@ -526,7 +568,7 @@ export const getDemandNoticeByRef = async (
     else if (isOverdue) computedStatus = "overdue";
     else computedStatus = "unpaid";
 
-    const bankDetails = data.statutoryAccount || resolveServiceProvidusAccount(app.service?.code || "demand_notice");
+    const bankDetails = storedOrStatutoryAccount(data.statutoryAccount);
 
     return sendSuccess(res, {
       id: app.id,
@@ -569,7 +611,7 @@ export const getDemandNoticeByRef = async (
         : null,
       issuedBy: app.createdBy
         ? `${app.createdBy.firstName} ${app.createdBy.lastName || ""}`
-        : "Ifo Revenue Service",
+        : `${LGA_CONFIG.name} Revenue Service`,
       createdAt: app.createdAt.toISOString(),
     });
   } catch (err) {
@@ -678,22 +720,30 @@ export const resendDemandNotice = async (
 
     const data = (app.formData || {}) as Record<string, any>;
     const targetEmail = overrideEmail || data.email;
-    if (!targetEmail || !targetEmail.includes("@")) {
-      return sendError(res, "No valid email address found for this notice", "VALIDATION_ERROR", null, 400);
+    const emailOk = !!targetEmail && String(targetEmail).includes("@");
+    const smsPhone = normalizeNoticePhone(String(data.phone || ""));
+    if (!emailOk && !smsPhone) {
+      return sendError(
+        res,
+        "No valid email address or phone number found for this notice",
+        "VALIDATION_ERROR",
+        null,
+        400
+      );
     }
 
     const noticeRef = data.demandNoticeNumber || app.applicationNumber;
-    const bankDetails = data.statutoryAccount || resolveServiceProvidusAccount(data.serviceCode || "demand_notice");
+    const bankDetails = storedOrStatutoryAccount(data.statutoryAccount);
 
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.5;">
         <div style="background-color: #0F4C2A; color: white; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
-          <h2 style="margin: 0; font-size: 20px; font-weight: 800;">IFO LOCAL GOVERNMENT COUNCIL</h2>
+          <h2 style="margin: 0; font-size: 20px; font-weight: 800;">${LGA_CONFIG.fullName.toUpperCase()}</h2>
           <p style="margin: 4px 0 0; font-size: 13px;">OFFICIAL STATUTORY DEMAND NOTICE (REMINDER)</p>
         </div>
         <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-top: none; padding: 24px; border-radius: 0 0 8px 8px;">
           <p>Dear <strong>${data.payerName}</strong>,</p>
-          <p>This is a notification reminder regarding statutory demand notice <strong>${noticeRef}</strong> issued to your entity by Ifo Local Government.</p>
+          <p>This is a notification reminder regarding statutory demand notice <strong>${noticeRef}</strong> issued to your entity by ${LGA_CONFIG.fullName}.</p>
           
           <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 16px; margin: 16px 0;">
             <table style="width: 100%; font-size: 13px;">
@@ -704,7 +754,7 @@ export const resendDemandNotice = async (
           </div>
 
           <div style="background-color: #ecfdf5; border: 1px solid #6ee7b7; border-radius: 6px; padding: 16px; margin: 16px 0;">
-            <h4 style="margin: 0 0 8px; color: #065f46; font-size: 14px;">DESIGNATED PROVIDUS BANK PAYMENT ACCOUNT</h4>
+            <h4 style="margin: 0 0 8px; color: #065f46; font-size: 14px;">DESIGNATED PAYMENT ACCOUNT</h4>
             <table style="width: 100%; font-size: 13px; font-family: monospace;">
               <tr><td style="color: #065f46;">Bank Name:</td><td style="font-weight: bold;">${bankDetails.bankName}</td></tr>
               <tr><td style="color: #065f46;">Account Name:</td><td style="font-weight: bold;">${bankDetails.accountName}</td></tr>
@@ -713,7 +763,7 @@ export const resendDemandNotice = async (
           </div>
 
           <p style="text-align: center; margin-top: 24px;">
-            <a href="${PORTAL_URL}/demand-notice/${encodeURIComponent(noticeRef)}" 
+            <a href="${portalBase()}/pay/${app.invoice?.invoiceNumber}" 
                style="background-color: #0F4C2A; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
               View & Pay Demand Notice
             </a>
@@ -722,13 +772,34 @@ export const resendDemandNotice = async (
       </div>
     `;
 
-    await sendEmail({
-      to: targetEmail,
-      subject: `[REMINDER] Statutory Demand Notice: ${noticeRef} — Ifo Local Government`,
-      html: emailHtml,
-    });
+    const sentTo: string[] = [];
+    if (emailOk) {
+      await sendEmail({
+        to: targetEmail,
+        subject: `[REMINDER] Statutory Demand Notice: ${noticeRef} — ${LGA_CONFIG.fullName}`,
+        html: emailHtml,
+      });
+      sentTo.push(String(targetEmail));
+    }
+    if (smsPhone) {
+      try {
+        await sendSms({
+          to: smsPhone,
+          message:
+            `${LGA_CONFIG.fullName}: Reminder. Demand notice ${noticeRef} of \u20A6${Number(data.amountPayable || 0).toLocaleString()} ` +
+            `is due ${data.dueDate ? new Date(data.dueDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : "soon"}. ` +
+            `Pay into ${bankDetails.bankName}, ${bankDetails.accountNumber} (${bankDetails.accountName}), quoting the notice number` +
+            (app.invoice?.invoiceNumber
+              ? `, or pay online: ${portalBase()}/pay/${app.invoice.invoiceNumber}`
+              : ""),
+        });
+        sentTo.push(String(data.phone));
+      } catch (smsErr) {
+        console.warn("[demandNotice] Failed to resend notice SMS:", smsErr);
+      }
+    }
 
-    return sendSuccess(res, null, `Demand notice sent successfully to ${targetEmail}`);
+    return sendSuccess(res, null, `Demand notice sent successfully to ${sentTo.join(" and ")}`);
   } catch (err) {
     next(err);
   }

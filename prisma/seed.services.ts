@@ -35,6 +35,9 @@ const lgaFullName =
   process.env.LGA_FULL_NAME?.trim() || `${lgaName} Local Government`;
 
 interface SeedService {
+  /** System services (e.g. demand_notice) are seeded inactive with no fee
+   * configuration: officers issue them, the public never applies. */
+  system?: boolean;
   code: string;
   certificateType: string;
   name: string;
@@ -71,6 +74,7 @@ export async function seedServices(prisma: PrismaClient) {
   console.log(` Seeding services for ${lgaName} (${lgaId})...`);
 
   for (const s of services) {
+    const isSystem = s.system === true;
     const supportsRenewal = [
       "liquor_licence",
       "viewing_centre_licence",
@@ -93,7 +97,7 @@ export async function seedServices(prisma: PrismaClient) {
         estimatedDays: s.estimatedDays,
         certificateType: s.certificateType as CertificateType,
         supportsRenewal,
-        isActive: true,
+        isActive: !isSystem,
         description: s.description,
       },
       create: {
@@ -106,14 +110,15 @@ export async function seedServices(prisma: PrismaClient) {
         requirements: s.requirements,
         estimatedDays: s.estimatedDays,
         supportsRenewal,
-        isActive: true,
+        isActive: !isSystem,
       },
     });
 
     // ---------------------------------------------------------
     // 2. Create/update the service fee configuration
+    // (system services carry their amount per record, never a fixed fee)
     // ---------------------------------------------------------
-    await prisma.serviceFeeConfig.upsert({
+    if (!isSystem) await prisma.serviceFeeConfig.upsert({
       where: {
         serviceId: service.id,
       },
@@ -129,7 +134,9 @@ export async function seedServices(prisma: PrismaClient) {
     });
 
     console.log(
-      `✅ ${service.name} → ₦${s.fee.toLocaleString()} (${FeeStatus.ACTIVE})`,
+      isSystem
+        ? `✅ ${service.name} (system service, inactive, no fee configuration)`
+        : `✅ ${service.name} → ₦${s.fee.toLocaleString()} (${FeeStatus.ACTIVE})`,
     );
   }
 

@@ -334,6 +334,39 @@ export async function confirmPayment({
     }
   }
 
+  // A settled demand notice: tell the officer who issued it that the
+  // payer has paid (in-app only, the same pattern as a
+  // treasurer-confirmed collection).
+  const settledForm = result.updatedApplication?.formData as
+    | Record<string, any>
+    | null
+    | undefined;
+  if (settledForm?.demandNoticeNumber && result.updatedApplication?.createdById && result.receipt) {
+    try {
+      const issuer = await prisma.user.findUnique({
+        where: { id: result.updatedApplication.createdById },
+        select: { firstName: true, lastName: true, role: true },
+      });
+      if (issuer?.role === "field_officer") {
+        await notify({
+          userId: result.updatedApplication.createdById,
+          templateKey: "application.foPaymentConfirmed",
+          vars: {
+            officer_name: `${issuer.firstName} ${issuer.lastName}`,
+            service_name: settledForm.serviceName || "Demand Notice",
+            amount: result.invoice.amount.toLocaleString(),
+            application_number: result.updatedApplication.applicationNumber,
+            invoice_number: result.invoice.invoiceNumber,
+            receipt_number: result.receipt.receiptNumber,
+          },
+          channels: [],
+        });
+      }
+    } catch (issuerErr) {
+      console.error("[confirmPayment] demand notice issuer notification failed:", issuerErr);
+    }
+  }
+
   return {
     alreadyProcessed: false,
     payment: result.payment,

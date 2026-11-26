@@ -947,11 +947,15 @@ export const confirmStaticAccountPayment = async (
     }
 
     // Alert the field officer who started this record (FO-only
-    // collections and FO-assisted flows): the treasurer's confirmation
-    // is the moment they are waiting on.
+    // collections, FO-assisted flows, and demand notices he issued,
+    // where he is also the applicant of record): the treasurer's
+    // confirmation is the moment they are waiting on.
     try {
       const creatorId = application.createdById;
-      if (creatorId && creatorId !== application.applicantId) {
+      const isDemandNotice = !!(
+        application.formData as Record<string, any> | null
+      )?.demandNoticeNumber;
+      if (creatorId && (creatorId !== application.applicantId || isDemandNotice)) {
         const creator = await prisma.user.findUnique({
           where: { id: creatorId },
           select: {

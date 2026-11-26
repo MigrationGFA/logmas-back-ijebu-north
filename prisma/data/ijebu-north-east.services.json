@@ -6,8 +6,24 @@
     "description": "Certificate of Origin / State of Origin issued by {lgaFullName} for residents.",
     "category": "CERTIFICATE",
     "revenueHead": "1010 - State of Origin Fees",
-    "requirements": ["passport_photo", "nin_slip", "proof_of_residency"],
+    "requirements": [
+      "passport_photo",
+      "nin_slip",
+      "proof_of_residency"
+    ],
     "estimatedDays": 5,
     "fee": 7500
+  },
+  {
+    "code": "demand_notice",
+    "certificateType": "NONE",
+    "name": "Demand Notice",
+    "description": "Statutory demand notices issued by {lgaFullName} to businesses and property owners. Issued by officers only; never applied for by the public.",
+    "category": "RATES_AND_LEVIES",
+    "revenueHead": "2002 - Business & Commercial Demand Notices",
+    "requirements": [],
+    "estimatedDays": 1,
+    "fee": 0,
+    "system": true
   }
 ]
