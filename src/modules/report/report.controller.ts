@@ -11,6 +11,17 @@ function buildDateRange(period?: string | null, from?: string | null, to?: strin
   const now = new Date();
 
   // Explicit from/to always wins, regardless of period — this is the "custom" case.
+  // Date-only values (YYYY-MM-DD, which is what the reports page sends for
+  // every preset) mean whole Lagos days: new Date("2026-11-26") is UTC
+  // midnight, 01:00 WAT, which used to close the window at 1am on the last
+  // day and hide everything recorded later that day.
+  const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+  if (from && to && DATE_ONLY.test(from) && DATE_ONLY.test(to)) {
+    return {
+      gte: new Date(`${from}T00:00:00.000+01:00`),
+      lte: new Date(`${to}T23:59:59.999+01:00`),
+    };
+  }
   if (from && !isNaN(Date.parse(from)) && to && !isNaN(Date.parse(to))) {
     return { gte: new Date(from), lte: new Date(to) };
   }
@@ -56,12 +67,28 @@ export const getReportsOverview = async (
     const period = queryString(req.query.period);
     const from = queryString(req.query.from);
     const to = queryString(req.query.to);
+    const serviceId = queryString(req.query.serviceId);
 
     const dateRange = buildDateRange(period, from, to);
 
     const paymentWhere: Prisma.PaymentWhereInput = {
       status: "confirmed",
       ...(dateRange ? { confirmedAt: dateRange } : {}),
+      ...(serviceId
+        ? { invoice: { application: { serviceId } } }
+        : {}),
+    };
+
+    const invoiceWhere: Prisma.InvoiceWhereInput = {
+      ...(dateRange ? { createdAt: dateRange } : {}),
+      ...(serviceId ? { application: { serviceId } } : {}),
+    };
+
+    const receiptWhere: Prisma.ReceiptWhereInput = {
+      ...(dateRange ? { issuedAt: dateRange } : {}),
+      ...(serviceId
+        ? { invoice: { application: { serviceId } } }
+        : {}),
     };
 
     const [
@@ -106,7 +133,7 @@ export const getReportsOverview = async (
 
       // Recent invoices
       prisma.invoice.findMany({
-        where: dateRange ? { createdAt: dateRange } : {},
+        where: invoiceWhere,
         take: 20,
         orderBy: { createdAt: "desc" },
         select: {
@@ -158,7 +185,7 @@ export const getReportsOverview = async (
 
       // Recent receipts
       prisma.receipt.findMany({
-        where: dateRange ? { issuedAt: dateRange } : {},
+        where: receiptWhere,
         take: 20,
         orderBy: { issuedAt: "desc" },
         select: {
