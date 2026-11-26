@@ -9,7 +9,10 @@ import {
 } from "../../utils/generators";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { notify } from "../notification/notification.service";
+import {
+  notify,
+  isPublicApplicant,
+} from "../notification/notification.service";
 
 interface ConfirmPaymentParams {
   invoiceId: string;
@@ -305,7 +308,10 @@ export async function confirmPayment({
     };
   });
 
-  if (result.updatedApplication?.applicant) {
+  if (
+    result.updatedApplication?.applicant &&
+    isPublicApplicant(result.updatedApplication.applicant)
+  ) {
     try {
       const app = result.updatedApplication;
       await notify({

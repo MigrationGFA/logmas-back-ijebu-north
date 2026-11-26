@@ -70,6 +70,29 @@ export const applicationTemplates = {
 </body>
 </html>`,
   },
+  // Officer Application Declined - the FO who attended to it learns the outcome
+  officerApplicationDeclined: {
+    sms: `Hello {{officer_name}}, the {{service_name}} application ({{application_number}}) you attended to was declined: {{decline_reason}}. Open it for the details.`,
+    emailSubject: `Application Declined: {{application_number}} - {{service_name}}`,
+    emailHtml: `
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; color: #1a1a1a; padding: 32px; background: #f5f5f5;">
+  <div style="max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 32px;">
+    <h2>Application Declined</h2>
+    <p>Dear {{officer_name}},</p>
+    <p>An application you attended to, for <strong>{{service_name}}</strong>, has been declined.</p>
+    <div style="background: #f9fafb; border-radius: 8px; padding: 16px; margin: 20px 0; font-size: 14px;">
+      <div style="margin-bottom: 8px;"><span style="color: #6b7280;">Application Number:</span> <strong style="font-family: monospace;">{{application_number}}</strong></div>
+      <div style="margin-bottom: 8px;"><span style="color: #6b7280;">Service:</span> {{service_name}}</div>
+      <div><span style="color: #6b7280;">Reason:</span> <strong>{{decline_reason}}</strong></div>
+    </div>
+    <p style="font-size: 13px; color: #6b7280;">Open the application for the full details and any next steps.</p>
+    <a href="${BASE_URL}/dashboard/applications/{{application_id}}" style="display: inline-block; background: #1a4731; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold;">Open Application \u2192</a>
+  </div>
+</body>
+</html>`,
+  },
   applicationCompleteYourForm: {
     sms: `Hello {{applicant_name}}, your payment for {{service_name}} was successful. Your application (#{{application_number}}) is awaiting form completion. Please log in to ${BASE_URL}/login to complete your application and upload the required documents.`,
 

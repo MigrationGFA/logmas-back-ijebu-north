@@ -6,7 +6,11 @@ import { sendSuccess, sendError } from "../../utils/response";
 import * as ApplicationService from "./application.service";
 import { createApplicationSchema } from "./application.validation";
 import { prisma } from "../../utils/prisma";
-import { notify } from "../notification/notification.service";
+import {
+  notify,
+  isPublicApplicant,
+  notifyOfficerApplicationDeclined,
+} from "../notification/notification.service";
 import { generateQrToken, generateReceiptNumber, generateVerificationCode } from "../../utils/generators";
 
 export const createApplication = async (
@@ -317,7 +321,7 @@ export const createApplication = async (
 
     const application = result.application;
 
-    if (application?.applicant) {
+    if (application?.applicant && isPublicApplicant(application.applicant)) {
       try {
         const fullName = `${application.applicant.firstName} ${application.applicant.lastName}`;
 
@@ -686,7 +690,7 @@ export const adminApproveApplication = async (
 
     try {
       const fullName = `${app.applicant.firstName} ${app.applicant.lastName}`;
-      await notify({
+      if (isPublicApplicant(app.applicant)) await notify({
         userId: app.applicant.id,
         to: {
           email: app.applicant.email,
@@ -793,7 +797,7 @@ export const adminDeclineApplication = async (
 
     try {
       const fullName = `${app.applicant.firstName} ${app.applicant.lastName}`;
-      await notify({
+      if (isPublicApplicant(app.applicant)) await notify({
         userId: app.applicant.id,
         to: {
           email: app.applicant.email,
@@ -820,6 +824,9 @@ export const adminDeclineApplication = async (
         notifyErr,
       );
     }
+
+    // The officer who attended to this application learns its outcome.
+    await notifyOfficerApplicationDeclined(app, declineReason);
 
     return sendSuccess(res, updated, "Application declined");
   } catch (err) {
@@ -1179,7 +1186,7 @@ export const subAdminReviewApplication = async (
     });
 
     // Create in-app notification for applicant when correction is requested or approved
-    if (app.applicantId) {
+    if (app.applicantId && isPublicApplicant(app.applicant)) {
       try {
         await prisma.notification.create({
           data: {

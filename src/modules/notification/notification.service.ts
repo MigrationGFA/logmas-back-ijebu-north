@@ -178,3 +178,67 @@ export async function notify({
         : undefined,
   };
 }
+
+/**
+ * Citizen lifecycle notifications (submitted, approved, declined,
+ * complete your application) belong to real applicant accounts. In
+ * assisted creation a staff account becomes the applicant of record
+ * only as a fallback, because the walk-up user has no account; those
+ * staff must not receive the citizen's notifications.
+ */
+export function isPublicApplicant(
+  user?: { role?: string | null } | null,
+): boolean {
+  return !!user && (user.role === "citizen" || user.role === "business_owner");
+}
+
+/**
+ * Tell the field officer who attended to an application (created or
+ * assisted it) that it was declined or rejected, so he learns the
+ * outcome of work he handled without watching the dashboard. Covers
+ * assisted citizen applications and his own FO collections alike: in
+ * both, the officer is the application's creator. Never throws.
+ */
+export async function notifyOfficerApplicationDeclined(
+  application: {
+    id: string;
+    applicationNumber: string;
+    createdById?: string | null;
+    service?: { name?: string } | null;
+  },
+  declineReason: string,
+): Promise<void> {
+  try {
+    if (!application?.createdById) return;
+    const creator = await prisma.user.findUnique({
+      where: { id: application.createdById },
+      select: {
+        id: true,
+        role: true,
+        email: true,
+        phone: true,
+        firstName: true,
+        lastName: true,
+      },
+    });
+    if (!creator || creator.role !== "field_officer") return;
+    await notify({
+      userId: creator.id,
+      to: { email: creator.email, phone: creator.phone ?? "" },
+      templateKey: "application.officerApplicationDeclined",
+      vars: {
+        officer_name: `${creator.firstName} ${creator.lastName}`,
+        application_number: application.applicationNumber,
+        service_name: application.service?.name ?? "LGA Service",
+        application_id: application.id,
+        decline_reason: declineReason,
+      },
+      channels: ["email", "sms"],
+    });
+  } catch (err) {
+    console.error(
+      "[notifyOfficerApplicationDeclined] failed, continuing:",
+      err,
+    );
+  }
+}

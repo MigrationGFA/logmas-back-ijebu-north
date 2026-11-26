@@ -7,7 +7,11 @@ import { InvoiceStatus, Prisma } from "@prisma/client";
 import { getIp, queryString } from "../complaints/complaints.controller";
 import { upsertServiceFeeSchema } from "./treasurer.validation";
 import { generateReceiptNumber, generateVerificationCode, generateQrToken } from "../../utils/generators";
-import { notify } from "../notification/notification.service";
+import {
+  notify,
+  isPublicApplicant,
+  notifyOfficerApplicationDeclined,
+} from "../notification/notification.service";
 
 
 const buildDateRange = (from?: string, to?: string) => {
@@ -924,7 +928,7 @@ export const confirmStaticAccountPayment = async (
     });
 
     try {
-      if (application.applicant) {
+      if (application.applicant && isPublicApplicant(application.applicant)) {
         await notify({
           userId: application.applicant.id,
           to: { email: application.applicant.email, phone: application.applicant.phone ?? "" },
@@ -1084,7 +1088,7 @@ export const declineStaticAccountPayment = async (
       // An FO bounce is not an application decline, and the officer is
       // staff who sees the reason on the invoice page: no declined
       // notification goes out for it.
-      if (!isFoCollection && application.applicant) {
+      if (!isFoCollection && application.applicant && isPublicApplicant(application.applicant)) {
         await notify({
           userId: application.applicant.id,
           to: { email: application.applicant.email, phone: application.applicant.phone ?? "" },
@@ -1104,6 +1108,10 @@ export const declineStaticAccountPayment = async (
     } catch (notifyErr) {
       console.error("[declineStaticAccountPayment] notify() failed, continuing:", notifyErr);
     }
+
+    // The officer who attended to this record learns it was declined
+    // or bounced back, whichever branch ran.
+    await notifyOfficerApplicationDeclined(application, reason);
 
     return sendSuccess(
       res,
@@ -1966,7 +1974,7 @@ export const settleGPayTransaction = async (
 
     // 5. Notification
     try {
-      if (application.applicant) {
+      if (application.applicant && isPublicApplicant(application.applicant)) {
         await notify({
           userId: application.applicant.id,
           to: {
