@@ -262,7 +262,9 @@ export const createFoCollection = async (
  * can resend for their own collections; treasurer and admin roles can
  * resend for any. Refused while the invoice is settled or a recorded
  * transfer is awaiting confirmation, so a payer can never be pushed to
- * pay twice.
+ * pay twice. A delivered resend on the other channel is a method switch:
+ * the new channel is recorded on the collection, so the invoice page and
+ * later messages follow the method the payer was last sent.
  */
 export const resendPaymentInstructions = async (
   req: Request,
@@ -433,6 +435,21 @@ export const resendPaymentInstructions = async (
     }
 
     const sms = await sendSms({ to, message });
+
+    // A delivered resend on the other channel switches the collection's
+    // recorded payment method, so the invoice page describes the method
+    // the payer was last sent. A failed SMS changes nothing.
+    if (
+      sms.success &&
+      invoice.application &&
+      formData.paymentChannel !== channel
+    ) {
+      await prisma.application.update({
+        where: { id: invoice.application.id },
+        data: { formData: { ...formData, paymentChannel: channel } },
+      });
+    }
+
     return sendSuccess(
       res,
       { smsSent: sms.success, channel },
