@@ -739,14 +739,19 @@ export const uploadInvoicePaymentProof = async (
 
 // POST /api/v1/invoices/:invoiceNumber/fo-payment
 //
-// FO-only services: after a collection is recorded, the officer states
-// how the payer paid (cash or bank transfer). Unlike recordInvoicePayment
-// this does NOT confirm anything: it parks the payment as pending and the
-// application at `awaiting_payment_confirmation`, so the treasurer's
-// confirmation remains the moment the collection becomes official (and
-// the moment the initiating officer is notified). No bank details are
-// involved for this service type; the officer settles with the LGA out
-// of band.
+// FO-only services: the payer transfers to the LGA collection account
+// and the officer records it here with the payer's receipt attached as
+// proof. Unlike recordInvoicePayment this does NOT confirm anything: it
+// parks the payment as a pending claim and the application at
+// `awaiting_payment_confirmation`, so the treasurer's confirmation
+// remains the moment the collection becomes official (and the moment
+// the initiating officer is notified).
+//
+// Method switching: a collection may have started as pay online, leaving
+// a pending card payment behind when the payer opened the link. That is
+// not a claim and must not block the officer: recording the transfer
+// removes the abandoned card payment in the same transaction, retiring
+// its reference so the old link can never settle the invoice.
 export const recordFoInvoicePayment = async (
   req: Request,
   res: Response,
@@ -835,11 +840,22 @@ export const recordFoInvoicePayment = async (
       );
     }
 
-    const existingPending = await prisma.payment.findFirst({
-      where: { invoiceId: invoice.id, status: "pending" },
+    // Only an active transfer claim blocks a new record. A pending card
+    // payment (the payer opened the pay-online link, then the method was
+    // switched to transfer) is not a claim; it is removed in the
+    // transaction below instead of blocking the officer. A claim the
+    // treasurer already rejected is not active either: the officer is
+    // recording again precisely because it was bounced back.
+    const existingClaim = await prisma.payment.findFirst({
+      where: {
+        invoiceId: invoice.id,
+        status: "pending",
+        method: "bank_transfer",
+        NOT: { matchStatus: "rejected" },
+      },
       select: { id: true },
     });
-    if (existingPending) {
+    if (existingClaim) {
       return sendError(
         res,
         "A payment is already recorded for this invoice and awaiting treasurer confirmation",
@@ -850,6 +866,18 @@ export const recordFoInvoicePayment = async (
     }
 
     const payment = await prisma.$transaction(async (tx) => {
+      // The method switch is complete once a transfer is recorded: any
+      // pending card payment on this invoice is abandoned, and deleting
+      // it retires its reference, so the old pay link and its webhook
+      // can never settle this invoice afterwards.
+      await tx.payment.deleteMany({
+        where: {
+          invoiceId: invoice.id,
+          status: "pending",
+          method: "online_gateway",
+        },
+      });
+
       const created = await tx.payment.create({
         data: {
           reference: generateReference("PAY"),
@@ -869,7 +897,7 @@ export const recordFoInvoicePayment = async (
       if (invoice.applicationId) {
         await tx.application.update({
           where: { id: invoice.applicationId },
-          data: { status: "awaiting_payment_confirmation" },
+          data: { status: "awaiting_payment_confirmation", declineReason: null },
         });
       }
 
@@ -880,6 +908,115 @@ export const recordFoInvoicePayment = async (
       res,
       { payment },
       "Transfer recorded with proof. Awaiting treasurer confirmation.",
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
+// PATCH /api/v1/invoices/:invoiceNumber/fo-payment/proof
+//
+// The collecting officer attached the wrong receipt: while the recorded
+// transfer still awaits treasurer confirmation, the officer can swap
+// the proof on the same claim. The claim itself does not change, the
+// treasurer only ever sees the current proof, and the swap restamps who
+// uploaded it and when. Once the claim is confirmed or rejected, the
+// proof is locked.
+export const replaceFoInvoicePaymentProof = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user!.id;
+    const role = req.user!.role;
+
+    const file = (req as any).file as
+      | { originalname?: string; path: string }
+      | undefined;
+    if (!file) {
+      return sendError(
+        res,
+        "Payment proof is required: upload the payer's transfer receipt",
+        "VALIDATION_ERROR",
+        null,
+        400,
+      );
+    }
+
+    if (!["field_officer", "sub_admin", "lga_admin", "super_admin"].includes(role)) {
+      return sendError(
+        res,
+        "Only field officers can replace FO collection proof",
+        "FORBIDDEN",
+        null,
+        403,
+      );
+    }
+
+    const invoice = await prisma.invoice.findUnique({
+      where: { invoiceNumber: String(id) },
+      include: { service: true },
+    });
+    if (!invoice)
+      return sendError(res, "Invoice not found", "NOT_FOUND", null, 404);
+
+    if (!invoice.service.foOnly) {
+      return sendError(
+        res,
+        "This endpoint is only for FO-only service invoices",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    if (role === "field_officer" && invoice.createdById !== userId) {
+      return sendError(
+        res,
+        "Only the officer who recorded this collection can replace its receipt",
+        "FORBIDDEN",
+        null,
+        403,
+      );
+    }
+
+    const claim = await prisma.payment.findFirst({
+      where: {
+        invoiceId: invoice.id,
+        status: "pending",
+        method: "bank_transfer",
+        NOT: { matchStatus: "rejected" },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    if (!claim) {
+      return sendError(
+        res,
+        "There is no recorded transfer awaiting confirmation on this invoice",
+        "BAD_REQUEST",
+        null,
+        400,
+      );
+    }
+
+    const serverUrl = `${req.protocol}://${req.get("host")}`;
+    const proofUrl = `${serverUrl}/${file.path.replace(/\\/g, "/")}`;
+
+    const payment = await prisma.payment.update({
+      where: { id: claim.id },
+      data: {
+        proofUrl,
+        proofUploadedById: userId,
+        proofUploadedAt: new Date(),
+      },
+    });
+
+    return sendSuccess(
+      res,
+      { payment },
+      "Receipt replaced. Awaiting treasurer confirmation.",
     );
   } catch (err) {
     next(err);

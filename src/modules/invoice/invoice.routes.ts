@@ -12,6 +12,7 @@ import {
   getInvoicesHubOverview,
   recordInvoicePayment,
   recordFoInvoicePayment,
+  replaceFoInvoicePaymentProof,
   uploadInvoicePaymentProof,
 } from './invoice.controller';
 import { validateBody } from '../../middleware/validate.middleware';
@@ -37,7 +38,22 @@ const proofStorage = multer.diskStorage({
     cb(null, `proof-${uniqueSuffix}${ext}`);
   },
 });
-const proofUpload = multer({ storage: proofStorage, limits: { fileSize: 5 * 1024 * 1024 } });
+const proofUpload = multer({
+  storage: proofStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  // Receipts are evidence: images and PDFs only, matching what the
+  // upload fields promise the officer and the citizen.
+  fileFilter: (req, file, cb) => {
+    if (
+      file.mimetype.startsWith("image/") ||
+      file.mimetype === "application/pdf"
+    ) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only image or PDF files are allowed as payment proof"));
+    }
+  },
+});
 // invoices.validation.ts
 export const recordPaymentSchema = z.object({
   method:    z.enum(['pos', 'cash']),
@@ -74,6 +90,7 @@ router.post(
 router.get('/:id',              requireAuth, getInvoiceById);
 router.post('/:id/pay',         requireAuth, validateBody(recordPaymentSchema), recordInvoicePayment);
 router.post('/:id/fo-payment',  requireAuth, proofUpload.single('proof'), recordFoInvoicePayment);
+router.patch('/:id/fo-payment/proof', requireAuth, proofUpload.single('proof'), replaceFoInvoicePaymentProof);
 router.post("/:id/pay-online", requireAuth, initializePaystackPayment);
 router.post("/public/initialize",  initializePaystackPaymentNewFlow);
 router.post("/public/:id/initialize", initializePublicInvoicePayment);

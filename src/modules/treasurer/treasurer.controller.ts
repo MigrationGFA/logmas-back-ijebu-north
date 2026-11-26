@@ -990,8 +990,12 @@ export const confirmStaticAccountPayment = async (
 /**
  * PATCH /api/v1/treasurer/payments/:paymentId/decline
  * Treasurer rejects the submitted proof (mismatched/invalid). The payment
- * stays pending with the proof cleared, and the application is declined with
- * the reason recorded — the citizen/FO can resubmit a new payment.
+ * stays pending with matchStatus rejected. For a citizen claim the
+ * application is declined with the reason recorded. For an FO-only
+ * collection a wrong receipt is the officer's to fix, not a failed
+ * collection: the application returns to `submitted`, the invoice stays
+ * unpaid, and the officer records again with the correct receipt; the
+ * reason stays on the application so the officer can see why it bounced.
  */
 export const declineStaticAccountPayment = async (
   req: Request,
@@ -1028,6 +1032,10 @@ export const declineStaticAccountPayment = async (
       );
     }
 
+    // FO-only collections bounce back to the collecting officer instead
+    // of being declined outright (see the transaction below).
+    const isFoCollection = application.service?.foOnly === true;
+
     const result = await prisma.$transaction(async (tx) => {
       const updatedPayment = await tx.payment.update({
         where: { id: payment.id },
@@ -1038,12 +1046,24 @@ export const declineStaticAccountPayment = async (
 
       const updatedApplication = await tx.application.update({
         where: { id: application.id },
-        data: {
-          status: "declined",
-          reviewedById: treasurerId,
-          reviewedAt: new Date(),
-          declineReason: reason,
-        },
+        data: isFoCollection
+          ? {
+              // Bounce back, not a failed collection: the claim is
+              // rejected, the application returns to its normal state,
+              // and the officer records again with the correct receipt.
+              // The reason stays on the application so the officer sees
+              // why it bounced.
+              status: "submitted",
+              reviewedById: treasurerId,
+              reviewedAt: new Date(),
+              declineReason: reason,
+            }
+          : {
+              status: "declined",
+              reviewedById: treasurerId,
+              reviewedAt: new Date(),
+              declineReason: reason,
+            },
       });
 
       return { updatedPayment, updatedApplication };
@@ -1055,13 +1075,16 @@ export const declineStaticAccountPayment = async (
         entity: "Payment",
         entityId: payment.id,
         userId: treasurerId,
-        details: { flow: "field_officer_static_account", reason, applicationId: application.id },
+        details: { flow: "field_officer_static_account", reason, applicationId: application.id, bouncedToOfficer: isFoCollection },
         ipAddress: getIp(req),
       },
     });
 
     try {
-      if (application.applicant) {
+      // An FO bounce is not an application decline, and the officer is
+      // staff who sees the reason on the invoice page: no declined
+      // notification goes out for it.
+      if (!isFoCollection && application.applicant) {
         await notify({
           userId: application.applicant.id,
           to: { email: application.applicant.email, phone: application.applicant.phone ?? "" },
@@ -1082,7 +1105,13 @@ export const declineStaticAccountPayment = async (
       console.error("[declineStaticAccountPayment] notify() failed, continuing:", notifyErr);
     }
 
-    return sendSuccess(res, result, "Payment proof declined — application declined");
+    return sendSuccess(
+      res,
+      result,
+      isFoCollection
+        ? "Payment proof declined. The collection has been returned to the officer to record again with the correct receipt."
+        : "Payment proof declined, application declined",
+    );
   } catch (err) {
     next(err);
   }
