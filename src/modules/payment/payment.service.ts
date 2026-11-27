@@ -345,11 +345,15 @@ export async function confirmPayment({
     try {
       const issuer = await prisma.user.findUnique({
         where: { id: result.updatedApplication.createdById },
-        select: { firstName: true, lastName: true, role: true },
+        select: { firstName: true, lastName: true, role: true, email: true, phone: true },
       });
       if (issuer?.role === "field_officer") {
         await notify({
           userId: result.updatedApplication.createdById,
+          to: {
+            email: issuer.email,
+            phone: issuer.phone ?? "",
+          },
           templateKey: "application.foPaymentConfirmed",
           vars: {
             officer_name: `${issuer.firstName} ${issuer.lastName}`,
