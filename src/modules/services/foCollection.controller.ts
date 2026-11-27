@@ -22,7 +22,7 @@ export const normalizeNgPhone = (raw: string): string | null => {
  * fallback when APP_URL was never set.
  */
 const portalBaseUrl = (): string =>
-  (process.env.APP_URL || process.env.PAYSTACK_CALLBACK_URL || "").replace(
+  (process.env.APP_URL || process.env.FRONTEND_URL || process.env.PAYSTACK_CALLBACK_URL || "").replace(
     /\/$/,
     "",
   );
